@@ -56,8 +56,9 @@ exports.showList = function(req, res) {
 
 exports.episodes = function(req, res) {
 	var showName = req.params[0],
-		episodes = [],
-		subtitles = [];
+		episodes = {},
+		subtitles = {},
+		seasons = [];
 	fs.readdir(startingFolder + showName, function(err, files) {
 		var filesList = wrench.readdirSyncRecursive(startingFolder + showName);
 		for(var i in filesList) {
@@ -66,6 +67,7 @@ exports.episodes = function(req, res) {
 				if(fileInfo.type == 'video') {
 					if(typeof episodes[fileInfo.season] == 'undefined') {
 						episodes[fileInfo.season] = [];
+						seasons.push(fileInfo.season);
 					}
 					episodes[fileInfo.season].push(fileInfo);
 				} else if(fileInfo.type == 'subtitle') {
@@ -76,6 +78,8 @@ exports.episodes = function(req, res) {
 				}
 			}
 		}
+		// tri des saisons
+		seasons.sort(function(a, b) { return a - b; });
 		// tri des épisodes par numéro
 		for(var i in episodes) {
 			episodes[i] = episodes[i].sort(function(a, b) { return a.episode - b.episode; });
@@ -109,7 +113,8 @@ exports.episodes = function(req, res) {
 				'/js/bootmetro-charms.js',
 				'/js/show.js'
 			],
-			showFiles: episodes
+			showFiles: episodes,
+			seasons: seasons
 		});
 	});
 };

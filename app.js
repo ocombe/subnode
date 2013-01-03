@@ -41,5 +41,7 @@ var server = http.createServer(app).listen(app.get('port'), function() {
 		app.get('/', shows.showList);
 		app.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, shows.episodes);
 	});
-	open('http://localhost:' + app.get('port'));
+	if(app.get('env') == 'production') {
+		open('http://localhost:' + app.get('port'));
+	}
 });

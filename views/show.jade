@@ -5,19 +5,15 @@ block content
 	p Choose an episode in the list :
 		div.tabbable.tabs-left
 			ul.nav.nav-tabs
-				- var first = true;
-				- for(var season in showFiles)
-					li(class=first ? 'active' : '')
-						- first = false;
-						a(data-toggle="tab",href="#season"+season) Season #{season}
+				- for(var season in seasons)
+					li(class=season == seasons.length-1 ? 'active' : '')
+						a(data-toggle="tab",href="#season"+season) Season #{seasons[season]}
 			div.tab-content
-				- var first = true;
-				- for (var season in showFiles)
-					div.tab-pane(id="season"+season, class=first ? 'active' : '')
-						- first = false;
+				- for (var season in seasons)
+					div.tab-pane(id="season"+season, class=season == seasons.length-1 ? 'active' : '')
 						p
 							ul.episodes
-								- each episode in showFiles[season]
+								- each episode in showFiles[seasons[season]]
 									li
 										span.label(href='', onclick='getSubs(event,"#{episode.file}"); return false;', class=episode.subtitle ? 'label-success' : 'label-important')= episode.name
 										if(episode.subtitle)
