@@ -1,0 +1,28 @@
+extends layout
+
+block content
+	h1#showName= title
+	p Choose an episode in the list :
+		div.tabbable.tabs-left
+			ul.nav.nav-tabs
+				- var first = true;
+				- for(var season in showFiles)
+					li(class=first ? 'active' : '')
+						- first = false;
+						a(data-toggle="tab",href="#season"+season) Season #{season}
+			div.tab-content
+				- var first = true;
+				- for (var season in showFiles)
+					div.tab-pane(id="season"+season, class=first ? 'active' : '')
+						- first = false;
+						p
+							ul.episodes
+								- each episode in showFiles[season]
+									li
+										span.label(href='', onclick='getSubs(event,"#{episode.file}"); return false;', class=episode.subtitle ? 'label-success' : 'label-important')= episode.name
+										if(episode.subtitle)
+											&nbsp;
+											i.icon-libreoffice(title=episode.subtitle.file, rel="tooltip", data-placement="right")
+										&nbsp;
+										div.loader.hidden
+										div.subtitles.metro
