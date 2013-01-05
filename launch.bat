@@ -1,14 +1,8 @@
 :Top
 echo off
 cls
-:MAINMENU choose option from menu
-set /p userinp=Enter the path to your video files (ex: D:/Series TV/) then press enter:   
-set userinp=%userinp%
-if "%userinp%"=="" goto All
-
-:SINGLE
-node app "%userinp%"
-
-:ALL
-echo You have to enter a path...
-pause
+if defined ProgramFiles(x86) (
+	"%~dp0\app\node\x64\node.exe" app "%userinp%"
+) else (
+	"%~dp0\app\node\x86\node.exe" app "%userinp%"
+)

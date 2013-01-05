@@ -1,9 +1,0 @@
-extends layout
-
-block content
-    h1= title
-    p Welcome. Choose a folder in the list :
-    ul
-        each show in shows
-            li
-                a(href='/show/'+show)= show

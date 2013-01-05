@@ -1,0 +1,42 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.content {
+    padding: 0 50px;
+}
+
+li {
+    list-style: none;
+}
+
+.nav-tabs > .active > a, .nav-tabs > .active > a:hover {
+    background-color: #333;
+    color: #FFF;
+}
+
+.tabs-left > .nav-tabs {
+    margin-right: 0;
+}
+
+.tabs-left > .tab-content {
+    background-color: #333;
+    padding-left: 19px;
+}
+
+.loader {
+    display: none;
+    width: 16px;
+    height: 16px;
+    background-image: url('/img/loader.gif');
+    display: inline-block;
+    vertical-align: text-bottom;
+}
+
+a.win-command, input, button, select, textarea {
+    height: auto;
+}
+
+header h1, header h2 {
+    color: #FFF;
+}

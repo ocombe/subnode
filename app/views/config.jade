@@ -1,0 +1,8 @@
+div.row-fluid
+	div.span12
+		form
+			hr
+			label Base folder
+			input#baseFolder(type="text", placeholder="Ex: C:/TV/", value=typeof startingFolder != 'undefined' ? startingFolder : '')
+			span.help-block Folder containing your TV Shows.
+			a.btn(href="/", onclick="return saveParams();") Save
