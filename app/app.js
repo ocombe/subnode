@@ -36,18 +36,6 @@ appRouter.configure('production', function() {
 });
 
 var server = http.createServer(appRouter).listen(appRouter.get('port'), function() {
-
-	/* Monkey patch express to support removal of routes */
-	/*appRouter.unmount = function (route) {
-		console.log('unmount '+route);
-		for (var i = 0, len = this.stack.length; i < len; ++i) {
-			if (this.stack[i].route == route) {
-				this.stack.splice(i, 1);
-				return true;
-			};
-		}
-		return false;
-	}*/
 	args[0] = args[0][args[0].length - 1] == '/' ? args[0] : args[0] + '/'; // add the last '/' if necessary
 	console.log("Server listening on port " + appRouter.get('port') + '. Watching folder "' + args[0] + '" - Opening browser...');
 
@@ -56,7 +44,7 @@ var server = http.createServer(appRouter).listen(appRouter.get('port'), function
 
 	var baseFolder = nconf.get('baseFolder');
 	if(baseFolder) {
-		shows.init(this, args[0], function(baseFolder) {
+		shows.init(this, baseFolder, function(baseFolder) {
 			appRouter.get('/', shows.showList);
 			appRouter.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, shows.episodes);
 			nconf.set('baseFolder', baseFolder);
