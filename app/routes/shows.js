@@ -7,7 +7,6 @@ var fs = require('fs'),
 	startingFolder;
 
 exports.init = function(server, dir, callback) {
-	startingFolder = dir;
 	var everyone = require("now").initialize(server);
 	everyone.now.getSubs = function(showName, episode, callback) {
 		betaSeries.getSubtitles(episode, 'VF', showName, callback);

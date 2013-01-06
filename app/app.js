@@ -44,11 +44,9 @@ var server = http.createServer(appRouter).listen(appRouter.get('port'), function
 
 	var baseFolder = nconf.get('baseFolder');
 	if(baseFolder) {
-		shows.init(this, baseFolder, function(baseFolder) {
+		shows.init(this, baseFolder, function() {
 			appRouter.get('/', shows.showList);
 			appRouter.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, shows.episodes);
-			nconf.set('baseFolder', baseFolder);
-			nconf.save();
 		});
 	} else {
 		appRouter.get('/', shows.config);
