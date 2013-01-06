@@ -29,14 +29,13 @@ appRouter.configure('development', function() {
 	appRouter.use(express.logger('dev'));
 });
 
-appRouter.set('env', args[1] ? args[1] : "production");
+appRouter.set('env', args[0] ? args[0] : "production");
 
 appRouter.configure('production', function() {
 	appRouter.use(express.errorHandler());
 });
 
 var server = http.createServer(appRouter).listen(appRouter.get('port'), function() {
-	args[0] = args[0][args[0].length - 1] == '/' ? args[0] : args[0] + '/'; // add the last '/' if necessary
 	console.log("Server listening on port " + appRouter.get('port') + '. Watching folder "' + args[0] + '" - Opening browser...');
 
 	nconf.use('file', { file: './config.json' });
