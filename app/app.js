@@ -59,7 +59,7 @@ var server = http.createServer(appRouter).listen(appRouter.get('port'), function
 	} else {
 		appRouter.get('/', shows.config);
 		shows.init(this, function(params) {
-			defineRoutes();
+			defineRoutes(params);
 		});
 	}
 	if(appRouter.get('env') == 'production') {
