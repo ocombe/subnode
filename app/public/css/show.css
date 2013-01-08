@@ -1,4 +1,7 @@
-.episodes li span, .episodes li i {
+.episodes li span.label {
+    cursor: default;
+}
+.episodes li span.label-success, .episodes li span.label-important, .episodes li i {
     cursor: pointer;
 }
 .episodes li span.label {

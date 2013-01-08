@@ -4,9 +4,25 @@ var fs = require('fs'),
 	fileScraper = require('../scraper.js'),
 	addic7ed = require('../addic7ed.js'),
 	betaSeries = require('../betaSeries.js'),
-	startingFolder;
+	sb = require('sickbeard'),
+	snParams;
 
-exports.init = function(server, dir, callback) {
+var getSbShows = function(callback) {
+	sickbeard.api('shows', function(result) {
+		var shows = [];
+		for(var id in result.data) {
+			var show = result.data[id];
+			show.id = id;
+			shows.push(show);
+		}
+		shows = shows.sort(function(a, b) {
+			return a.show_name < b.show_name ? -1 : 1;
+		});
+		callback(shows);
+	});
+}
+
+exports.init = function(server, params, callback) {
 	var everyone = require("now").initialize(server);
 	everyone.now.getSubs = function(showName, episode, callback) {
 		betaSeries.getSubtitles(episode, 'VF', showName, callback);
@@ -19,18 +35,24 @@ exports.init = function(server, dir, callback) {
 			addic7ed.download(url, folder, subtitle, callback);
 		}
 	};
-	if(typeof dir == 'function' && typeof callback == 'undefined') {
-		callback = dir;
+	everyone.now.saveParams = function(params) {
+		snParams = params;
+		if(params.sickbeardUrl != '' && params.sickbeardApiKey != '') {
+			sickbeard = new sb(params.sickbeardUrl, params.sickbeardApiKey);
+		}
+		callback(params);
+	};
+	if(typeof params == 'function' && typeof callback == 'undefined') {
+		callback = params;
 	} else {
-		startingFolder = dir;
+		snParams = params;
+		if(params.sickbeardUrl != '' && params.sickbeardApiKey != '') {
+			sickbeard = new sb(params.sickbeardUrl, params.sickbeardApiKey);
+		}
 		if(typeof callback == 'function') {
 			callback();
 		}
 	}
-	everyone.now.saveParams = function(baseFolder) {
-		startingFolder = baseFolder;
-		callback(baseFolder);
-	};
 }
 
 exports.config = function(req, res) {
@@ -56,12 +78,13 @@ exports.config = function(req, res) {
 			'/js/bootmetro-charms.js',
 			'/js/show.js'
 		],
-		parent: 'init'
+		parent: 'init',
+		snParams: {}
 	});
 }
 
 exports.showList = function(req, res) {
-	fs.readdir(startingFolder, function(err, shows) {
+	var callback = function(shows) {
 		res.render('index', {
 			title: 'subNode',
 			stylesheets: [
@@ -85,20 +108,111 @@ exports.showList = function(req, res) {
 				'/js/show.js'
 			],
 			shows: shows,
-			startingFolder: startingFolder
+			snParams: snParams
 		});
-	});
+	}
+	if(snParams.sickbeardUrl != '' && snParams.sickbeardApiKey != '') {
+		getSbShows(callback);
+	} else if(snParams.baseFolder != '') {
+		fs.readdir(snParams.baseFolder, function(err, folders) {
+			var shows = [];
+			for(var i in folders) {
+				shows.push({
+					id: folders[i],
+					show_name: folders[i]
+				});
+			}
+			callback(shows);
+		});
+	}
 };
 
 exports.episodes = function(req, res) {
-	var showName = req.params[0],
-		episodes = {},
-		subtitles = {},
-		seasons = [];
-	fs.readdir(startingFolder + showName, function(err, files) {
-		var filesList = wrench.readdirSyncRecursive(startingFolder + showName);
+	var showId = req.params[0],
+		callback = function(showName, seasons, episodes, shows) {
+			res.render('show', {
+				title: showName,
+				stylesheets: [
+					'/css/bootstrap.css',
+					'/css/bootstrap-responsive.css',
+					'/css/bootmetro.css',
+					'/css/bootmetro-tiles.css',
+					'/css/bootmetro-charms.css',
+					'/css/metro-ui-dark.css',
+					'/css/icomoon.css',
+					'/css/style.css',
+					'/css/show.css'
+				],
+				scripts: [
+					'https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js',
+					'/nowjs/now.js',
+					'/js/modernizr-2.6.2.min.js',
+					'/js/bootstrap.min.js',
+					'/js/bootmetro.js',
+					'/js/bootmetro-charms.js',
+					'/js/show.js'
+				],
+				showFiles: episodes,
+				seasons: seasons,
+				shows: shows,
+				snParams: snParams
+			});
+		};
+
+	if(snParams.sickbeardUrl != '' && snParams.sickbeardApiKey != '') {
+		getSbShows(function(shows) {
+			sickbeard.api('show', {
+				tvdbid: showId
+			}, function(result) {
+				var showData = result.data;
+				var seasons = showData.season_list.sort(),
+					episodes = {},
+					subtitles = {},
+					showName = showData.show_name,
+					filesList = wrench.readdirSyncRecursive(showData.location);
+				for(var i in filesList) {
+					var fileInfo = fileScraper.scrape(showData.location + '/' + filesList[i]);
+					if(fileInfo) { // if video or subtitle
+						if(fileInfo.type == 'video') {
+							if(typeof episodes[fileInfo.season] == 'undefined') {
+								episodes[fileInfo.season] = {};
+							}
+							episodes[fileInfo.season][fileInfo.episode] = fileInfo;
+						} else if(fileInfo.type == 'subtitle') {
+							if(typeof subtitles[fileInfo.season] == 'undefined') {
+								subtitles[fileInfo.season] = {};
+							}
+							subtitles[fileInfo.season][fileInfo.episode] = fileInfo;
+						}
+					}
+				}
+				sickbeard.api('show.seasons', {
+					tvdbid: showId,
+					full: 1
+				}, function(result) {
+					var epData = result.data;
+					for(var season in epData) {
+						for(var episode in epData[season]) {
+							if(epData[season][episode].status == 'Downloaded' || epData[season][episode].status == 'Snatched') {
+								epData[season][episode].name = season + 'x' + (episode < 10 ? '0' + episode : episode) + ' - ' + epData[season][episode].name;
+								epData[season][episode].file = episodes[season][episode].file;
+								epData[season][episode].subtitle = typeof subtitles[season] != 'undefined' && typeof subtitles[season][episode] != 'undefined' ? subtitles[season][episode] : undefined;
+							} else {
+								epData[season][episode].name = season + 'x' + (episode < 10 ? '0' + episode : episode) + ' - ' + epData[season][episode].name + ' [' + epData[season][episode].status + ']';
+							}
+						}
+					}
+					callback(showName, seasons, epData, shows);
+				});
+			});
+		});
+	} else if(snParams.baseFolder != '') {
+		var filesList = wrench.readdirSyncRecursive(snParams.baseFolder + showName),
+			seasons = [],
+			episodes = {},
+			subtitles = {};
 		for(var i in filesList) {
-			var fileInfo = fileScraper.scrape(startingFolder + showName + '/' + filesList[i]);
+			var fileInfo = fileScraper.scrape(snParams.baseFolder + showName + '/' + filesList[i]);
 			if(fileInfo) { // if video or subtitle
 				if(fileInfo.type == 'video') {
 					if(typeof episodes[fileInfo.season] == 'undefined') {
@@ -131,34 +245,8 @@ exports.episodes = function(req, res) {
 				}
 			}
 		}
-		fs.readdir(startingFolder, function(err, shows) {
-			res.render('show', {
-				title: showName,
-				stylesheets: [
-					'/css/bootstrap.css',
-					'/css/bootstrap-responsive.css',
-					'/css/bootmetro.css',
-					'/css/bootmetro-tiles.css',
-					'/css/bootmetro-charms.css',
-					'/css/metro-ui-dark.css',
-					'/css/icomoon.css',
-					'/css/style.css',
-					'/css/show.css'
-				],
-				scripts: [
-					'https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js',
-					'/nowjs/now.js',
-					'/js/modernizr-2.6.2.min.js',
-					'/js/bootstrap.min.js',
-					'/js/bootmetro.js',
-					'/js/bootmetro-charms.js',
-					'/js/show.js'
-				],
-				showFiles: episodes,
-				seasons: seasons,
-				shows: shows,
-				startingFolder: startingFolder
-			});
+		fs.readdir(snParams.baseFolder, function(err, shows) {
+			callback(showId, seasons, episodes, shows);
 		});
-	});
+	}
 };

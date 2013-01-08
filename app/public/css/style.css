@@ -6,6 +6,16 @@ body {
     padding: 0 50px;
 }
 
+.login {
+    max-width: 500px;
+    margin: auto;
+    padding: 50px;
+}
+
+.login form button:hover {
+    color: #fff;
+}
+
 li {
     list-style: none;
 }
@@ -39,4 +49,12 @@ a.win-command, input, button, select, textarea {
 
 header h1, header h2 {
     color: #FFF;
+}
+
+#charms {
+    width: 560px;
+}
+
+a.win-command, button, input[type="button"], input[type="reset"], input[type="submit"] {
+    border: none;
 }

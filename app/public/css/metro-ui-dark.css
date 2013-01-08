@@ -216,16 +216,6 @@ input[type=reset], input[type=file]::-ms-browse {
     border-color: rgb(255, 255, 255);
     color: rgb(255, 255, 255);
 }
-button[type=submit], input[type=submit] {
-    background-color: rgb(0, 130, 135);
-}
-button:hover, input[type=button]:hover, input[type=reset]:hover,
-input[type=file]::-ms-browse:hover {
-    background-color: rgba(255, 255, 255, 0.13);
-}
-button[type=submit]:hover, input[type=submit]:hover {
-    background-color: rgb(33, 146, 151);
-}
 button:hover:active, input[type=button]:hover:active,
 input[type=reset]:hover:active, input[type=submit]:hover:active,
 input[type=file]::-ms-browse:hover:active {

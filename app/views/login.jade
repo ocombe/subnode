@@ -1,0 +1,17 @@
+extends layout
+
+block content
+	div.content.login
+			h1 Access Restricted !
+			br
+			br
+			p Please, provide your credentials to access subNode :
+			form(action="/login", method="post")
+				div
+					label Username:
+					input(type="text", name="username")
+				div
+					label Password:
+					input(type="password", name="password")
+				div
+					button.btn.btn-success(type="submit") Log In

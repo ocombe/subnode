@@ -18,8 +18,9 @@ function toggleLoading(e, active) {
 }
 
 function getSubs(e, episode) {
-	if(!isLoading) {
-		var $target = $(e.currentTarget).siblings('.subtitles');
+	var $target = $(e.currentTarget);
+	if(!isLoading && ($target.hasClass('label-success') || $target.hasClass('label-important'))) {
+		$target = $target.siblings('.subtitles');
 		if(!$target.hasClass('active') && $target.html() == '') {
 			toggleLoading($target, true);
 			now.ready(function() {
@@ -48,11 +49,11 @@ function getSubs(e, episode) {
 	}
 }
 
-function download(e, folder, url, subtitle) {
+function download(e, url, folder, subtitle) {
 	var $target = $(e.currentTarget);
 	if(!isLoading && !$target.hasClass('label-success')) {
 		toggleLoading($target, true);
-		now.download(folder, url, subtitle, function(success) {
+		now.download(url, folder, subtitle, function(success) {
 			toggleLoading($target, false);
 			if(success) {
 				$target.addClass('label label-success').removeClass('label-important');
@@ -65,9 +66,19 @@ function download(e, folder, url, subtitle) {
 }
 
 function saveParams() {
-	var dir = $('#baseFolder').val();
-	if(dir != '')   {
-		now.saveParams(dir);
+	var username = $('#username').val();
+	var password = $('#password').val();
+	var baseFolder = $('#baseFolder').val();
+	var sickbeardUrl = $('#sickbeardUrl').val();
+	var sickbeardApiKey = $('#sickbeardApiKey').val();
+	if(baseFolder != '' || (sickbeardUrl != '' && sickbeardApiKey != ''))   {
+		now.saveParams({
+			username: password == '' ? '' : username,
+			password: username == '' ? '' : password,
+			baseFolder: baseFolder,
+			sickbeardUrl: sickbeardUrl,
+			sickbeardApiKey: sickbeardApiKey
+		});
 		return true;
 	} else {
 		return false;

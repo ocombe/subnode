@@ -18,7 +18,7 @@ block content
 								ul.episodes
 									- each episode in showFiles[seasons[season]]
 										li
-											span.label(href='', onclick='getSubs(event,"#{episode.file}"); return false;', class=episode.subtitle ? 'label-success' : 'label-important')= episode.name
+											span.label(href='', onclick='getSubs(event,"#{episode.file}"); return false;', class=episode.subtitle ? 'label-success' : (episode.status && episode.status == 'Downloaded' ? 'label-important' : ''), title=episode.airdate ? "Air date: "+episode.airdate : '', rel="tooltip", data-placement="left")= episode.name
 											if(episode.subtitle)
 												&nbsp;
 												i.icon-libreoffice(title=episode.subtitle.file, rel="tooltip", data-placement="right")

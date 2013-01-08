@@ -1,5 +1,5 @@
 exports.scrape = function(fileName) {
-	fileName = fileName.replace('\\','/');
+	fileName = fileName.replace(/\\/g,'/');
     var data = false,
         regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})/i,
         alternate = /[\.\-_\s\[\(]+(?!720\s?p|[xh]264)(\d{1,2}|\d)(\d{2})/i,

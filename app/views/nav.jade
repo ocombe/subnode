@@ -11,7 +11,7 @@ header#nav-bar.container-fluid
 						ul.dropdown-menu
 							each show in shows
 								li
-									a(href='/show/'+show)= show
+									a(href='/show/'+show.id)= show.show_name
 		div.align-center
 			span.win-commandimage.win-commandring &#xe1fe;
 			h1 subNode
