@@ -207,12 +207,12 @@ exports.episodes = function(req, res) {
 			});
 		});
 	} else if(snParams.baseFolder != '') {
-		var filesList = wrench.readdirSyncRecursive(snParams.baseFolder + showName),
+		var filesList = wrench.readdirSyncRecursive(snParams.baseFolder + showId),
 			seasons = [],
 			episodes = {},
 			subtitles = {};
 		for(var i in filesList) {
-			var fileInfo = fileScraper.scrape(snParams.baseFolder + showName + '/' + filesList[i]);
+			var fileInfo = fileScraper.scrape(snParams.baseFolder + showId + '/' + filesList[i]);
 			if(fileInfo) { // if video or subtitle
 				if(fileInfo.type == 'video') {
 					if(typeof episodes[fileInfo.season] == 'undefined') {
