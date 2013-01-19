@@ -3,8 +3,8 @@
  */
 
 var express = require('express'),
-	shows = require('./routes/shows'),
-	login = require('./routes/login'),
+	shows = require('./app/routes/shows'),
+	login = require('./app/routes/login'),
 	http = require('http'),
 	path = require('path'),
 	fs = require('fs'),
@@ -18,7 +18,7 @@ var appRouter = express();
 appRouter.configure(function() {
 	login.init(passport);
 	appRouter.set('port', process.env.PORT || 3000);
-	appRouter.set('views', __dirname + '/views');
+	appRouter.set('views', __dirname + '/app/views');
 	appRouter.set('view engine', 'jade');
 	appRouter.use(express.favicon());
 	appRouter.use(express.cookieParser());
@@ -28,7 +28,7 @@ appRouter.configure(function() {
 	appRouter.use(passport.initialize());
 	appRouter.use(passport.session());
 	appRouter.use(appRouter.router);
-	appRouter.use(express.static(path.join(__dirname, 'public')));
+	appRouter.use(express.static(path.join(__dirname, '/app/public')));
 });
 
 appRouter.configure('development', function() {
@@ -45,7 +45,7 @@ appRouter.configure('production', function() {
 var server = http.createServer(appRouter).listen(appRouter.get('port'), function() {
 	console.log("Server listening on port " + appRouter.get('port') + " - Opening browser...");
 
-	nconf.use('file', { file: __dirname + '/../config.json' });
+	nconf.use('file', { file: __dirname + '/config.json' });
 	nconf.load();
 
 	var params = {
