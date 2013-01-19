@@ -87,4 +87,6 @@ var defineRoutes = function(params) {
 	appRouter.get('/login', login.login);
 	appRouter.get('/', function(req, res) { login.checkLogin(req, res, shows.showList) });
 	appRouter.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, function(req, res) { login.checkLogin(req, res, shows.episodes) });
+	appRouter.get('/banner/:showid', shows.getBanner);
+	appRouter.get('/history', function(req, res) { login.checkLogin(req, res, shows.history) });
 }

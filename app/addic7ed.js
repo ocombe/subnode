@@ -42,8 +42,8 @@ exports.getShowId = function(showName, start, callback) {
 }
 
 
-exports.getSubtitlesList = function(id, show, lang, season, episode, callback) {
-	request({uri: 'http://www.addic7ed.com/ajax_loadShow.php?show=' + id + '&season=' + season + '&langs=|' + lang + '|&hd=0&hi=0'}, function(err, response, body) {
+var getSubtitlesList = function(id, show, lang, fileInfo, callback) {
+	request({uri: 'http://www.addic7ed.com/ajax_loadShow.php?show=' + id + '&season=' + fileInfo.season + '&langs=|' + lang + '|&hd=0&hi=0'}, function(err, response, body) {
 		var self = this;
 		//Just a basic error check
 		if(err && response.statusCode !== 200) {
@@ -59,19 +59,21 @@ exports.getSubtitlesList = function(id, show, lang, season, episode, callback) {
 			var subs = [];
 			var rows = $('div#season tbody tr.epeven.completed').each(function(i, row) {
 				var columns = $(row).find('td');
-				if(columns[1].innerHTML == episode && columns[5].innerHTML == 'Completed') {
-					var fileName = show + ' - ' + season + 'x' + (episode < 10 ? '0' + episode : episode) + ' - ' + $(columns[4]).text() + '.' + $(columns[3]).text() + '.srt';
+				if(columns[1].innerHTML == fileInfo.episode && columns[5].innerHTML == 'Completed') {
+					var fileName = show + ' - ' + fileInfo.season + 'x' + (fileInfo.episode < 10 ? '0' + fileInfo.episode : fileInfo.episode) + ' - ' + $(columns[4]).text() + '.' + $(columns[3]).text() + '.srt';
+					var subInfo = fileScraper.scrape(fileName);
+					subInfo.score = fileScraper.score(fileInfo, subInfo, lang);
 					subs.push({
 						title: fileName,
-						season: season,
-						episode: episode,
+						season: fileInfo.season,
+						episode: fileInfo.episode,
 						language: lang == 8 ? 'VF' : 'VO',
 						source: 'addic7ed',
 						file: fileName,
 						url: 'http://www.addic7ed.com' + $(columns[9]).find('a').first().attr('href'),
 						quality: 3,
 						content: [
-							fileScraper.scrape(fileName)
+							subInfo
 						]
 					});
 				}
@@ -83,12 +85,11 @@ exports.getSubtitlesList = function(id, show, lang, season, episode, callback) {
 	});
 }
 
-exports.getSubtitles = function(fileName, lang, show, callback) {
+exports.getSubtitles = function(fileInfo, lang, show, callback) {
 	if(typeof show == 'function' && typeof callback == 'undefined') {
 		callback = show;
 		show = undefined;
 	}
-	var fileInfo = fileScraper.scrape(fileName);
 	if(lang == 'VF') {
 		lang = 8;
 	} else {
@@ -97,7 +98,7 @@ exports.getSubtitles = function(fileName, lang, show, callback) {
 
 	exports.getShowId(show ? show : fileInfo.show, true, function(id) {
 		if(id) {
-			exports.getSubtitlesList(id, show ? show : fileInfo.show, lang, fileInfo.season, fileInfo.episode, function(data) {
+			getSubtitlesList(id, show ? show : fileInfo.show, lang, fileInfo, function(data) {
 				if(typeof callback == 'function') {
 					callback(data);
 				}

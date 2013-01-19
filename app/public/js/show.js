@@ -24,22 +24,24 @@ function getSubs(e, episode) {
 		if(!$target.hasClass('active') && $target.html() == '') {
 			toggleLoading($target, true);
 			now.ready(function() {
-				now.getSubs($('#showName').text(), episode, function(subtitles) {
+				now.getSubs($('#showName').text(), episode, function(subtitles, providerName) {
 					var text = '';
 						for(var i in subtitles) {
 							text = text + '<div class="tile wide text"><div class="column3-info tile wide text qualite'+subtitles[i].quality+'">Source: '+subtitles[i].source+'</div><div class="text-header">' + subtitles[i].file + '</div>';
 							for(var j in subtitles[i].content) {
 								if(subtitles[i].content[j].type == 'subtitle') {
-									text = text + '<div><a onClick=\'download(event, "' + subtitles[i].url + '", "' + episode.substr(0, episode.lastIndexOf('/')) + '", "' + subtitles[i].content[j].name + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
+									text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a onClick=\'download(event, "' + escape(subtitles[i].url) + '", "' + escape(episode.substr(0, episode.lastIndexOf('/'))) + '", "' + escape(subtitles[i].content[j].name) + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
 								}
 							}
 							text = text + '</div>';
 						}
 					if(text == '') {
-						text = '<div class="tile wide text"><div class="text">Aucun sous titre disponible</div></div>';
+						text = '<div class="tile wide text"><div class="text">No subtitles available on <b>' + providerName + '</b></div></div>';
 					}
 					$target.parent().find('.subtitles').append(text);
 					$target.addClass('active');
+					$("[rel=tooltip]").tooltip();
+				}, function() {
 					toggleLoading($target, false);
 				});
 			});
@@ -53,6 +55,9 @@ function download(e, url, folder, subtitle) {
 	var $target = $(e.currentTarget);
 	if(!isLoading && !$target.hasClass('label-success')) {
 		toggleLoading($target, true);
+		url = unescape(url);
+		folder = unescape(folder);
+		subtitle = unescape(subtitle);
 		now.download(url, folder, subtitle, function(success) {
 			toggleLoading($target, false);
 			if(success) {

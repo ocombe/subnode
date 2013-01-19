@@ -1,0 +1,11 @@
+extends layout
+
+block content
+	include nav
+	div.content
+		h1= snParams.baseFolder
+		p Welcome. Choose a folder in the list :
+		ul
+			each show in shows
+				li
+					a(href='/show/'+show.id)= show.show_name

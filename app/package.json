@@ -1,6 +1,6 @@
 {
   "name": "subnode",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "scripts": {
     "start": "node app"
   },
@@ -33,6 +33,7 @@
     "sickbeard": "0.0.2",
     "adm-zip": "~0.1.9",
     "passport-local": "~0.1.6",
-    "passport": "~0.1.15"
+    "passport": "~0.1.15",
+    "async": "~0.1.22"
   }
 }

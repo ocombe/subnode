@@ -1,10 +1,11 @@
 header#nav-bar.container-fluid
 	div.row-fluid
-		- if(typeof showFiles != 'undefined')
-			div.pull-left
-				div#header-container
+		div.pull-left
+			div#header-container
+				- if(currentUrl != '/')
 					a#backbutton.win-backbutton(href="/")
 					h5 Go back
+				- if(typeof shows != 'undefined')
 					div.dropdown
 						a.header-dropdown.dropdown-toggle(data-toggle="dropdown", href="#") TV Shows
 							b.caret
@@ -12,19 +13,26 @@ header#nav-bar.container-fluid
 							each show in shows
 								li
 									a(href='/show/'+show.id)= show.show_name
-		div.align-center
-			span.win-commandimage.win-commandring &#xe1fe;
-			h1 subNode
 		div#top-info.pull-right
-			//a.pull-left(href="#")
-				div.top-info-block
-					h3 FirstName
-					h4 LastName
-				div.top-info-block
-					b.icon-user
-			//hr.separator.pull-left
-			a#settings.pull-left(href="#")
+			if snParams.sickbeardUrl != '' && snParams.sickbeardApiKey != '' && typeof showId != 'undefined'
+				a.pull-left(href="/history", title="SickBeard History", rel="tooltip", data-placement="left")
+					b.icon-history
+			a#settings.pull-right(href="#", title="Settings", rel="tooltip", data-placement="right")
 				b.icon-settings
+			//a.pull-left(href="#")
+					div.top-info-block
+						h3 FirstName
+						h4 LastName
+					div.top-info-block
+						b.icon-user
+			//hr.separator.pull-left
+		div.align-center
+			if snParams.sickbeardUrl != '' && snParams.sickbeardApiKey != '' && typeof showId != 'undefined'
+				img(src="/banner/"+showId)
+			else
+				a(href="/")
+					img.logo(src="/img/subnode.png")
+
 
 div#charms.win-ui-dark
 	div#theme-charms-section.charms-section

@@ -2,6 +2,10 @@ body {
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.logo {
+    max-width: 200px;
+}
+
 .content {
     padding: 0 50px;
 }
@@ -53,8 +57,14 @@ header h1, header h2 {
 
 #charms {
     width: 560px;
+    z-index: 10;
 }
 
 a.win-command, button, input[type="button"], input[type="reset"], input[type="submit"] {
     border: none;
+}
+
+.dropdown-menu {
+    max-height: 500px;
+    overflow: auto;
 }

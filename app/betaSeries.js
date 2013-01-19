@@ -29,6 +29,7 @@ exports.getFromApi = function(path, params, callback) {
 }
 
 exports.getShowUrl = function(showName, callback) {
+	showName = showName.replace(/:/g, '');
 	exports.getFromApi('/shows/search', {title: showName}, function(data) {
         if(typeof callback == 'function') {
             callback(data.root.shows[0].url);
@@ -36,12 +37,11 @@ exports.getShowUrl = function(showName, callback) {
     });
 }
 
-exports.getSubtitles = function(fileName, lang, show, callback) {
+exports.getSubtitles = function(fileInfo, lang, show, callback) {
 	if(typeof show == 'function' && typeof callback == 'undefined') {
 		callback = show;
 		show = undefined;
 	}
-    var fileInfo = fileScraper.scrape(fileName);
 	exports.getShowUrl(show ? show : fileInfo.show, function(showUrl) {
 		exports.getFromApi('/subtitles/show/' + showUrl, {
             language: lang,
@@ -52,9 +52,13 @@ exports.getSubtitles = function(fileName, lang, show, callback) {
 			for(var i in subtitles) {
 				var tempContent = [];
 				for(var s in subtitles[i].content) {
-					tempContent.push(fileScraper.scrape(subtitles[i].content[s]));
+					if(subtitles[i].content[s]) {
+						var subInfo = fileScraper.scrape(subtitles[i].content[s]);
+						subInfo.score = fileScraper.score(fileInfo, subInfo, lang);
+						tempContent.push(subInfo);
+					}
 				}
-				subtitles[i].content = tempContent.sort(function(a, b) { return a.episode - b.episode; });
+				subtitles[i].content = tempContent.sort(function(a, b) { return b.score - a.score; });
 			}
             if(typeof callback == 'function') {
                 callback(subtitles);
