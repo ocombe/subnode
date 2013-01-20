@@ -51,7 +51,8 @@ var server = http.createServer(appRouter).listen(appRouter.get('port'), function
 	var params = {
 		baseFolder: nconf.get('baseFolder'),
 		sickbeardUrl: nconf.get('sickbeardUrl'),
-		sickbeardApiKey: nconf.get('sickbeardApiKey')
+		sickbeardApiKey: nconf.get('sickbeardApiKey'),
+		autorename: nconf.get('autorename')
 	}
 
 	if((typeof params.baseFolder != 'undefined' && params.baseFolder != '') || (typeof params.sickbeardUrl != 'undefined' && typeof params.sickbeardApiKey != 'undefined' && params.sickbeardUrl != '' && params.sickbeardApiKey != '')) {
@@ -74,6 +75,7 @@ var defineRoutes = function(params) {
 		nconf.set('sickbeardUrl', params.sickbeardUrl);
 		nconf.set('sickbeardApiKey', params.sickbeardApiKey);
 		nconf.set('baseFolder', params.baseFolder);
+		nconf.set('autorename', params.autorename);
 		nconf.save();
 	}
 	delete appRouter._router.map.get;
@@ -85,8 +87,9 @@ var defineRoutes = function(params) {
 		})
 	);
 	appRouter.get('/login', login.login);
-	appRouter.get('/', function(req, res) { login.checkLogin(req, res, shows.showList) });
-	appRouter.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, function(req, res) { login.checkLogin(req, res, shows.episodes) });
+	appRouter.get('/', function(req, res) { login.checkLogin(req, res, shows.showList); });
+	appRouter.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, function(req, res) { login.checkLogin(req, res, shows.episodes); });
 	appRouter.get('/banner/:showid', shows.getBanner);
-	appRouter.get('/history', function(req, res) { login.checkLogin(req, res, shows.history) });
+	appRouter.get('/history', function(req, res) { login.checkLogin(req, res, shows.history); });
+	appRouter.get('/renameAll', function(req, res) { login.checkLogin(req, res, shows.renameAll ); })
 }

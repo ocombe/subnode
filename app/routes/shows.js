@@ -57,11 +57,13 @@ exports.init = function(server, params, callback) {
 			allFinished();
 		});
 	}
-	everyone.now.download = function(url, folder, subtitle, callback) {
+	everyone.now.download = function(episode, url, subtitle, callback) {
+		var folder = path.dirname(episode) + '/',
+			newName = snParams.autorename ? path.basename(episode).replace(path.extname(episode), path.extname(subtitle)) : false;
 		if(url.indexOf('betaseries') != -1) {
-			betaSeries.download(url, folder, subtitle, callback);
+			betaSeries.download(url, folder, subtitle, newName, callback);
 		} else if(url.indexOf('addic7ed') != -1) {
-			addic7ed.download(url, folder, subtitle, callback);
+			addic7ed.download(url, folder, newName, callback);
 		}
 	};
 	everyone.now.saveParams = function(params) {
@@ -329,4 +331,69 @@ exports.history = function(req, res) {
 			shows: results[0]
 		});
 	});
+}
+
+exports.renameAll = function(req, res) {
+	res.writeHead(200, {'Content-Type': 'text/html'});
+	getShows(function(err, shows) {
+		async.forEach(shows, function(show, callback1) {
+			sickbeard.api('show', {
+				tvdbid: show.id
+			}, function(showData) {
+				var episodes = new Array(),
+					subtitles = new Array(),
+					filesList = wrench.readdirSyncRecursive(location);
+				res.write('<br/>Processing <b>' + showData.data.show_name + '</b><br/>');
+				async.forEach(filesList, function(file, callback2) {
+					var fileInfo = fileScraper.scrape(location + '/' + file);
+					if(fileInfo) { // if video or subtitle
+						if(fileInfo.type == 'video') {
+							episodes.push(fileInfo);
+						} else if(fileInfo.type == 'subtitle') {
+							subtitles.push(fileInfo);
+						}
+					}
+					callback2(null);
+				}, function(err){
+					async.forEach(episodes, function(episode, callback3) {
+						async.forEach(subtitles, function(subtitle, callback4) {
+							if(episode.episode == subtitle.episode && episode.season == subtitle.season) {
+								fs.rename(subtitle.file, episode.file.replace(episode.extension, subtitle.extension), function(err) {
+									if(err) {
+										res.write('<br/><span style="color: red; font-weight: bold;">rename error: ' + err.toString() + '</span><br/>');
+									} else {
+//										res.write('renamed ' + subtitle.name + ' to ' + episode.name.replace(episode.extension, subtitle.extension) + '<br/>');
+										res.write('.');
+									}
+									callback4(null);
+								});
+							} else {
+								callback4(null);
+							}
+						}, function(err){
+							callback3(null);
+							// if any of the saves produced an error, err would equal that error
+						});
+					}, function(err){
+						callback1(null);
+					});
+				});
+
+
+			})
+		}, function(err){
+			res.write('<br/><br/><b>FINISHED !!</b>');
+			res.send();
+		});
+	});
+	/*async.parallel([
+		getShows,
+		function(callback) {
+			sickbeard.api('history', function(result) {
+				callback(null, result);
+			});
+		}
+	], function(err, results) {
+
+	});*/
 }

@@ -30,7 +30,7 @@ function getSubs(e, episode) {
 							text = text + '<div class="tile wide text"><div class="column3-info tile wide text qualite'+subtitles[i].quality+'">Source: '+subtitles[i].source+'</div><div class="text-header">' + subtitles[i].file + '</div>';
 							for(var j in subtitles[i].content) {
 								if(subtitles[i].content[j].type == 'subtitle') {
-									text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a onClick=\'download(event, "' + escape(subtitles[i].url) + '", "' + escape(episode.substr(0, episode.lastIndexOf('/'))) + '", "' + escape(subtitles[i].content[j].name) + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
+									text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a onClick=\'download(event, "' + escape(episode) + '", "' + escape(subtitles[i].url) + '", "' + escape(subtitles[i].content[j].name) + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
 								}
 							}
 							text = text + '</div>';
@@ -51,14 +51,14 @@ function getSubs(e, episode) {
 	}
 }
 
-function download(e, url, folder, subtitle) {
+function download(e, episode, url, subtitle) {
 	var $target = $(e.currentTarget);
 	if(!isLoading && !$target.hasClass('label-success')) {
 		toggleLoading($target, true);
+		episode = unescape(episode);
 		url = unescape(url);
-		folder = unescape(folder);
 		subtitle = unescape(subtitle);
-		now.download(url, folder, subtitle, function(success) {
+		now.download(episode, url, subtitle, function(success) {
 			toggleLoading($target, false);
 			if(success) {
 				$target.addClass('label label-success').removeClass('label-important');
@@ -76,13 +76,15 @@ function saveParams() {
 	var baseFolder = $('#baseFolder').val();
 	var sickbeardUrl = $('#sickbeardUrl').val();
 	var sickbeardApiKey = $('#sickbeardApiKey').val();
+	var autorename = $('#autorename').is(':checked');
 	if(baseFolder != '' || (sickbeardUrl != '' && sickbeardApiKey != ''))   {
 		now.saveParams({
 			username: password == '' ? '' : username,
 			password: username == '' ? '' : password,
 			baseFolder: baseFolder,
 			sickbeardUrl: sickbeardUrl,
-			sickbeardApiKey: sickbeardApiKey
+			sickbeardApiKey: sickbeardApiKey,
+			autorename: autorename
 		});
 		return true;
 	} else {
