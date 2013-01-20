@@ -111,7 +111,7 @@ exports.getSubtitles = function(fileInfo, lang, show, callback) {
 	});
 }
 
-exports.download = function(url, folder, subtitle, callback) {
+exports.download = function(url, folder, newName, callback) {
 	var request = http.get({
 		hostname: 'www.addic7ed.com',
 		headers: {
@@ -119,12 +119,17 @@ exports.download = function(url, folder, subtitle, callback) {
 		},
 		port: 80,
 		path: url.substr(23, url.length)
-	}, function(response) {
+	}, function(response, err) {
 		var success = false;
 		var fileName = response.headers['content-disposition'];
 		if(fileName) {
-			fileName = fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"'));
-			response.pipe(fs.createWriteStream(folder + '/' + fileName));
+			if(newName) {
+				response.pipe(fs.createWriteStream(folder + newName));
+			} else {
+				fileName = fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')).replace(/[\:\\\/\*\"\<\>\|]/g, '');
+				console.log(fileName);
+				response.pipe(fs.createWriteStream(folder + fileName));
+			}
 			success = true;
 		}
 		if(typeof callback == 'function') {

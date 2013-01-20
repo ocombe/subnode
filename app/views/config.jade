@@ -9,6 +9,13 @@ div.row-fluid
 				label Password (optional)
 				input#password(type="password", name="password", value=snParams.password ? snParams.password : '')
 			br
+			div
+				if snParams.autorename && snParams.autorename === true
+					input#autorename(type="checkbox", name="autorename", checked="checked")
+				else
+					input#autorename(type="checkbox", name="autorename")
+				span= " Autorename subtitles files to video file name"
+			br
 			div.tabbable
 				ul.nav.nav-tabs
 					li(class=snParams.sickbeardUrl || !snParams.baseFolder ? 'active' : '')

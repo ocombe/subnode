@@ -1,6 +1,7 @@
 var request = require('request'),
 	http = require('http'),
 	path = require('path'),
+	fs = require('fs'),
 	AdmZip = require('adm-zip'),
     fileScraper = require('./scraper.js'),
     betaSeriesApiKey = '0bc44794dd9b';
@@ -67,7 +68,7 @@ exports.getSubtitles = function(fileInfo, lang, show, callback) {
     });
 }
 
-exports.download = function(url, folder, subtitle, callback) {
+exports.download = function(url, folder, subtitle, newName, callback) {
 	var request = http.get(url.replace('https', 'http'), function(response) {
 		var data = [],
 			dataLen = 0,
@@ -85,8 +86,15 @@ exports.download = function(url, folder, subtitle, callback) {
 					}
 					var zip = new AdmZip(buf);
 					zip.extractEntryTo(subtitle, folder, false, true);
+					if(newName) {
+						fs.rename(folder + subtitle, folder + newName);
+					}
 				} else {
-					response.pipe(fs.createWriteStream(folder+'/'+downloadedFile));
+					if(newName) {
+						response.pipe(fs.createWriteStream(folder + newName));
+					} else {
+						response.pipe(fs.createWriteStream(folder + downloadedFile.replace(/\:\\\/\*\"\<\>\|/g, '')));
+					}
 				}
 				if(typeof callback == 'function') {
 					callback(true);
