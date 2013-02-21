@@ -1,0 +1,6 @@
+.gitignore
+node_modules
+.project
+http-auth.iml
+.idea
+*.swp
