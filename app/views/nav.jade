@@ -14,7 +14,7 @@ header#nav-bar.container-fluid
 								li
 									a(href='/show/'+show.id)= show.show_name
 		div#top-info.pull-right
-			if snParams.sickbeardUrl != '' && snParams.sickbeardApiKey != '' && typeof showId != 'undefined'
+			if snParams.sickbeardUrl != '' && snParams.sickbeardApiKey != ''
 				a.pull-left(href="/history", title="SickBeard History", rel="tooltip", data-placement="left")
 					b.icon-history
 			a#settings.pull-right(href="#", title="Settings", rel="tooltip", data-placement="right")

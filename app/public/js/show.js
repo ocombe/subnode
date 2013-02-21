@@ -1,4 +1,3 @@
-var isLoading = false;
 $(document).ready(function() {
 	$("[rel=tooltip]").tooltip();
 
@@ -8,52 +7,56 @@ $(document).ready(function() {
 	});
 });
 
-function toggleLoading(e, active) {
-	isLoading = active;
-	if(!isLoading) {
-		$(e).siblings('.loader').addClass('hidden');
+function toggleLoading($target, active) {
+	$target.data('isLoading', active);
+	if(!active) {
+		$target.siblings('.loader').addClass('hidden');
 	} else {
-		$(e).siblings('.loader').removeClass('hidden');
+		$target.siblings('.loader').removeClass('hidden');
 	}
 }
 
 function getSubs(e, episode) {
 	var $target = $(e.currentTarget);
-	if(!isLoading && ($target.hasClass('label-success') || $target.hasClass('label-important'))) {
-		$target = $target.siblings('.subtitles');
-		if(!$target.hasClass('active') && $target.html() == '') {
-			toggleLoading($target, true);
-			now.ready(function() {
-				now.getSubs($('#showName').text(), episode, function(subtitles, providerName) {
-					var text = '';
-						for(var i in subtitles) {
-							text = text + '<div class="tile wide text"><div class="column3-info tile wide text qualite'+subtitles[i].quality+'">Source: '+subtitles[i].source+'</div><div class="text-header">' + subtitles[i].file + '</div>';
-							for(var j in subtitles[i].content) {
-								if(subtitles[i].content[j].type == 'subtitle') {
-									text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a onClick=\'download(event, "' + escape(episode) + '", "' + escape(subtitles[i].url) + '", "' + escape(subtitles[i].content[j].name) + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
+	if(!$target.data('isLoading') && ($target.hasClass('label-success') || $target.hasClass('label-important'))) {
+		$newTarget = $target.siblings('.subtitles');
+		if(!$newTarget.hasClass('active')) {
+			if($newTarget.html() == '') {
+				toggleLoading($target, true);
+				now.ready(function() {
+					now.getSubs($('#showName').text(), episode, function(subtitles, providerName) {
+						var text = '';
+							for(var i in subtitles) {
+								text = text + '<div class="tile wide text"><div class="column3-info tile wide text qualite'+subtitles[i].quality+'">Source: '+subtitles[i].source+'</div><div class="text-header">' + subtitles[i].file + '</div>';
+								for(var j in subtitles[i].content) {
+									if(subtitles[i].content[j].type == 'subtitle') {
+										text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a onClick=\'download(event, "' + escape(episode) + '", "' + escape(subtitles[i].url) + '", "' + escape(subtitles[i].content[j].name) + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
+									}
 								}
+								text = text + '</div>';
 							}
-							text = text + '</div>';
+						if(text == '') {
+							text = '<div class="tile wide text"><div class="text">No subtitles available on <b>' + providerName + '</b></div></div>';
 						}
-					if(text == '') {
-						text = '<div class="tile wide text"><div class="text">No subtitles available on <b>' + providerName + '</b></div></div>';
-					}
-					$target.parent().find('.subtitles').append(text);
-					$target.addClass('active');
-					$("[rel=tooltip]").tooltip();
-				}, function() {
-					toggleLoading($target, false);
+						$newTarget.parent().find('.subtitles').append(text);
+						$newTarget.addClass('active');
+						$("[rel=tooltip]").tooltip();
+					}, function() {
+						toggleLoading($target, false);
+					});
 				});
-			});
+			} else {
+				$newTarget.addClass('active');
+			}
 		} else {
-			$target.removeClass('active');
+			$newTarget.removeClass('active');
 		}
 	}
 }
 
 function download(e, episode, url, subtitle) {
 	var $target = $(e.currentTarget);
-	if(!isLoading && !$target.hasClass('label-success')) {
+	if(!$target.data('isLoading') && !$target.hasClass('label-success')) {
 		toggleLoading($target, true);
 		episode = unescape(episode);
 		url = unescape(url);
@@ -77,6 +80,7 @@ function saveParams() {
 	var sickbeardUrl = $('#sickbeardUrl').val();
 	var sickbeardApiKey = $('#sickbeardApiKey').val();
 	var autorename = $('#autorename').is(':checked');
+	var subLang = $('#subLang').val();
 	if(baseFolder != '' || (sickbeardUrl != '' && sickbeardApiKey != ''))   {
 		now.saveParams({
 			username: password == '' ? '' : username,
@@ -84,7 +88,8 @@ function saveParams() {
 			baseFolder: baseFolder,
 			sickbeardUrl: sickbeardUrl,
 			sickbeardApiKey: sickbeardApiKey,
-			autorename: autorename
+			autorename: autorename,
+			subLang: subLang
 		});
 		return true;
 	} else {
