@@ -4,6 +4,7 @@ var request = require('request'),
 	fs = require('fs'),
 	AdmZip = require('adm-zip'),
     fileScraper = require('./scraper.js'),
+	natural = require('natural'),
     betaSeriesApiKey = '0bc44794dd9b';
 
 exports.serialize = function(obj, prefix) {
@@ -33,7 +34,16 @@ exports.getShowUrl = function(showName, callback) {
 	showName = showName.replace(/:/g, '');
 	exports.getFromApi('/shows/search', {title: showName}, function(data) {
         if(typeof callback == 'function') {
-            callback(data.root.shows[0].url);
+	        var matches = [],
+		        shows = data.root.shows;
+	        for(var i in shows) {
+		        matches.push({url: shows[i].url, value: natural.JaroWinklerDistance(shows[i].title,showName)});
+		        matches.push({url: shows[i].url, value: natural.JaroWinklerDistance(shows[i].url,showName)}); // sometimes url is closer than title (ex: CSI)
+	        }
+	        matches.sort(function(a, b) {
+		        return b.value - a.value;
+	        });
+            callback(matches[0].url);
         }
     });
 }

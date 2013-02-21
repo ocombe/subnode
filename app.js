@@ -3,20 +3,18 @@
  */
 
 var express = require('express'),
-	shows = require('./app/routes/shows'),
-	login = require('./app/routes/login'),
+	shows = require('./app/scripts/shows'),
+	login = require('./app/scripts/login'),
 	http = require('http'),
 	path = require('path'),
 	fs = require('fs'),
 	open = require('open'),
 	args = process.argv.slice(2),
-	nconf = require('nconf'),
-	passport = require('passport');
+	nconf = require('nconf').file('config', __dirname + '/config.json');
 
 var appRouter = express();
 
 appRouter.configure(function() {
-	login.init(passport);
 	appRouter.set('port', process.env.PORT || 3000);
 	appRouter.set('views', __dirname + '/app/views');
 	appRouter.set('view engine', 'jade');
@@ -25,9 +23,6 @@ appRouter.configure(function() {
 	appRouter.use(express.bodyParser());
 	appRouter.use(express.session({ secret: 'REED6hGqdqGbrMvA5p78DOXpA4S9UAb8JWAe24nP7li+TS+raL' }));
 	appRouter.use(express.methodOverride());
-	appRouter.use(passport.initialize());
-	appRouter.use(passport.session());
-	appRouter.use(appRouter.router);
 	appRouter.use(express.static(path.join(__dirname, '/app/public')));
 });
 
@@ -44,49 +39,43 @@ appRouter.configure('production', function() {
 
 var server = http.createServer(appRouter).listen(appRouter.get('port'), function() {
 	console.log("Server listening on port " + appRouter.get('port') + " - Opening browser...");
+	var self = this;
+	nconf.load(function() {
+		var params = {
+			baseFolder: nconf.get('baseFolder'),
+			sickbeardUrl: nconf.get('sickbeardUrl'),
+			sickbeardApiKey: nconf.get('sickbeardApiKey'),
+			autorename: nconf.get('autorename'),
+			subLang: nconf.get('subLang'),
+			username: nconf.get('username'),
+			password: nconf.get('password')
+		}
 
-	nconf.use('file', { file: __dirname + '/config.json' });
-	nconf.load();
+		login.init(params.username, params.password);
 
-	var params = {
-		baseFolder: nconf.get('baseFolder'),
-		sickbeardUrl: nconf.get('sickbeardUrl'),
-		sickbeardApiKey: nconf.get('sickbeardApiKey'),
-		autorename: nconf.get('autorename')
-	}
-
-	if((typeof params.baseFolder != 'undefined' && params.baseFolder != '') || (typeof params.sickbeardUrl != 'undefined' && typeof params.sickbeardApiKey != 'undefined' && params.sickbeardUrl != '' && params.sickbeardApiKey != '')) {
-		shows.init(this, params, defineRoutes);
-	} else {
-		appRouter.get('/', shows.config);
-		shows.init(this, function(params) {
-			defineRoutes(params);
-		});
-	}
-	if(appRouter.get('env') == 'production') {
-		open('http://localhost:' + appRouter.get('port'));
-	}
+		if((typeof params.baseFolder != 'undefined' && params.baseFolder != '') || (typeof params.sickbeardUrl != 'undefined' && typeof params.sickbeardApiKey != 'undefined' && params.sickbeardUrl != '' && params.sickbeardApiKey != '')) {
+			shows.init(self, params, defineRoutes);
+		} else {
+			appRouter.get('/', shows.config);
+			shows.init(self, function(params) {
+				defineRoutes(params);
+			});
+		}
+		if(appRouter.get('env') == 'production') {
+			open('http://localhost:' + appRouter.get('port'));
+		}
+	});
 });
 
 var defineRoutes = function(params) {
 	if(params) {
-		nconf.set('username', params.username);
-		nconf.set('password', params.password);
-		nconf.set('sickbeardUrl', params.sickbeardUrl);
-		nconf.set('sickbeardApiKey', params.sickbeardApiKey);
-		nconf.set('baseFolder', params.baseFolder);
-		nconf.set('autorename', params.autorename);
+		var keys = Object.keys(params);
+		for(var i in keys) {
+			nconf.set(keys[i], params[keys[i]]);
+		}
 		nconf.save();
+		login.init(params.username, params.password);
 	}
-	delete appRouter._router.map.get;
-	appRouter._router.map.get = [];
-	appRouter.post('/login',
-		passport.authenticate('local', {
-			successRedirect: '/',
-			failureRedirect: '/login'
-		})
-	);
-	appRouter.get('/login', login.login);
 	appRouter.get('/', function(req, res) { login.checkLogin(req, res, shows.showList); });
 	appRouter.get(/^\/show\/([^\/]+)\/?(\d+)?\/?(\d+)?\/?$/, function(req, res) { login.checkLogin(req, res, shows.episodes); });
 	appRouter.get('/banner/:showid', shows.getBanner);

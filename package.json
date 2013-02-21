@@ -32,8 +32,8 @@
     "nconf": "~0.6.7",
     "sickbeard": "0.0.2",
     "adm-zip": "~0.1.9",
-    "passport-local": "~0.1.6",
-    "passport": "~0.1.15",
-    "async": "~0.1.22"
+    "async": "~0.1.22",
+    "natural": "~0.1.19",
+    "http-auth": "~1.2.7"
   }
 }

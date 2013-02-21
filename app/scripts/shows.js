@@ -42,13 +42,13 @@ exports.init = function(server, params, callback) {
 		var fileInfo = fileScraper.scrape(episode);
 		async.parallel([
 			function(callback){
-				betaSeries.getSubtitles(fileInfo, 'VF', showName, function(results) {
+				betaSeries.getSubtitles(fileInfo, snParams.subLang, showName, function(results) {
 					returnSubs(results, 'BetaSeries');
 					callback(null);
 				});
 			},
 			function(callback){
-				addic7ed.getSubtitles(fileInfo, 'VF', showName, function(results) {
+				addic7ed.getSubtitles(fileInfo, snParams.subLang, showName, function(results) {
 					returnSubs(results, 'Addic7ed');
 					callback(null);
 				});
@@ -201,6 +201,7 @@ exports.episodes = function(req, res) {
 		], function(err, results) {
 			// processing show
 			var showData = results[1].data;
+			showData.location = showData.location.replace('D:\\', 'M:\\'); //TODO: à enlever, pour tests dév
 			var seasons = showData.season_list.sort(function(a, b) {
 					return a - b;
 				}),
@@ -342,6 +343,7 @@ exports.renameAll = function(req, res) {
 			}, function(showData) {
 				var episodes = new Array(),
 					subtitles = new Array(),
+					location = showData.data.location.replace('D:\\', 'M:\\'); //TODO: à enlever, pour tests dév
 					filesList = wrench.readdirSyncRecursive(location);
 				res.write('<br/>Processing <b>' + showData.data.show_name + '</b><br/>');
 				async.forEach(filesList, function(file, callback2) {
@@ -386,14 +388,4 @@ exports.renameAll = function(req, res) {
 			res.send();
 		});
 	});
-	/*async.parallel([
-		getShows,
-		function(callback) {
-			sickbeard.api('history', function(result) {
-				callback(null, result);
-			});
-		}
-	], function(err, results) {
-
-	});*/
 }

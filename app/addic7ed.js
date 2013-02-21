@@ -2,41 +2,79 @@ var request = require('request'),
 	http = require('http'),
 	fs = require('fs'),
 	fileScraper = require('./scraper.js'),
-	jsdom = require('jsdom');
+	jsdom = require('jsdom'),
+	async = require('async'),
+	nconf = require('nconf').file('addic7ed', __dirname + '/data/addic7ed.db'),
+	natural = require('natural'),
+	showListData,
+	additionalData;
 
-exports.getShowId = function(showName, start, callback) {
-	var uri = 'http://www.google.com/search?q=' + (start == true ? encodeURIComponent(showName + ' site:www.addic7ed.com/show/') : encodeURIComponent('addic7ed ' + showName) + '&start='+start);
-	request({uri: uri}, function(err, response, body) {
-		var self = this;
+nconf.load(function() {
+	showListData = nconf.get('showListData');
+	additionalData = nconf.get('additional');
+});
+
+
+exports.getShowId = function(showName, callback) {
+	var checkNames = function(data, retry) {
+		var matches = [];
+		for(var i in data) {
+			if(data[i].name == showName) {
+				callback(data[i].id, 'match');
+				return;
+			} else {
+				matches.push({id: data[i].id, value: natural.JaroWinklerDistance(data[i].name, showName)});
+			}
+		}
+		matches.sort(function(a, b) {
+			return b.value - a.value;
+		});
+		if(matches[0].value > 0.8 || retry) {
+			callback(matches[0].id);
+		} else { // else, new show ? update the show list
+			getShowList(function(newData) {
+				if(newData != data) {
+					checkNames(data, true);
+				} else {
+					callback(matches[0].id);
+				}
+			});
+		}
+	};
+	if(showListData) {
+		checkNames(showListData);
+	} else {
+		getShowList(checkNames);
+	}
+}
+
+var getShowList = function(callback) {
+	request({uri: 'http://www.addic7ed.com/ajax_getShows.php'}, function(err, response, body) {
 		//Just a basic error check
 		if(err && response.statusCode !== 200) {
-			console.log('Request error.');
+			throw('Request error.');
 		}
 		//Send the body param as the HTML code we will parse in jsdom
 		//also tell jsdom to attach jQuery in the scripts and loaded from jQuery.com
 		jsdom.env({
 			html: body,
-			scripts: ['https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js']
+			scripts: ['https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js']
 		}, function(err, window) {
-			var $ = window.jQuery;
-			$('#search div#ires ol li.g div.s cite').each(function() {
-				if($(this).text().indexOf('www.addic7ed.com/show/') != -1) {
-					url = $(this).text();
-				}
+			var $ = window.jQuery,
+				data = [];
+			$('#qsShow option').each(function() {
+				data.push({
+					id: $(this).attr('value'),
+					name: $(this).text()
+				});
 			});
-			var url = $('#search div#ires ol li.g div.s cite:first').text();
-			if(url.indexOf('www.addic7ed.com/show/') != -1) {
-				var id = url.substr(url.lastIndexOf('/') + 1, url.length);
-				if(typeof callback == 'function') {
-					callback(id);
-				}
-			} else if(start == true || start < 100) {
-				exports.getShowId(showName, start == true ? 0 : start + 10, callback);
-			} else {
-				if(typeof callback == 'function') {
-					callback(false);
-				}
+			for(var i in additionalData) {
+				data.push(additionalData[i]);
 			}
+			nconf.set('showListData', data);
+			showListData = data;
+			nconf.save();
+			callback(data);
 		});
 	});
 }
@@ -96,7 +134,7 @@ exports.getSubtitles = function(fileInfo, lang, show, callback) {
 		lang = 1; // english
 	}
 
-	exports.getShowId(show ? show : fileInfo.show, true, function(id) {
+	exports.getShowId(show ? show : fileInfo.show, function(id) {
 		if(id) {
 			getSubtitlesList(id, show ? show : fileInfo.show, lang, fileInfo, function(data) {
 				if(typeof callback == 'function') {
@@ -127,7 +165,6 @@ exports.download = function(url, folder, newName, callback) {
 				response.pipe(fs.createWriteStream(folder + newName));
 			} else {
 				fileName = fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')).replace(/[\:\\\/\*\"\<\>\|]/g, '');
-				console.log(fileName);
 				response.pipe(fs.createWriteStream(folder + fileName));
 			}
 			success = true;

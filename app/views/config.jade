@@ -16,6 +16,12 @@ div.row-fluid
 					input#autorename(type="checkbox", name="autorename")
 				span= " Autorename subtitles files to video file name"
 			br
+			div
+				label Subtitles language
+				select#subLang
+					option(value="VO", selected=snParams.subLang == "VO" ? true : false)="English"
+					option(value="VF", selected=snParams.subLang == "VF" ? true : false)="French"
+			br
 			div.tabbable
 				ul.nav.nav-tabs
 					li(class=snParams.sickbeardUrl || !snParams.baseFolder ? 'active' : '')
