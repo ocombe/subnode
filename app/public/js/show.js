@@ -16,8 +16,8 @@ function toggleLoading($target, active) {
 	}
 }
 
-function getSubs(e, episode) {
-	var $target = $(e.currentTarget);
+function getSubs(target, episode) {
+	var $target = $(target);
 	if(!$target.data('isLoading') && ($target.hasClass('label-success') || $target.hasClass('label-important'))) {
 		$newTarget = $target.siblings('.subtitles');
 		if(!$newTarget.hasClass('active')) {
@@ -30,7 +30,7 @@ function getSubs(e, episode) {
 								text = text + '<div class="tile wide text"><div class="column3-info tile wide text qualite'+subtitles[i].quality+'">Source: '+subtitles[i].source+'</div><div class="text-header">' + subtitles[i].file + '</div>';
 								for(var j in subtitles[i].content) {
 									if(subtitles[i].content[j].type == 'subtitle') {
-										text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a onClick=\'download(event, "' + escape(episode) + '", "' + escape(subtitles[i].url) + '", "' + escape(subtitles[i].content[j].name) + '");\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
+										text = text + '<div><span rel="tooltip" data-placement="right" title="Compatibility score: ' + subtitles[i].content[j].score + '">[' + subtitles[i].content[j].score + ']</span> <a http=\'\' onClick=\'downloadSub(this, "' + escape(episode) + '", "' + escape(subtitles[i].url) + '", "' + escape(subtitles[i].content[j].name) + '"); return false;\'>' + subtitles[i].content[j].name + '</a> <div class="loader hidden"></div></div>';
 									}
 								}
 								text = text + '</div>';
@@ -54,8 +54,8 @@ function getSubs(e, episode) {
 	}
 }
 
-function download(e, episode, url, subtitle) {
-	var $target = $(e.currentTarget);
+function downloadSub(target, episode, url, subtitle) {
+	var $target = $(target);
 	if(!$target.data('isLoading') && !$target.hasClass('label-success')) {
 		toggleLoading($target, true);
 		episode = unescape(episode);
