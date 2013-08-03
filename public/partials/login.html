@@ -1,0 +1,44 @@
+<div>
+    <div class="modal-header">
+        <h3>{{ 'LOGIN' | translate }}</h3>
+        <span type="button" class="modal-close" ng-click="closeModal()">&times;</span>
+    </div>
+    <form name="loginForm" action="/authenticate/userpass" ng-submit="submit()" class="form-horizontal" method="POST">
+        <div class="modal-body">
+            <h5>{{ 'LOGIN_WITH' | translate }} :</h5>
+            <a href="/authenticate/twitter"><img src="img/providers/twitter.png"></a>
+            <a href="/authenticate/facebook"><img src="img/providers/facebook.png"></a>
+            <a href="/authenticate/google"><img src="img/providers/google.png"></a>
+            <br/>
+
+            <h5>{{ 'LOGIN_WITH_OR' | translate }} :</h5>
+            <div class="control-group" id="username_field">
+                <label class="control-label" for="username">{{'EMAIL' | translate}}</label>
+                <input type="email" id="username" name="username" value="" class="input" ng-model="username" required>
+                <span ng-show="loginForm.username.$error.required" class="help-inline">{{'REQUIRED' | translate}}</span>
+                <span ng-show="loginForm.username.$error.email" class="help-inline">{{'VALID_EMAIL' | translate}}</span>
+            </div>
+
+            <div class="control-group" id="password_field">
+                <label class="control-label" for="password">{{ 'PASSWORD' | translate }}</label>
+                <input type="password" id="password" name="password" class="input" ng-model="password" ng-pattern="/\d+/" ng-minlength="8" required>
+                <span ng-show="loginForm.password.$error.required" class="help-inline">{{'REQUIRED' | translate}}</span>
+                <span ng-show="loginForm.password.$error.pattern" class="help-inline">{{'MIN_NUMBER' | translate:'{ nb: 1 }'}}</span>
+                <span ng-show="loginForm.password.$error.minlength" class="help-inline">{{'MIN_LENGTH' | translate:'{ nb: 8 }'}}</span>
+            </div>
+
+            <div class="clearfix pull-right">
+                <small><a href="#/reset">{{ 'FORGOT_PASSWORD' | translate }}</a></small>
+            </div>
+            <br/>
+            <br/>
+
+            <div>{{ 'SIGNUP_HINT' | translate }} <a href="#/signup">{{'HERE' | translate | lowercase}}</a>.</div>
+        </div>
+        <div class="modal-footer">
+            <loader ng-show="sending"/>
+            <button type="submit" class="btn btn-primary" ng-disabled="!loginForm.$valid || sending">{{ 'LOGIN' | translate }}</button>
+            <span class="btn" ng-click="closeModal()">{{ 'CLOSE' | translate }}</span>
+        </div>
+    </form>
+</div>
