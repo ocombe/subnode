@@ -144,7 +144,7 @@ var updater = function() {
 			}
 
 			// the latest tag is at the end of the array
-			this.lastTag = json[ json.length - 1 ];
+			this.lastTag = json[0];
 			return this.lastTag;
 		},
 
