@@ -1,0 +1,111 @@
+<div ng-controller="ConfigCtrl">
+    <div class="modal-header">
+        <button aria-hidden="true" ng-click="closeModal()" class="close" type="button">×</button>
+        <h4 class="modal-title">{{ 'PARAMS' | translate }}</h4>
+    </div>
+    <div class="modal-body">
+        <form name="paramsForm" class="form-horizontal" method="POST">
+            <div class="form-group" ng-class="{'has-error': !paramsForm.lang.$valid}">
+                <label class="col-lg-4 control-label" for="username">{{'INTERFACE_LANG' | translate}}</label>
+
+                <div class="col-lg-8">
+                    <select id="lang" name="lang" ng-model="params.lang" ng-options="lang.id as lang.name for lang in languages" ng-change="selectLangChange()" class="form-control" required></select>
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span ng-show="paramsForm.lang.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': !paramsForm.rootFolder.$valid}">
+                <label class="col-lg-4 control-label" for="rootFolder">{{'ROOT_FOLDER' | translate}}</label>
+
+                <div class="col-lg-8">
+                    <input type="rootFolder" id="rootFolder" name="rootFolder" value="" class="form-control" ng-model="params.rootFolder" placeholder="ex: /home/user/Videos/TV" required>
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span class="help-block">{{'ROOT_FOLDER_HINT' | translate}}</span>
+                    <span ng-show="paramsForm.rootFolder.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': !paramsForm.username.$valid}">
+                <label class="col-lg-4 control-label" for="username">{{'USERNAME' | translate}}</label>
+
+                <div class="col-lg-8">
+                    <input type="username" id="username" name="username" value="" class="form-control" ng-model="params.username">
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span class="help-block">{{'USERNAME_HINT' | translate}}</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': !paramsForm.password.$valid}" ng-show="params.username && params.username != ''" ng-animate="{show: 'fade-in', hide: ''}">
+                <label class="col-lg-4 control-label" for="password">{{ 'PASSWORD' | translate }}</label>
+
+                <div class="col-lg-8">
+                    <input type="password" id="password" name="password" class="form-control" ng-model="params.password" ng-pattern="/\d+/" ng-minlength="8">
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span ng-show="paramsForm.password.$error.pattern" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'MIN_NUMBER' | translate:'{ nb: 1 }'}}</span>
+                    <span ng-show="paramsForm.password.$error.minlength" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'MIN_LENGTH' | translate:'{ nb: 8 }'}}</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-show="params.password && params.password != ''" ng-animate="{show: 'fade-in', hide: ''}" ng-class="{'has-error': !paramsForm.password2.$valid || params.password != params.password2}">
+                <label class="col-lg-4 control-label" for="password_password2">{{ 'PASSWORD_CONFIRM' | translate }}</label>
+
+                <div class="col-lg-8">
+                    <input type="password" id="password_password2" name="password2" ng-model="params.password2" class="form-control">
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span ng-show="params.password != params.password2" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'MATCH_PASSWD' | translate}}</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': !paramsForm.providers.$valid}">
+                <label class="col-lg-4 control-label" for="username">{{'PROVIDERS' | translate}}</label>
+
+                <div class="col-lg-8">
+                    <select chosen id="providers" multiple="true" name="providers" ng-model="params.providers" class="form-control" data-placeholder="{{ 'PROVIDERS_PLACEHOLDER' | translate }}" required>
+                        <option value="betaSeries">BetaSeries</option>
+                        <option value="addic7ed">Addic7ed</option>
+                    </select>
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span ng-show="paramsForm.providers.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': !paramsForm.subLang.$valid}">
+                <label class="col-lg-4 control-label" for="username">{{'SUBTITLES_LANG' | translate}}</label>
+
+                <div class="col-lg-8">
+                    <select id="subLang" name="subLang" ng-model="params.subLang" ng-options="lang.id as lang.name for lang in languages" class="form-control" required></select>
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <span ng-show="paramsForm.subLang.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                </div>
+
+                <div class="col-lg-8 pull-right">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" id="autorename" name="autorename" ng-model="params.autorename"> {{ 'AUTORENAME' | translate }}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <loader/>
+        <button type="submit" class="btn btn-success" ng-disabled="!paramsForm.$valid || sending" ng-click="saveParams()">{{ 'SAVE' | translate }}</button>
+        <span class="btn btn-default" ng-click="closeModal()">{{ 'CLOSE' | translate }}</span>
+    </div>
+</div>

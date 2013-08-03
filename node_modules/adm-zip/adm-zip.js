@@ -1,5 +1,4 @@
 var fs = require("fs"),
-    buffer = require("buffer"),
     pth = require("path");
 
 fs.existsSync = fs.existsSync || pth.existsSync;
@@ -8,21 +7,21 @@ var ZipEntry = require("./zipEntry"),
     ZipFile =  require("./zipFile"),
     Utils = require("./util");
 
-module.exports = function(/*String*/inPath) {
+module.exports = function(/*String*/input) {
     var _zip = undefined,
         _filename = "";
 
-    if (inPath && typeof inPath === "string") { // load zip file
-        if (fs.existsSync(inPath)) {
-            _filename = inPath;
-            _zip = new ZipFile(fs.readFileSync(inPath));
+    if (input && typeof input === "string") { // load zip file
+        if (fs.existsSync(input)) {
+            _filename = input;
+            _zip = new ZipFile(input, Utils.Constants.FILE);
         } else {
            throw Utils.Errors.INVALID_FILENAME;
         }
-    } else if(inPath && Buffer.isBuffer(inPath)) { // load buffer
-        _zip = new ZipFile(inPath);
+    } else if(input && Buffer.isBuffer(input)) { // load buffer
+        _zip = new ZipFile(input, Utils.Constants.BUFFER);
     } else { // create new zip file
-        _zip = new ZipFile();
+        _zip = new ZipFile(null, Utils.Constants.NONE);
     }
 
     function getEntry(/*Object*/entry) {
@@ -42,10 +41,6 @@ module.exports = function(/*String*/inPath) {
         return null;
     }
 
-    //process.on('uncaughtException', function (err) {
-    //    console.log('Caught exception: ' + err);
-    //});
-
     return {
         /**
          * Extracts the given entry from the archive and returns the content as a Buffer object
@@ -57,6 +52,7 @@ module.exports = function(/*String*/inPath) {
             var item = getEntry(entry);
             return item && item.getData() || null;
         },
+
         /**
          * Asynchronous readFile
          * @param entry ZipEntry object or String with the full path of the entry
@@ -72,6 +68,7 @@ module.exports = function(/*String*/inPath) {
                 callback(null,"getEntry failed for:" + entry)
             }
         },
+
         /**
          * Extracts the given entry from the archive and returns the content as plain text in the given encoding
          * @param entry ZipEntry object or String with the full path of the entry
@@ -89,6 +86,7 @@ module.exports = function(/*String*/inPath) {
             }
             return "";
         },
+
         /**
          * Asynchronous readAsText
          * @param entry ZipEntry object or String with the full path of the entry
@@ -190,7 +188,8 @@ module.exports = function(/*String*/inPath) {
          */
         addLocalFile : function(/*String*/localPath) {
              if (fs.existsSync(localPath)) {
-                  // do stuff
+                 var p = localPath.split("\\").join("/").split("/").pop();
+                 this.addFile(p, fs.readFileSync(localPath), "", 0)
              } else {
                  throw Utils.Errors.FILE_NOT_FOUND.replace("%s", localPath);
              }
@@ -207,24 +206,18 @@ module.exports = function(/*String*/inPath) {
                 localPath += "/";
 
             if (fs.existsSync(localPath)) {
-                var items = Utils.findFiles(localPath);
+
+                var items = Utils.findFiles(localPath),
+                    self = this;
+
                 if (items.length) {
                     items.forEach(function(path) {
-                        var entry = new ZipEntry();
-						entry.entryName = path.split("\\").join("/").replace(localPath, ""); //windows fix
-                        var stats = fs.statSync(path);
-                        if (stats.isDirectory()) {
-                            entry.setData("");
-                            entry.header.inAttr = stats.mode;
-                            entry.header.attr = stats.mode
+						var p = path.split("\\").join("/").replace(localPath, ""); //windows fix
+                        if (p.charAt(p.length - 1) !== "/") {
+                            self.addFile(p, fs.readFileSync(path), "", 0)
                         } else {
-                            entry.setData(fs.readFileSync(path));
-                            entry.header.inAttr = stats.mode;
-                            entry.header.attr = stats.mode
+                            self.addFile(p, new Buffer(0), "", 0)
                         }
-                        entry.attr = stats.mode;
-                        entry.header.time = stats.mtime;
-                        _zip.setEntry(entry);
                     });
                 }
             } else {
@@ -233,7 +226,7 @@ module.exports = function(/*String*/inPath) {
         },
 
         /**
-         * Allows you to programmatically create a entry (file or directory) in the zip file.
+         * Allows you to create a entry (file or directory) in the zip file.
          * If you want to create a directory the entryName must end in / and a null buffer should be provided.
          * Comment and attributes are optional
          *
@@ -248,10 +241,9 @@ module.exports = function(/*String*/inPath) {
             entry.comment = comment || "";
             entry.attr = attr || 0666;
             if (entry.isDirectory && content.length) {
-                throw Utils.Errors.DIRECTORY_CONTENT_ERROR;
+               // throw Utils.Errors.DIRECTORY_CONTENT_ERROR;
             }
             entry.setData(content);
-            entry.header.time = new Date();
             _zip.setEntry(entry);
         },
 
@@ -293,7 +285,7 @@ module.exports = function(/*String*/inPath) {
          */
         extractEntryTo : function(/*Object*/entry, /*String*/targetPath, /*Boolean*/maintainEntryPath, /*Boolean*/overwrite) {
             overwrite = overwrite || false;
-            maintainEntryPath = typeof maintainEntryPath == "undefned" ? true : maintainEntryPath;
+            maintainEntryPath = typeof maintainEntryPath == "undefined" ? true : maintainEntryPath;
 
             var item = getEntry(entry);
             if (!item) {
@@ -341,12 +333,15 @@ module.exports = function(/*String*/inPath) {
             }
 
             _zip.entries.forEach(function(entry) {
-                if (entry.isDirectory) return;
+                if (entry.isDirectory) {
+                    Utils.makeDir(pth.resolve(targetPath, entry.entryName.toString()));
+                    return;
+                }
                 var content = entry.getData();
                 if (!content) {
                     throw Utils.Errors.CANT_EXTRACT_FILE + "2";
                 }
-                Utils.writeFileTo(pth.resolve(targetPath, entry.entryName), content, overwrite);
+                Utils.writeFileTo(pth.resolve(targetPath, entry.entryName.toString()), content, overwrite);
             })
         },
 
@@ -354,9 +349,9 @@ module.exports = function(/*String*/inPath) {
          * Writes the newly created zip file to disk at the specified location or if a zip was opened and no ``targetFileName`` is provided, it will overwrite the opened zip
          *
          * @param targetFileName
+         * @param callback
          */
         writeZip : function(/*String*/targetFileName, /*Function*/callback) {
-
             if (arguments.length == 1) {
                 if (typeof targetFileName == "function") {
                     callback = targetFileName;
@@ -369,7 +364,7 @@ module.exports = function(/*String*/inPath) {
             }
             if (!targetFileName) return;
 
-            var zipData = _zip.toBuffer();
+            var zipData = _zip.compressToBuffer();
             if (zipData) {
                 Utils.writeFileTo(targetFileName, zipData, true);
             }
@@ -386,13 +381,7 @@ module.exports = function(/*String*/inPath) {
                 _zip.toAsyncBuffer(callback);
                 return null;
             }
-            return _zip.toBuffer()
+            return _zip.compressToBuffer()
         }
-
-        /*get lastError () {
-            var x = function() { console.log("2", arguments); };
-            x.prototype = 2
-            return x; //
-        } */
     }
 };

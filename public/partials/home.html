@@ -1,0 +1,31 @@
+<div class="home">
+    <div class="page-header">
+        <h1>
+            {{ 'LAST_EPISODES' | translate }}
+            <small><a class="refreshBtn" ng-click="refresh(true)"><i class="glyphicon glyphicon-refresh"></i></a></small>
+            <loader class="pull-right" loader-id="home" loader-active="true"/>
+        </h1>
+    </div>
+
+    <div class="lastEpisodes">
+        <div class="col-lg-12 thumbnail" ng-repeat="file in lastEpisodes" ng-animate="{enter: 'fade-in', leave: ''}">
+            <div class="col-lg-3">
+                <div class="caption">
+                    <a class="title" ng-href="#show/{{ file.episode.show }}"><h3>{{ file.episode.show }}</h3></a>
+                    <h4 class="number">{{ file.episode.season | decimalFormat }}x{{ file.episode.episode | decimalFormat }}</h4>
+
+                    <p class="date">{{ file.ctime | localDate }}</p>
+                </div>
+            </div>
+            <table class="col-lg-9 imgWrapper">
+                <tr>
+                    <td>
+                        <a ng-href="#show/{{ file.episode.show }}">
+                            <img ng-src="banner/{{ file.episode.show }}">
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

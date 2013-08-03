@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--[if lte IE 7]>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script><![endif]-->
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" class="ng-app:subNode">
+    <script defer src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script defer>window.attachEvent('onload', function() {
+        CFInstall.check({mode: 'overlay'})
+    })</script>
+    <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+
+        // Optionally these for CSS
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+    </script>
+<![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" class="ng-app:subNode">
+    <script>
+        document.createElement('ng-include');
+        document.createElement('ng-pluralize');
+        document.createElement('ng-view');
+
+        // Optionally these for CSS
+        document.createElement('ng:include');
+        document.createElement('ng:pluralize');
+        document.createElement('ng:view');
+    </script>
+<![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="subNode"><![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="subNode">
+    <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title ng-bind-template="subNode"></title>
+        <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <link rel="stylesheet" href="css/app.css">
+        <script src="js/modernizr.js"></script>
+        <script>
+            window.brunch = window.brunch || {};
+            window.brunch['auto-reload'] = { enabled: true };
+        </script>
+    </head>
+    <body ng-controller="SubnodeCtrl">
+        <div id="layout">
+            <div id="nav">
+                <div class="navbar navbar-fixed-top">
+                    <a class="navbar-brand" href="#"><img src="img/subnode.png"></a>
+                    <select style="min-width: 250px" chosen allow-single-deselect="true" ng-model="selectedTVShow" id="selectedTVShow" ng-change="changeShow()" data-placeholder="{{ 'CHOOSE_SHOW' | translate }}" ng-options="s as s for s in showList"></select>
+                    <a class="pull-right paramsBtn" modal-open="partials/config.html"><i class="glyphicon glyphicon-cog"></i></a>
+                    <loader class="pull-right" loader-id="app"/>
+                </div>
+            </div>
+            <div class="alert" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
+                {{ 'UPDATE_MSG' | translate:updateMsg }}
+                <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
+                <loader loader-id="update"/>
+            </div>
+            <div id="mainView" ui-view="mainView" class="container"></div>
+        </div>
+        <footer class="panel-footer">
+            <p class="copyright"><a href='https://github.com/ocombe/subNode' target='_blank'>subNode</a> {{ 'BY' | translate }} <a href="https://twitter.com/OCombe" target="_blank">Olivier Combe</a> © 2013</p>
+            <a href="http://www.betaseries.com" target="_blank"><img src="img/betaseries.png"></a>
+            <a href="http://www.addic7ed.com/" target="_blank"><img src="img/addic7ed.png"></a>
+        </footer>
+        <modal></modal>
+        <script src="js/vendor.js"></script>
+        <script src="js/app.js"></script>
+    </body>
+</html>

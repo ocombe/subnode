@@ -1,29 +1,27 @@
 subNode
 =======
 
-Node app to easily get subtitles for your tv show !
+An app to easily get subtitles for your tv show !
 
 
 # Installation & usage for Linux/MAC :
 
-- Download and install [nodeJS](http://nodejs.org/download/).
+1. Download and install [nodeJS](http://nodejs.org/download/).
 
-- Download the light branch from GitHub https://github.com/ocombe/subNode/tree/light
 
-- Got to the subNode folder and get the node modules, it will download and compile the modules for your environment :
-```bash
-$ npm update
-```
+2. Go to the subNode folder and launch the init script, it will download and compile the modules for your environment.
+  
+  On Windows : ```./scripts/init.bat```
 
-- Got to the subNode folder and launch via command line
-```bash
-$ node app.js
-```
+  On Linux : ```sudo sh scripts/init.sh```
 
-# Installation & usage for Windows :
-- Download the master branch from GitHub https://github.com/ocombe/subNode/tree/master
+  Or via the command line :```npm install --production```
 
-- Got to the subNode folder and launch via launch.bat or via command line
-```bash
-$ node app.js
-```
+
+3. Launch the server :
+
+  On Windows : ```./scripts/launch.bat```
+  
+  On Linux : ```sudo sh scripts/launch.sh```
+  
+  Or via the command line :```node app.js```

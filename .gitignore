@@ -1,12 +1,35 @@
 #################
 ## Misc
 #################
-config.json
+**/.DS_Store
+nbproject
+manifest.mf
+build.xml
+node_modules
+npm-debug.log
+docs
+build
+vendor
+banners
+.bowerrc
+appParams.json
+bower-config.json
+config.js
+app
+scripts/production.bat
+scripts/production.sh
+scripts/server.bat
+scripts/server.sh
 
 #################
 ## JetBrains
 #################
 .idea
+.project
+.settings
+.idea/*
+*.iml
+subNode
 
 ############
 ## Windows

@@ -1,0 +1,54 @@
+<div class='show'>
+    <div class="page-header">
+        <img ng-src="banner/{{ showId }}" image-fallback="{{ showId }}">
+    </div>
+
+    <div class="row" ng-class="{compact: compact}">
+        <div class="seasonsList" ng-class="{'col-lg-3': !compact, 'col-lg-1': compact}">
+            <div class="list-group">
+                <a class="list-group-item" ng-class="{active: !seasonFilter, seasonCompact: compact, ellipsis: !show}" ng-click="filter()">
+                    <span ng-show="!compact" class="uncompacted">{{ 'SHOW_ALL' | translate }}</span>
+                    <i class="glyphicon glyphicon-filter" title="{{ 'SHOW_ALL' | translate }}" tooltip></i>
+                </a>
+                <a class="list-group-item ellipsis" ng-class="{active: seasonFilter == epList.season, seasonCompact: compact}" ng-repeat="epList in show" ng-click="filter(epList.season)">
+                    <span ng-show="!compact" class="uncompacted">{{ 'SEASON' | translate }} </span>{{epList.season }}
+                    <span ng-show="unsubs(epList.episodes) > 0 && !compact" class="uncompacted badge pull-right">{{ unsubs(epList.episodes) }}</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="episodesList" ng-class="{'col-lg-9': !compact, 'col-lg-1': compact}">
+            <div class="panel list-group epListWrapper" ng-repeat="epList in show | seasonFilter: seasonFilter">
+                <div class="panel-heading">
+                    <span ng-show="!compact" class="uncompacted">{{ 'SEASON' | translate }} </span>{{ epList.season }}
+                </div>
+                <a ng-repeat="ep in epList.episodes" class="episode alert list-group-item" ng-class="{'alert-success': ep.subtitle}" ng-click="searchSubs($event)">
+                    <span ng-show="compact">{{ ep.episode | decimalFormat }}</span>
+                    <span ng-show="!compact" class="name ellipsis">{{ ep.name }}</span>
+                    <i ng-show="ep.subtitle && !compact" class="glyphicon glyphicon-paperclip" title="{{ ep.subtitle.name }}" tooltip></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="subtitlesList" ng-class="{'col-lg-10 in': compact}" ng-show="subtitlesListShow" ng-animate="{enter: 'fade-in', leave: ''}">
+            <div class="panel">
+                <div class="panel-heading">
+                    {{ selectedEpisode.name }}
+                    <button type="button" class="close" ng-click="expand()">&times;</button>
+                    <loader loader-id="subtitles" class="pull-right"/>
+                </div>
+                <div ng-show="subList.length == 0 && loadingDone">{{ 'NO_RESULT' | translate }}</div>
+                <div class="panel list-group subPackWrapper" ng-animate="{enter: 'fade-in', leave: ''}" ng-repeat="subPack in subList | qualitySort">
+                    <div class="panel-heading qualite{{ subPack.quality }}">
+                        {{ subPack.file }}
+                        <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
+                    </div>
+                    <a ng-repeat="sub in subPack.content" class="subtitle list-group-item" ng-click="downloadSub($event)">
+                        <span class="label">{{ sub.score }}</span>
+                        <span class="name ellipsis">{{ sub.name }}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
