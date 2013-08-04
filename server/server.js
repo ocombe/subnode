@@ -278,7 +278,7 @@ module.exports = {
 				};
 			});
 
-			return console.log("Listening on port "+(process.env.PORT || 3000)+"…");
+			return console.log("Listening on port "+(process.env.PORT || 3000)+". Go to http://localhost:"+(process.env.PORT || 3000)+"/ and enjoy !");
 		});
 	}
 };

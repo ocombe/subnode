@@ -39,6 +39,8 @@ An app to download subtitles for your TV Shows
 
   Or via the command line :```node app.js```
 
+4. Go to http://localhost:3000/ and enjoy !
+
 # Screenshots
 * Home
 
