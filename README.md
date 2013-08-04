@@ -18,7 +18,7 @@ An app to download subtitles for your TV Shows
 * And many more...
 
 
-# Installation & usage for Linux/MAC :
+# Installation & usage :
 1. Download and install [nodeJS](http://nodejs.org/download/).
 
 
