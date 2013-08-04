@@ -10,7 +10,7 @@
                     <span ng-show="!compact" class="uncompacted">{{ 'SHOW_ALL' | translate }}</span>
                     <i class="glyphicon glyphicon-filter" title="{{ 'SHOW_ALL' | translate }}" tooltip></i>
                 </a>
-                <a class="list-group-item ellipsis" ng-class="{active: seasonFilter == epList.season, seasonCompact: compact}" ng-repeat="epList in show" ng-click="filter(epList.season)">
+                <a class="list-group-item" ng-class="{active: seasonFilter == epList.season, seasonCompact: compact}" ng-repeat="epList in show" ng-click="filter(epList.season)">
                     <span ng-show="!compact" class="uncompacted">{{ 'SEASON' | translate }} </span>{{epList.season }}
                     <span ng-show="unsubs(epList.episodes) > 0 && !compact" class="uncompacted badge pull-right">{{ unsubs(epList.episodes) }}</span>
                 </a>
