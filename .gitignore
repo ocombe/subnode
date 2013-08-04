@@ -5,7 +5,8 @@
 nbproject
 manifest.mf
 build.xml
-node_modules
+node_modules/*
+!node_modules/forever-monitor
 npm-debug.log
 docs
 build
