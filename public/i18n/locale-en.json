@@ -34,7 +34,6 @@
 	"LAST_EPISODES": "Last episodes",
 	"PROVIDERS_PLACEHOLDER": "Add providers",
 	"USERNAME_HINT": "A username to protect the access to the application (optional)",
-	"UPDATE_MSG": "An update of the application is available: version {{last}}. Your current version is version{{current}}.",
-	"UPDATE_NOW": "Update now",
+	"UPDATE_MSG": "An update of the application is available: <a target='_blank' href='https://github.com/ocombe/subNode/commits/'>version {{last}}</a>. Your current version is version {{current}}. <a ng-click='updateApp()'>Update now</a>.",
 	"UPDATE_CONFIRM": "Are you sure that you want to update the application ?"
 }

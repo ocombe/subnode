@@ -67,8 +67,7 @@
                 </div>
             </div>
             <div class="alert" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
-                {{ 'UPDATE_MSG' | translate:updateMsg }}
-                <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
+                <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span>
                 <loader loader-id="update"></loader>
             </div>
             <div id="mainView" ui-view="mainView" class="container"></div>
