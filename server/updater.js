@@ -148,7 +148,7 @@ var updater = function() {
 		},
 
 		parseTagVersion: function(lastTag) {
-			return lastTag.name.replace(/[^0-9]+/g, '') / 1; // to num;
+			return lastTag.name ? lastTag.name.replace(/[^0-9]+/g, '') / 1 : 0; // to num;
 		},
 
 		compareVersions: function() {
