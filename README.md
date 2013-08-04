@@ -42,19 +42,19 @@ An app to download subtitles for your TV Shows
 # Screenshots
 * Home
 
-[![Home](img/home.jpg)](img/home.jpg)
+[![Home](http://ocombe.github.io/subNode/img/home.jpg)](http://ocombe.github.io/subNode/img/home.jpg)
 
 
 * Parameters
 
-[![Parameters](img/params.jpg)](img/params.jpg)
+[![Parameters](http://ocombe.github.io/subNode/img/params.jpg)](http://ocombe.github.io/subNode/img/params.jpg)
 
 
 * Show page
 
-[![Show page](img/shows.jpg)](img/shows.jpg)
+[![Show page](http://ocombe.github.io/subNode/img/shows.jpg)](http://ocombe.github.io/subNode/img/shows.jpg)
 
 
 * Subtitles
 
-[![Subtitles](img/subtitles.jpg)](img/subtitles.jpg)
+[![Subtitles](http://ocombe.github.io/subNode/img/subtitles.jpg)](http://ocombe.github.io/subNode/img/subtitles.jpg)
