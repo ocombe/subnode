@@ -11,6 +11,8 @@
         document.createElement('ng-include');
         document.createElement('ng-pluralize');
         document.createElement('ng-view');
+        document.createElement('loader');
+        document.createElement('modal');
 
         // Optionally these for CSS
         document.createElement('ng:include');
@@ -24,6 +26,8 @@
         document.createElement('ng-include');
         document.createElement('ng-pluralize');
         document.createElement('ng-view');
+        document.createElement('loader');
+        document.createElement('modal');
 
         // Optionally these for CSS
         document.createElement('ng:include');
@@ -55,16 +59,17 @@
         <div id="layout">
             <div id="nav">
                 <div class="navbar navbar-fixed-top">
-                    <a class="navbar-brand" href="#"><img src="img/subnode.png"></a>
+                    <a class="navbar-brand hidden-sm" href="#"><img src="img/subnode.png"></a>
+                    <a class="navbar-brand visible-sm glyphicon glyphicon-home" href="#"></a>
                     <select style="min-width: 250px" chosen allow-single-deselect="true" ng-model="selectedTVShow" id="selectedTVShow" ng-change="changeShow()" data-placeholder="{{ 'CHOOSE_SHOW' | translate }}" ng-options="s as s for s in showList"></select>
                     <a class="pull-right paramsBtn" modal-open="partials/config.html"><i class="glyphicon glyphicon-cog"></i></a>
-                    <loader class="pull-right" loader-id="app"/>
+                    <loader class="pull-right" loader-id="app"></loader>
                 </div>
             </div>
             <div class="alert" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
                 {{ 'UPDATE_MSG' | translate:updateMsg }}
                 <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
-                <loader loader-id="update"/>
+                <loader loader-id="update"></loader>
             </div>
             <div id="mainView" ui-view="mainView" class="container"></div>
         </div>
