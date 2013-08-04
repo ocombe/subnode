@@ -2,7 +2,7 @@
   "author": "Olivier Combe <olivier.combe@gmail.com> (https://github.com/ocombe)",
   "name": "subnode",
   "description": "An app to easily get subtitles for your tv show",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "engines": {
     "node": ">=0.8"
   },
