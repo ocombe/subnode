@@ -35,7 +35,7 @@
                 <div class="panel-heading">
                     {{ selectedEpisode.name }}
                     <button type="button" class="close" ng-click="expand()">&times;</button>
-                    <loader loader-id="subtitles" class="pull-right"/>
+                    <loader loader-id="subtitles" class="pull-right"></loader>
                 </div>
                 <div ng-show="subList.length == 0 && loadingDone">{{ 'NO_RESULT' | translate }}</div>
                 <div class="panel list-group subPackWrapper" ng-animate="{enter: 'fade-in', leave: ''}" ng-repeat="subPack in subList | qualitySort">
@@ -44,8 +44,7 @@
                         <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
                     </div>
                     <a ng-repeat="sub in subPack.content" class="subtitle list-group-item" ng-click="downloadSub($event)">
-                        <span class="label">{{ sub.score }}</span>
-                        <span class="name ellipsis">{{ sub.name }}</span>
+                        <span class="name ellipsis"><span class="label">{{ sub.score }}</span> {{ sub.name }}</span>
                     </a>
                 </div>
             </div>
