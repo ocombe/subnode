@@ -4,6 +4,7 @@ var https = require('https'),
 	AdmZip = require('adm-zip'),
 	request = require('request'),
 	wrench = require('wrench'),
+	_ = require('lodash'),
 
 	GITHUB_HOST = 'api.github.com',
 	GITHUB_API = 'https://' + GITHUB_HOST + '/repos/';
@@ -13,7 +14,7 @@ var updater = function() {
 		packageJSON: null, // getPackageJSON
 		currentVersion: null, // getCurrentVersion
 		lastTag: null,
-		latestVersion: null, // parseLatestVersion
+		latestVersion: null, // parseTagVersion
 
 		checkVersion: function(options, callback) {
 			var self = this;
@@ -27,7 +28,7 @@ var updater = function() {
 				}
 			}
 
-			// getPackageJSON -> getCurrentVersion -> getLatestVersion -> parseLatestVersion -> compareVersions
+			// getPackageJSON -> getCurrentVersion -> getLatestVersion -> parseTagVersion -> compareVersions
 			var packageJSON = this.getPackageJSON(options.packagePath);
 			var currentVersion = this.getCurrentVersion();
 			this.getLatestVersion(options, function(err, latestVersion) {
@@ -35,7 +36,7 @@ var updater = function() {
 					callback(err);
 				} else {
 					var lastTag = self.getLastTag(latestVersion);
-					var latestVersion = self.parseLatestVersion(lastTag);
+					self.latestVersion = self.parseTagVersion(lastTag);
 					callback(self.compareVersions());
 				}
 			});
@@ -131,7 +132,8 @@ var updater = function() {
 		},
 
 		getLastTag: function(data) {
-			var json = {};
+			var json = {},
+				self = this;
 
 			try {
 				json = JSON.parse(data);
@@ -139,18 +141,14 @@ var updater = function() {
 				throw 'ERROR: updater cannot parse GitHub response';
 			}
 
-			if(!json[ json.length - 1 ] || !json[ json.length - 1 ].name) {
-				throw 'WARN: updater cannot find latest tag';
-			}
-
-			// the latest tag is at the end of the array
-			this.lastTag = json[0];
+			this.lastTag = _.max(json, function(tag) {
+				return self.parseTagVersion(tag);
+			});
 			return this.lastTag;
 		},
 
-		parseLatestVersion: function(lastTag) {
-			this.latestVersion = lastTag.name.replace(/[^0-9]+/g, '') / 1; // to num
-			return this.latestVersion;
+		parseTagVersion: function(lastTag) {
+			return lastTag.name.replace(/[^0-9]+/g, '') / 1; // to num;
 		},
 
 		compareVersions: function() {
