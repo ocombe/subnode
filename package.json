@@ -34,15 +34,11 @@
     "sickbeard": "0.0.2",
     "nconf": ">= 0.6.7",
     "tvdb": "0.0.12",
-    "dive": ">= 0.3.0",
-    "fast-list": ">= 1.0.2",
     "express": ">= 3.3.1",
     "lodash": ">= 1.3.1",
-    "bower": ">= 1.0.3",
     "cheerio": ">= 0.12.1",
-    "coffee-script": "~1.6.3",
     "forever-monitor": "git://github.com/abueckerMB/forever-monitor.git",
-    "github-update-checker": "~1.1.0"
+    "coffee-script": "~1.6.3"
   },
   "devDependencies": {
     "brunch": ">= 1.7.0",
@@ -51,6 +47,7 @@
     "css-brunch": ">= 1.6",
     "sass-brunch": ">= 1.6.1",
     "uglify-js-brunch": ">= 1.6",
-    "clean-css-brunch": ">= 1.6"
+    "clean-css-brunch": ">= 1.6",
+    "bower": ">= 1.0.3"
   }
 }
