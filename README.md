@@ -28,7 +28,7 @@ An app to download subtitles for your TV Shows
 
   On Linux : ```sudo sh scripts/init.sh```
 
-  Or via the command line :```npm install --production```
+  Or via the command line :```npm install --production --unsafe-perm```
 
 
 3. Launch the server :
