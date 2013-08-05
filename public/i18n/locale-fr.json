@@ -34,6 +34,6 @@
 	"LAST_EPISODES": "Derniers épisodes",
 	"PROVIDERS_PLACEHOLDER": "Ajoutez des fournisseurs",
 	"USERNAME_HINT": "Un nom d'utilisateur pour protéger l'accès à l'application (facultatif)",
-	"UPDATE_MSG": "Une mise à jour de l'application est disponible: <a target='_blank' href='https://github.com/ocombe/subNode/commits/'>version {{last}}</a>. Votre version actuelle est la version {{current}}. <a ng-click='updateApp()'>Mettre à jour</a>.",
+	"UPDATE_MSG": "Une mise à jour de l'application est disponible: <a target='_blank' href='https://github.com/ocombe/subNode/commits/{{ last.commit.sha }}'>version {{last.name}}</a>. Votre version actuelle est la version {{current}}. <a ng-click='updateApp()'>Mettre à jour</a>.",
 	"UPDATE_CONFIRM": "Êtes-vous sur de vouloir mettre à jour l'application ?"
 }

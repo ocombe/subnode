@@ -12,6 +12,7 @@ var https = require('https'),
 var updater = function() {
 	return {
 		packageJSON: null, // getPackageJSON
+		currentTag: null,
 		currentVersion: null, // getCurrentVersion
 		lastTag: null,
 		latestVersion: null, // parseTagVersion
@@ -64,6 +65,7 @@ var updater = function() {
 			}
 
 			this.currentVersion = this.packageJSON.version.replace(/[^0-9]+/g, '') / 1; // to num
+			this.currentTag = this.packageJSON.version;
 			return this.currentVersion;
 		},
 
@@ -141,10 +143,25 @@ var updater = function() {
 				throw 'ERROR: updater cannot parse GitHub response';
 			}
 
-			this.lastTag = _.max(json, function(tag) {
-				return self.parseTagVersion(tag);
-			});
+			json = this.sortTags(json);
+			this.lastTag = json[0];
 			return this.lastTag;
+		},
+
+		sortTags: function(tags) {
+			tags.sort(function(a, b) {
+				var versionsA = a.name.split('.');
+				var versionsB = b.name.split('.');
+				for(var i = 0, len = versionsA.length; i < len; i++) {
+					if(versionsA[i] > versionsB[i]) {
+						return false;
+					} else if(versionsA[i] < versionsB[i]) {
+						return true;
+					}
+				}
+				return 0;
+			});
+			return tags;
 		},
 
 		parseTagVersion: function(lastTag) {
@@ -152,11 +169,12 @@ var updater = function() {
 		},
 
 		compareVersions: function() {
-			if(typeof this.currentVersion !== 'number' || typeof this.latestVersion !== 'number') {
-				throw 'WARN: updater needs numbers to compare';
-			}
+			var tags = this.sortTags([
+				this.lastTag,
+				{ name: this.currentTag }
+			]);
 
-			return this.currentVersion >= this.latestVersion ? {upToDate: true} : {upToDate: false, current: this.currentVersion, last: this.latestVersion};
+			return tags[0].name === this.currentTag ? {upToDate: true} : {upToDate: false, current: this.currentTag, last: this.lastTag};
 		},
 
 		update: function(callback) {
