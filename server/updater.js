@@ -186,7 +186,17 @@ var updater = function() {
 				var zipEntries = zip.getEntries();
 				var updateFolder = zipEntries[0].entryName;
 				zip.extractEntryTo(updateFolder, __dirname + '/../', false, true);
-			    callback({success: true});
+
+				// update node_modules if needed
+				var exec = require('child_process').exec;
+				var child = exec('npm install --production --unsafe-perm', function(err, stdout, stderr) {
+					if (err) {
+						console.log(err);
+						callback({success: false});
+					} else {
+						callback({success: true});
+					}
+				});
 			});
 		}
 	}
