@@ -15,11 +15,14 @@ banners
 appParams.json
 bower-config.json
 config.js
+config.rb
 app
 scripts/production.bat
 scripts/production.sh
 scripts/server.bat
 scripts/server.sh
+public/js/*.map
+public/css/*.map
 
 #################
 ## JetBrains

@@ -66,7 +66,7 @@
                     <loader class="pull-right" loader-id="app"></loader>
                 </div>
             </div>
-            <div class="alert" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
+            <div class="alert" ng-class="{hidden: !updateMsg}" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
                 <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span>
                 <loader loader-id="update"></loader>
             </div>
