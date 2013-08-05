@@ -54,12 +54,14 @@ var listToRegex = function(list, modifiers) {
 }
 
 var findIt = function(str, regData) {
-	for(var value = 0, len = regData; value < len; value++) {
-		if(str.match(listToRegex(regData[value], 'i'))) {
-			return value;
+	var found;
+	_.each(regData, function(value, key) {
+		if(str.match(listToRegex(value, 'i'))) {
+			found = key;
+			return false
 		}
-	}
-	return undefined;
+	});
+	return found;
 }
 
 var getData = function(file, fileName, type, info, format, screenSize, videoCodec, group, other, lang, tag) {

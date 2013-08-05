@@ -14,7 +14,9 @@ module.exports = {
 			_ = require('lodash'),
 			TVDB = require('tvdb'),
 			tvdb = new TVDB({apiKey: "66BBEB48D4C7D155"}),
-			updater = require('./updater');
+			updater = require('./updater'),
+			lastUpdateCheck = 0,
+			upToDate;
 
 		var appParams = {},
 			tvdbMirrors,
@@ -77,9 +79,16 @@ module.exports = {
 		});
 
 		app.get('/checkUpdate', function(req, response) {
-			updater.checkVersion(function(res) {
-				return response.json(res);
-			});
+			var now = new Date().getTime();
+			if(now - lastUpdateCheck <= 6*60*60*1000) { // 1 check / 6h
+				return response.json(upToDate);
+			} else {
+				updater.checkVersion(function(res) {
+					lastUpdateCheck = new Date().getTime();
+					upToDate = res;
+					return response.json(res);
+				});
+			}
 		});
 
 		app.get('/update', function(req, response) {
@@ -209,6 +218,8 @@ module.exports = {
 							lastEpisodes = filesList.splice(0, 10);
 							_.each(lastEpisodes, function(file) {
 								file.episode = fileScraper.scrape(appParams.rootFolder + '/' + file.episode);
+								file.showId = file.episode.file.replace(appParams.rootFolder + '/', '');
+								file.showId = file.showId.substr(0, file.showId.indexOf('/'));
 							});
 							lastFetch = now;
 							return response.json(lastEpisodes);
@@ -278,7 +289,7 @@ module.exports = {
 				};
 			});
 
-			return console.log("Listening on port "+(process.env.PORT || 3000)+"…");
+			return console.log("Listening on port "+(process.env.PORT || 3000)+". Go to http://localhost:"+(process.env.PORT || 3000)+"/ and enjoy !");
 		});
 	}
 };
