@@ -40,11 +40,11 @@
                 <div ng-show="subList.length == 0 && loadingDone">{{ 'NO_RESULT' | translate }}</div>
                 <div class="panel list-group subPackWrapper" ng-animate="{enter: 'fade-in', leave: ''}" ng-repeat="subPack in subList | qualitySort">
                     <div class="panel-heading qualite{{ subPack.quality }}">
-                        {{ subPack.file }}
                         <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
+                        {{ subPack.file }}
                     </div>
                     <a ng-repeat="sub in subPack.content" class="subtitle list-group-item" ng-click="downloadSub($event)">
-                        <span class="name ellipsis"><span class="label">{{ sub.score }}</span> {{ sub.name }}</span>
+                        <span class="name"><span class="label">{{ sub.score }}</span> {{ sub.name }}</span>
                     </a>
                 </div>
             </div>
