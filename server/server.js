@@ -94,8 +94,10 @@ module.exports = {
 		app.get('/update', function(req, response) {
 			updater.update(function(res) {
 				response.json(res);
-				console.log('Update complete, restarting server');
-				process.exit(0);
+				if(res.success) {
+					console.log('Update complete, restarting server');
+					process.exit(0);
+				}
 			});
 		});
 

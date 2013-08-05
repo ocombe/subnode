@@ -66,9 +66,10 @@
                     <loader class="pull-right" loader-id="app"></loader>
                 </div>
             </div>
-            <div class="alert" ng-class="{hidden: !updateMsg}" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
+            <div class="alert" ng-class="{hidden: !updateMsg, 'alert-danger': updateError}" ng-show="updateMsg" ng-animate="{enter: 'fade-in', leave: ''}">
                 <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span>
                 <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
+                <div translate="UPDATE_ERROR" translate-values="{{updateError}}" ng-show="updateError"></div>
                 <loader loader-id="update"></loader>
             </div>
             <div id="mainView" ui-view="mainView" class="container"></div>

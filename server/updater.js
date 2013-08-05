@@ -210,7 +210,7 @@ var updater = function() {
 				var child = exec('npm install --production --unsafe-perm', function(err, stdout, stderr) {
 					if (err) {
 						console.log(err);
-						callback({success: false});
+						callback({success: false, err: err});
 					} else {
 						callback({success: true});
 					}
