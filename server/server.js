@@ -14,7 +14,9 @@ module.exports = {
 			_ = require('lodash'),
 			TVDB = require('tvdb'),
 			tvdb = new TVDB({apiKey: "66BBEB48D4C7D155"}),
-			updater = require('./updater');
+			updater = require('./updater'),
+			lastUpdateCheck = 0,
+			upToDate;
 
 		var appParams = {},
 			tvdbMirrors,
@@ -77,9 +79,16 @@ module.exports = {
 		});
 
 		app.get('/checkUpdate', function(req, response) {
-			updater.checkVersion(function(res) {
-				return response.json(res);
-			});
+			var now = new Date().getTime();
+			if(now - lastUpdateCheck <= 6*60*60*1000) { // 1 check / 6h
+				return response.json(upToDate);
+			} else {
+				updater.checkVersion(function(res) {
+					lastUpdateCheck = new Date().getTime();
+					upToDate = res;
+					return response.json(res);
+				});
+			}
 		});
 
 		app.get('/update', function(req, response) {
