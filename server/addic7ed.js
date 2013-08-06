@@ -54,7 +54,7 @@ exports.getShowId = function(showName, callback) {
 var getShowList = function(callback) {
 	request({uri: 'http://www.addic7ed.com/ajax_getShows.php'}, function(err, response, body) {
 		//Just a basic error check
-		if(!response || (err && response && response.statusCode !== 200)) {
+		if(!response || (err && response.statusCode !== 200)) {
 			return callback([]);
 		}
 		var $ = cheerio.load(body),
@@ -91,8 +91,9 @@ var getSubtitlesList = function(params, callback) {
 	request({uri: 'http://www.addic7ed.com/ajax_loadShow.php?show=' + params.id + '&season=' + params.fileInfo.season + '&langs=|' + aLang + '|&hd=0&hi=0'}, function(err, response, body) {
 		var self = this;
 		//Just a basic error check
-		if(err && response.statusCode !== 200) {
+		if(!response ||(err && response.statusCode !== 200)) {
 			console.log('Request error.');
+			return callback([]);
 		}
 		var $ = cheerio.load(body),
 			subs = [];
@@ -163,6 +164,9 @@ exports.download = function(params, callback) {
 		port: 80,
 		path: params.url.substr(23, params.url.length)
 	}, function(response, err) {
+		if(!response ||(err && response.statusCode !== 200)) {
+			return callback('Request error.');
+		}
 		var success = false;
 		var fileName = response.headers['content-disposition'];
 		if(fileName) {

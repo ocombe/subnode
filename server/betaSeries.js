@@ -23,8 +23,8 @@ exports.getFromApi = function(path, params, callback) {
         params.key = betaSeriesApiKey;
     }
     request({uri: 'http://api.betaseries.com/' + path + '.json?' + exports.serialize(params)}, function(err, response, body) {
-        if(err && response.statusCode !== 200) {
-            console.log('Request error: ' + response.statusCode, err);
+        if(!response || (err && response.statusCode !== 200)) {
+            return callback('Request error.');
         }
         if(typeof callback == 'function') {
             callback(JSON.parse(body));
@@ -113,6 +113,9 @@ exports.getSubtitles = function(params, callback) {
 
 exports.download = function(params, callback) {
 	var request = http.get(params.url.replace('https', 'http'), function(response) {
+		if(!response || (err && response.statusCode !== 200)) {
+			return callback('Request error.');
+		}
 		var data = [],
 			dataLen = 0,
 			fileName = response.headers['content-disposition'],
