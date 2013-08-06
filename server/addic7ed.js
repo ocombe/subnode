@@ -54,8 +54,8 @@ exports.getShowId = function(showName, callback) {
 var getShowList = function(callback) {
 	request({uri: 'http://www.addic7ed.com/ajax_getShows.php'}, function(err, response, body) {
 		//Just a basic error check
-		if(err && response.statusCode !== 200) {
-			throw('Request error.');
+		if(!response || (err && response && response.statusCode !== 200)) {
+			return callback([]);
 		}
 		var $ = cheerio.load(body),
 			data = [];
