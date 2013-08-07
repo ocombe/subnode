@@ -207,7 +207,7 @@ module.exports = {
 		app.get('/lastEpisodes/:refresh', function(req, response) {
 			var filesList = [],
 				now = new Date();
-			if(req.params.refresh === 'false' && lastEpisodes.length > 0 && now - lastFetch <= 15 * 60 * 60 * 1000) {
+			if(req.params.refresh === 'false' && lastEpisodes.length > 0 && now - lastFetch <= 15 * 60 * 1000) {
 				return response.json(lastEpisodes);
 			} else {
 				if(appParams.rootFolder) {
