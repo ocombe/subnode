@@ -113,7 +113,7 @@ exports.getSubtitles = function(params, callback) {
 
 exports.download = function(params, callback) {
 	var request = http.get(params.url.replace('https', 'http'), function(response) {
-		if(!response || (err && response.statusCode !== 200)) {
+		if(!response || response.statusCode !== 200) {
 			return callback('Request error.');
 		}
 		var data = [],
@@ -133,8 +133,7 @@ exports.download = function(params, callback) {
 					var zip = new AdmZip(buf);
 					zip.extractEntryTo(params.subtitle, params.folder, false, true);
 					if(params.newName) {
-						fs.rename(params.folder + params.subtitle, params.folder + params.newName, function() {
-
+						fs.rename(params.folder + path.basename(params.subtitle), params.folder + params.newName, function(err) {
 						});
 					}
 				} else {
