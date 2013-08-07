@@ -3,17 +3,16 @@ module.exports = {
 		var express = require('express'),
 			app = express(),
 			nconf = require('nconf'),
-			nconf = new nconf.Provider().file('config', __dirname + '/../appParams.json'),
+			nconfParams = new nconf.Provider().file('config', __dirname + '/../appParams.json'),
 			fs = require('fs'),
 			request = require('request'),
 			path = require('path'),
 			fileScraper = require('./scraper'),
 			addic7ed = require('./addic7ed.js'),
 			betaSeries = require('./betaSeries.js'),
+			tvdb = require('./tvdb.js'),
 			wrench = require('wrench'),
 			_ = require('lodash'),
-			TVDB = require('tvdb'),
-			tvdb = new TVDB({apiKey: "66BBEB48D4C7D155"}),
 			updater = require('./updater'),
 			lastUpdateCheck = 0,
 			upToDate;
@@ -66,13 +65,13 @@ module.exports = {
 
 		app.post('/params', function(req, response) {
 			appParams = req.body;
-			nconf.set("rootFolder", appParams.rootFolder);
-			nconf.set("autorename", appParams.autorename);
-			nconf.set("subLang", appParams.subLang);
-			nconf.set("username", appParams.username);
-			nconf.set("password", appParams.password);
-			nconf.set("providers", appParams.providers);
-			nconf.save(function(err) {
+			nconfParams.set("rootFolder", appParams.rootFolder);
+			nconfParams.set("autorename", appParams.autorename);
+			nconfParams.set("subLang", appParams.subLang);
+			nconfParams.set("username", appParams.username);
+			nconfParams.set("password", appParams.password);
+			nconfParams.set("providers", appParams.providers);
+			nconfParams.save(function(err) {
 				response.send(err);
 				app.use(authenticate);
 			});
@@ -80,7 +79,7 @@ module.exports = {
 
 		app.get('/checkUpdate', function(req, response) {
 			var now = new Date().getTime();
-			if(now - lastUpdateCheck <= 6*60*60*1000) { // 1 check / 6h
+			if(now - lastUpdateCheck <= 6 * 60 * 60 * 1000) { // 1 check / 6h
 				return response.json(upToDate);
 			} else {
 				updater.checkVersion(function(res) {
@@ -243,55 +242,40 @@ module.exports = {
 			}
 		});
 
-		app.get('/banner/:showId', function(req, response) {
-			var filename = __dirname + '/../banners/' + req.params.showId + '.jpg';
-			fs.exists(filename, function(exists) {
-				if(exists) {
-					fs.createReadStream(filename).pipe(response);
+		app.get('/banner/:showName', function(req, response) {
+			tvdb.getBanner({
+				path: __dirname + '/../banners/',
+				showName: req.params.showName
+			}, function(path) {
+				if(path === false) {
+					return response.end();
 				} else {
-					var getBanner = function() {
-						tvdb.findTvShow(req.params.showId, function(err, tvShows) {
-							if(err) return;
-							if(tvShows && tvShows.length > 0 && tvShows[0].banner) {
-								var bannerUrl = tvdbMirrors[0].url + '/banners/' + tvShows[0].banner;
-								wrench.mkdirSyncRecursive(__dirname + '/../banners/', 0777);
-								var stream = request(bannerUrl).on('end', function() {
-									fs.createReadStream(filename).pipe(response);
-								});
-								stream.pipe(fs.createWriteStream(filename));
-							} else {
-								return response.end();
-							}
-						});
-					}
-					if(!tvdbMirrors) {
-						tvdb.getMirrors(function(err, mirrors) {
-							if(err) return;
-							tvdbMirrors = mirrors;
-							getBanner();
-						});
-					} else {
-						getBanner();
-					}
+					fs.createReadStream(path).pipe(response);
 				}
 			});
 		});
 
+		app.get('/info/:showName/:lang', function(req, response) {
+			tvdb.getFullShowInfo({showName: req.params.showName, lang: req.params.lang}, function(err, data) {
+				return response.json(data);
+			});
+		});
+
 		return app.listen(process.env.PORT || 3000, function() {
-			nconf.load(function() {
+			nconfParams.load(function() {
 				appParams = {
-					rootFolder: nconf.get('rootFolder'),
-					sickbeardUrl: nconf.get('sickbeardUrl'),
-					sickbeardApiKey: nconf.get('sickbeardApiKey'),
-					autorename: nconf.get('autorename'),
-					subLang: nconf.get('subLang'),
-					username: nconf.get('username'),
-					password: nconf.get('password'),
-					providers: nconf.get('providers')
+					rootFolder: nconfParams.get('rootFolder'),
+					sickbeardUrl: nconfParams.get('sickbeardUrl'),
+					sickbeardApiKey: nconfParams.get('sickbeardApiKey'),
+					autorename: nconfParams.get('autorename'),
+					subLang: nconfParams.get('subLang'),
+					username: nconfParams.get('username'),
+					password: nconfParams.get('password'),
+					providers: nconfParams.get('providers')
 				};
 			});
 
-			return console.log("Listening on port "+(process.env.PORT || 3000)+". Go to http://localhost:"+(process.env.PORT || 3000)+"/ and enjoy !");
+			return console.log("Listening on port " + (process.env.PORT || 3000) + ". Go to http://localhost:" + (process.env.PORT || 3000) + "/ and enjoy !");
 		});
 	}
 };
