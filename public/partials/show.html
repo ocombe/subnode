@@ -1,6 +1,14 @@
 <div class='show'>
     <div class="page-header">
-        <img ng-src="banner/{{ showId }}" image-fallback="{{ showId }}">
+        <img ng-src="banner/{{ showId }}" image-fallback="{{ showId }}" overview="{{ showInfo.tvShow.overview }}">
+
+        <div id="overview" class="panel" ng-show='overview' ng-animate="{show: 'fade-in', hide: ''}">
+            <div class="panel-heading">
+                {{ overview.header }}
+                <button type="button" class="close" ng-click="hideOverview()">&times;</button>
+            </div>
+            {{ overview.content }}
+        </div>
     </div>
 
     <div class="row" ng-class="{compact: compact}">
@@ -22,15 +30,18 @@
                 <div class="panel-heading">
                     <span ng-show="!compact" class="uncompacted">{{ 'SEASON' | translate }} </span>{{ epList.season }}
                 </div>
-                <a ng-repeat="ep in epList.episodes" class="episode alert list-group-item" ng-class="{'alert-success': ep.subtitle}" ng-click="searchSubs($event)">
-                    <span ng-show="compact">{{ ep.episode | decimalFormat }}</span>
-                    <span ng-show="!compact" class="name ellipsis">{{ ep.name }}</span>
-                    <i ng-show="ep.subtitle && !compact" class="glyphicon glyphicon-paperclip" title="{{ ep.subtitle.name }}" tooltip></i>
-                </a>
+                <div ng-repeat="ep in epList.episodes" class="episode alert list-group-item" ng-class="{'alert-success': ep.subtitle}">
+                    <a ng-click="searchSubs($event)">
+                        <span ng-show="compact">{{ ep.episode | decimalFormat }}</span>
+                        <span ng-show="!compact" class="name ellipsis">{{ ep.name }}</span>
+                    </a>
+                    <i ng-show="!compact" class="glyphicon glyphicon-info-sign pull-right" ng-show="showInfo" overview></i>
+                    <i ng-show="ep.subtitle && !compact" class="glyphicon glyphicon-paperclip pull-right"></i>
+                </div>
             </div>
         </div>
 
-        <div class="subtitlesList" ng-class="{'col-lg-10 in': compact}" ng-show="subtitlesListShow" ng-animate="{enter: 'fade-in', leave: ''}">
+        <div class="subtitlesList" ng-class="{'col-lg-10 in': compact}" ng-show="subtitlesListShow" ng-animate="{show: 'fade-in', hide: ''}">
             <div class="panel">
                 <div class="panel-heading">
                     {{ selectedEpisode.name }}

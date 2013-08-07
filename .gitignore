@@ -24,6 +24,8 @@ scripts/server.sh
 public/js/*.map
 public/css/*.map
 .tagconfig
+server/data/shows/*
+todo.txt
 
 #################
 ## JetBrains
