@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="col-lg-8 pull-right">
-                    <span ng-show="paramsForm.lang.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                    <span class="help-block fade-in fade-out" ng-show="paramsForm.lang.$error.required">{{'REQUIRED' | translate}}</span>
                 </div>
             </div>
 
@@ -26,7 +26,7 @@
 
                 <div class="col-lg-8 pull-right">
                     <span class="help-block">{{'ROOT_FOLDER_HINT' | translate}}</span>
-                    <span ng-show="paramsForm.rootFolder.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                    <span ng-show="paramsForm.rootFolder.$error.required" class="help-block fade-in fade-out">{{'REQUIRED' | translate}}</span>
                 </div>
             </div>
 
@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <div class="form-group" ng-class="{'has-error': !paramsForm.password.$valid}" ng-show="params.username && params.username != ''" ng-animate="{show: 'fade-in', hide: ''}">
+            <div class="form-group fade-in" ng-class="{'has-error': !paramsForm.password.$valid}" ng-show="params.username && params.username != ''">
                 <label class="col-lg-4 control-label" for="password">{{ 'PASSWORD' | translate }}</label>
 
                 <div class="col-lg-8">
@@ -50,12 +50,12 @@
                 </div>
 
                 <div class="col-lg-8 pull-right">
-                    <span ng-show="paramsForm.password.$error.pattern" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'MIN_NUMBER' | translate:'{ nb: 1 }'}}</span>
-                    <span ng-show="paramsForm.password.$error.minlength" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'MIN_LENGTH' | translate:'{ nb: 8 }'}}</span>
+                    <span ng-show="paramsForm.password.$error.pattern" class="help-block fade-in fade-out">{{'MIN_NUMBER' | translate:'{ nb: 1 }'}}</span>
+                    <span ng-show="paramsForm.password.$error.minlength" class="help-block fade-in fade-out">{{'MIN_LENGTH' | translate:'{ nb: 8 }'}}</span>
                 </div>
             </div>
 
-            <div class="form-group" ng-show="params.password && params.password != ''" ng-animate="{show: 'fade-in', hide: ''}" ng-class="{'has-error': !paramsForm.password2.$valid || params.password != params.password2}">
+            <div class="form-group fade-in" ng-show="params.password && params.password != ''" ng-class="{'has-error': !paramsForm.password2.$valid || params.password != params.password2}">
                 <label class="col-lg-4 control-label" for="password_password2">{{ 'PASSWORD_CONFIRM' | translate }}</label>
 
                 <div class="col-lg-8">
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="col-lg-8 pull-right">
-                    <span ng-show="params.password != params.password2" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'MATCH_PASSWD' | translate}}</span>
+                    <span ng-show="params.password != params.password2" class="help-block fade-in fade-out">{{'MATCH_PASSWD' | translate}}</span>
                 </div>
             </div>
 
@@ -78,7 +78,7 @@
                 </div>
 
                 <div class="col-lg-8 pull-right">
-                    <span ng-show="paramsForm.providers.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                    <span ng-show="paramsForm.providers.$error.required" class="help-block fade-in fade-out">{{'REQUIRED' | translate}}</span>
                 </div>
             </div>
 
@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="col-lg-8 pull-right">
-                    <span ng-show="paramsForm.subLang.$error.required" ng-animate="{show: 'fade-in', hide: 'fade-out'}" class="help-block">{{'REQUIRED' | translate}}</span>
+                    <span ng-show="paramsForm.subLang.$error.required" class="help-block fade-in fade-out">{{'REQUIRED' | translate}}</span>
                 </div>
 
                 <div class="col-lg-8 pull-right">

@@ -1,31 +1,32 @@
 <div class="home">
     <div class="page-header">
-        <h1>
+        <h2>
             {{ 'LAST_EPISODES' | translate }}
             <small><a class="refreshBtn" ng-click="refresh(true)"><i class="glyphicon glyphicon-refresh"></i></a></small>
             <loader class="pull-right" loader-id="home" loader-active="true"></loader>
-        </h1>
+        </h2>
     </div>
 
     <div class="lastEpisodes">
-        <div class="col-lg-12 thumbnail" ng-repeat="file in lastEpisodes" ng-animate="{enter: 'fade-in', leave: ''}">
-            <div class="col-lg-3">
-                <div class="caption">
-                    <a class="title" ng-href="#show/{{ file.showId }}"><h3>{{ file.showId }}</h3></a>
-                    <h4 class="number">{{ file.episode.season | decimalFormat }}x{{ file.episode.episode | decimalFormat }}</h4>
+        <div class="col-lg-12 thumbnail fade-in" ng-repeat="file in lastEpisodes">
+            <a ng-href="#show/{{ file.showId }}">
+                <div class="col-lg-3">
+                    <div class="caption">
+                        <h3 class="title">{{ file.showId }}</h3>
+                        <h4 class="number">{{ file.episode.season | decimalFormat }}x{{ file.episode.episode |
+                            decimalFormat }}</h4>
 
-                    <p class="date">{{ file.ctime | localDate }}</p>
+                        <p class="date">{{ file.ctime | localDate }}</p>
+                    </div>
                 </div>
-            </div>
-            <table class="col-lg-9 imgWrapper">
-                <tr>
-                    <td>
-                        <a ng-href="#show/{{ file.showId }}">
+                <table class="col-lg-9 imgWrapper">
+                    <tr>
+                        <td>
                             <img ng-src="banner/{{ file.showId }}">
-                        </a>
-                    </td>
-                </tr>
-            </table>
+                        </td>
+                    </tr>
+                </table>
+            </a>
         </div>
     </div>
 </div>
