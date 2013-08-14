@@ -13,7 +13,7 @@ vendor
 banners
 .bowerrc
 appParams.json
-bower-config.json
+bower.json
 config.js
 config.rb
 app

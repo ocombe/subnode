@@ -61,12 +61,11 @@
                 <div class="navbar navbar-fixed-top">
                     <a class="navbar-brand hidden-sm" href="#"><img src="img/subnode.png"></a>
                     <a class="navbar-brand visible-sm glyphicon glyphicon-home" href="#"></a>
-                    <select style="min-width: 250px" chosen ng-model="selectedTVShow" id="selectedTVShow" ng-change="changeShow()" data-placeholder="{{ 'CHOOSE_SHOW' | translate }}" ng-options="s as s for s in showList"></select>
-                    <a class="pull-right paramsBtn" modal-open="partials/config.html"><i class="glyphicon glyphicon-cog"></i></a>
-                    <loader class="pull-right" loader-id="app"></loader>
+                    <select chosen ng-model="selectedTVShow" id="selectedTVShow" ng-change="changeShow()" data-placeholder="{{ 'CHOOSE_SHOW' | translate }}" ng-options="s as s for s in showList"></select>
+                    <a class="pull-right paramsBtn glyphicon glyphicon-cog" modal-open="partials/config.html"></a>
                 </div>
             </div>
-            <div class="alert" ng-class="{hidden: !updateMsg, 'alert-danger': updateError}" ng-show="updateMsg" ng-animate="{show: 'fade-in', hide: ''}">
+            <div class="alert fade-in" ng-class="{hidden: !updateMsg, 'alert-danger': updateError}" ng-show="updateMsg">
                 <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span>
                 <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
                 <div translate="UPDATE_ERROR" translate-values="{{updateError}}" ng-show="updateError"></div>
