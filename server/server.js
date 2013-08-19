@@ -219,7 +219,9 @@ module.exports = {
 							lastEpisodes = filesList.splice(0, 10);
 							_.each(lastEpisodes, function(file) {
 								file.episode = fileScraper.scrape(appParams.rootFolder + '/' + file.episode);
-								file.showId = file.episode.file.replace(appParams.rootFolder + '/', '');
+								if(file.episode && file.episode.file) {
+									file.showId = file.episode.file.replace(appParams.rootFolder + '/', '');
+								}
 								file.showId = file.showId.substr(0, file.showId.indexOf('/'));
 							});
 							lastFetch = now;
