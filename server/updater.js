@@ -143,25 +143,25 @@ var updater = function() {
 				throw 'ERROR: updater cannot parse GitHub response';
 			}
 
-			json = this.sortTags(json);
-			this.lastTag = json[0];
+			this.lastTag = this.findLastTags(json);
 			return this.lastTag;
 		},
 
-		sortTags: function(tags) {
-			tags.sort(function(a, b) {
-				var versionsA = a.name.split('.');
-				var versionsB = b.name.split('.');
-				for(var i = 0, len = versionsA.length; i < len; i++) {
-					if(versionsA[i] > versionsB[i]) {
-						return false;
-					} else if(versionsA[i] < versionsB[i]) {
-						return true;
+		findLastTags: function(tags) {
+			var last = tags[0],
+				lastNumber = last.name.split('.');
+			_.each(tags, function(tag) {
+				var numbers = tag.name.split('.');
+				for(var i = 0, len = numbers.length; i < len; i++) {
+					if(numbers[i] > lastNumber[i]) {
+//						console.log(a.name,'>',b.name);
+						last = tag;
+						lastNumber = numbers;
+						break;
 					}
 				}
-				return 0;
 			});
-			return tags;
+			return last;
 		},
 
 		parseTagVersion: function(lastTag) {
@@ -169,12 +169,12 @@ var updater = function() {
 		},
 
 		compareVersions: function() {
-			var tags = this.sortTags([
+			var lastTag = this.findLastTags([
 				this.lastTag,
 				{ name: this.currentTag }
 			]);
 
-			return tags[0].name === this.currentTag ? {upToDate: true} : {upToDate: false, current: this.currentTag, last: this.lastTag};
+			return lastTag.name === this.currentTag ? {upToDate: true} : {upToDate: false, current: this.currentTag, last: this.lastTag};
 		},
 
 		update: function(callback) {
