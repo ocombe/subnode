@@ -3,10 +3,7 @@ var forever = require('forever-monitor');
 var subNode = new (forever.Monitor)('./server/serverWrapper.js', {
 	command: 'node',
 	max: 3,
-	silent: false,
-	env: {
-		'PORT': '3000'
-	}
+	silent: false
 });
 
 subNode.on('exit', function() {

@@ -37,9 +37,16 @@ An app to download subtitles for your TV Shows
 
   On Linux : ```sudo sh scripts/launch.sh```
 
-  Or via the command line :```node app.js```
+  Or via the command line :```node app.js``` on Windows and ```nodejs app.js``` on Linux
 
 4. Go to http://localhost:3000/ and enjoy !
+
+# Troubleshooting
+* The launch script ```sudo sh scripts/launch.sh``` or the command ```nodejs app.js``` doesn't work on Linux: it launches and the exits :
+  It's a bug in forever (the module to keep the app launched even if it crashes). Try to launch the app manually via the command: ```sudo nodejs ./server/serverWrapper.js```
+
+* I got an error "EADDRINUSE" when I try to start the app :
+  subNode uses the port 3000 by default. If this port is already used by another program you will get this error. You can change the value of the variable "port" in the file appParams.json
 
 # Screenshots
 * Home

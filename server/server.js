@@ -263,21 +263,30 @@ module.exports = {
 			});
 		});
 
-		return app.listen(process.env.PORT || 3000, function() {
-			nconfParams.load(function() {
-				appParams = {
-					rootFolder: nconfParams.get('rootFolder'),
-					sickbeardUrl: nconfParams.get('sickbeardUrl'),
-					sickbeardApiKey: nconfParams.get('sickbeardApiKey'),
-					autorename: nconfParams.get('autorename'),
-					subLang: nconfParams.get('subLang'),
-					username: nconfParams.get('username'),
-					password: nconfParams.get('password'),
-					providers: nconfParams.get('providers')
-				};
-			});
+		return nconfParams.load(function() {
+			appParams = {
+				rootFolder: nconfParams.get('rootFolder'),
+				sickbeardUrl: nconfParams.get('sickbeardUrl'),
+				sickbeardApiKey: nconfParams.get('sickbeardApiKey'),
+				autorename: nconfParams.get('autorename'),
+				subLang: nconfParams.get('subLang'),
+				username: nconfParams.get('username'),
+				password: nconfParams.get('password'),
+				providers: nconfParams.get('providers'),
+				port: nconfParams.get('port')
+			};
 
-			return console.log("Listening on port " + (process.env.PORT || 3000) + ". Go to http://localhost:" + (process.env.PORT || 3000) + "/ and enjoy !");
+			return app.listen(appParams.port || process.env.PORT || 3000, function() {
+				if(!appParams.port) {
+					nconfParams.set("port", process.env.PORT || 3000);
+					nconfParams.save(function(err) {
+						if(err) throw err;
+					});
+				}
+				return console.log("Listening on port " + (appParams.port || process.env.PORT || 3000) + ". Go to http://localhost:" + (appParams.port || process.env.PORT || 3000) + "/ and enjoy !");
+			});
 		});
+
+
 	}
 };
