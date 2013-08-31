@@ -70,10 +70,24 @@
 
                         <p>On Linux : <code>sudo sh scripts/launch.sh</code></p>
 
-                        <p>Or via the command line :<code>node app.js</code></p>
+                        <p>Or via the command line :<code>node app.js</code> on Windows and <code>nodejs app.js</code> on Linux</p>
                     </li>
                     <li>Go to <a href="http://localhost:3000/" target="_blank">http://localhost:3000/</a> and enjoy !</li>
                 </ol>
+
+                <h1>
+                    <a name="troubleshooting" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Troubleshooting
+                </h1>
+
+                <ul>
+                    <li>The launch script <code>sudo sh scripts/launch.sh</code> or the command <code>nodejs app.js</code> doesn't work on Linux: it launches and the exits :
+                        It's a bug in forever (the module to keep the app launched even if it crashes). Try to launch the app manually via the command: <code>sudo nodejs ./server/serverWrapper.js</code></li>
+                    <li>I got an error "EADDRINUSE" when I try to start the app :
+                        subNode uses the port 3000 by default. If this port is already used by another program you will get this error.
+                        You can change the value of the variable "port" in the file appParams.json
+                    </li>
+                </ul>
+
                 <h1>
                     <a name="screenshots" class="anchor" href="#screenshots"><span class="octicon octicon-link"></span></a>Screenshots
                 </h1>
@@ -98,6 +112,19 @@
                 </ul>
                 <p><a href="img/subtitles.jpg"><img src="img/subtitles.jpg" alt="Subtitles"></a></p>
             </section>
+
+            <div id="disqus_thread"></div>
+            <script type="text/javascript">
+                var disqus_shortname = 'subnodeweb';
+                (function() {
+                    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+            <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
         </div>
 
         <!-- FOOTER  -->
