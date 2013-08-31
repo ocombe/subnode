@@ -153,7 +153,9 @@ var updater = function() {
 			_.each(tags, function(tag) {
 				var numbers = tag.name.split('.');
 				for(var i = 0, len = numbers.length; i < len; i++) {
-					if(parseInt(numbers[i],10) > parseInt(lastNumber[i],10)) {
+					if(parseInt(numbers[i],10) < parseInt(lastNumber[i],10)) {
+						break;
+					} else if(parseInt(numbers[i],10) > parseInt(lastNumber[i],10)) {
 						last = tag;
 						lastNumber = numbers;
 						break;
