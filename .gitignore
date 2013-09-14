@@ -10,6 +10,7 @@ npm-debug.log
 docs
 build
 vendor
+bower_components
 banners
 .bowerrc
 appParams.json

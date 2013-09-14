@@ -2,7 +2,7 @@
     <div class="page-header">
         <img ng-src="banner/{{ showId }}" image-fallback="{{ showId }}" overview="{{ showInfo.tvShow.overview }}">
 
-        <div id="overview" class="panel fade-in" ng-show='overview'>
+        <div id="overview" class="panel panel-default fade-in" ng-show='overview'>
             <div class="panel-heading">
                 {{ overview.header }}
                 <button type="button" class="close" ng-click="hideOverview()">&times;</button>
@@ -26,11 +26,11 @@
         </div>
 
         <div class="episodesList col-lg-9">
-            <div class="panel list-group epListWrapper" ng-repeat="epList in show | seasonFilter: seasonFilter">
+            <div class="panel panel-default list-group epListWrapper" ng-repeat="epList in show | seasonFilter: seasonFilter">
                 <div class="panel-heading">
                     <span ng-show="!compact" class="uncompacted">{{ 'SEASON' | translate }} </span>{{ epList.season }}
                 </div>
-                <div ng-repeat="ep in epList.episodes" class="episode alert list-group-item" ng-class="{'alert-success': ep.subtitle}">
+                <div ng-repeat="ep in epList.episodes" class="episode alert list-group-item" ng-class="{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}">
                     <a ng-click="searchSubs($event)">
                         <span ng-show="compact">{{ ep.episode | decimalFormat }}</span>
                         <span ng-show="!compact" class="name ellipsis">{{ ep.name }}</span>
@@ -42,14 +42,14 @@
         </div>
 
         <div class="subtitlesList fade-in" ng-class="{'col-lg-10 in': compact}" ng-show="subtitlesListShow">
-            <div class="panel">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     {{ selectedEpisode.name }}
                     <button type="button" class="close" ng-click="expand()">&times;</button>
                     <loader loader-id="subtitles" class="pull-right"></loader>
                 </div>
                 <div ng-show="subList.length == 0 && loadingDone">{{ 'NO_RESULT' | translate }}</div>
-                <div class="panel list-group subPackWrapper fade-in" ng-repeat="subPack in subList | qualitySort">
+                <div class="panel panel-default list-group subPackWrapper fade-in" ng-repeat="subPack in subList | qualitySort">
                     <div class="panel-heading qualite{{ subPack.quality }}">
                         <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
                         {{ subPack.file }}

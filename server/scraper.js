@@ -9,6 +9,7 @@ exports.scrape = function(file) {
 		regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})/i,
 		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264)(\d{1,2}|\d)(\d{2})/i,
 		alternate2 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[x\.\-_\s]*e?p?(\d{2})/i,
+		alternate3 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)/i,
 		screenSize = /(1080\s?p|720\s?p|480\s?p)/i,
 		videoCodec = /(Xvid|DVDivX|DivX|[hx]\s?264|Rv10)/i,
 		format = {
@@ -43,7 +44,38 @@ exports.scrape = function(file) {
 	if(type) {
 		var info = regular.exec(fileName) || alternate.exec(fileName) || alternate2.exec(fileName);
 		if(info != null) {
-			data = getData(file, fileName, type, info, findIt(fileName, format), screenSize.exec(fileName) || '', videoCodec.exec(fileName) || '', listToRegex(groups, 'i').exec(fileName) || '', listToRegex(other, 'i').exec(fileName) || '', findIt(fileName, lang), listToRegex(tag, 'i').exec(fileName) || '');
+			//file, fileName, type, info, format, screenSize, videoCodec, group, other, lang, tag
+			data = getData({
+				file: file,
+				fileName: fileName,
+				type: type,
+				info: info,
+				format: findIt(fileName, format),
+				screenSize: screenSize.exec(fileName) || '',
+				videoCodec: videoCodec.exec(fileName) || '',
+				group: listToRegex(groups, 'i').exec(fileName) || '',
+				other: listToRegex(other, 'i').exec(fileName) || '',
+				lang: findIt(fileName, lang),
+				tag: listToRegex(tag, 'i').exec(fileName) || ''
+			});
+		} else {
+			info = alternate3.exec(fileName);
+			if(info) {
+				data = getData({
+					file: file,
+					fileName: fileName,
+					type: type,
+					info: info,
+					format: findIt(fileName, format),
+					screenSize: screenSize.exec(fileName) || '',
+					videoCodec: videoCodec.exec(fileName) || '',
+					group: listToRegex(groups, 'i').exec(fileName) || '',
+					other: listToRegex(other, 'i').exec(fileName) || '',
+					lang: findIt(fileName, lang),
+					tag: listToRegex(tag, 'i').exec(fileName) || '',
+					season: 1
+				});
+			}
 		}
 	}
 	return data;
@@ -64,22 +96,22 @@ var findIt = function(str, regData) {
 	return found;
 }
 
-var getData = function(file, fileName, type, info, format, screenSize, videoCodec, group, other, lang, tag) {
+var getData = function(params) {
 	var data = {
-		name: fileName.substr(fileName.lastIndexOf('/') + 1, fileName.length),
-		file: file,
-		type: type,
-		season: parseInt(info[1], 10),
-		episode: parseInt(info[2], 10),
-		show: fileName.substring(0, fileName.indexOf(info[0])).replace(/[\._]/gi, ' '),
-		format: format,
-		group: group[1],
-		screenSize: screenSize[1],
-		videoCodec: videoCodec[1],
-		other: other[1],
-		lang: lang,
-		tag: tag[1],
-		extension: path.extname(fileName)
+		name: params.fileName.substr(params.fileName.lastIndexOf('/') + 1, params.fileName.length),
+		file: params.file,
+		type: params.type,
+		season: params.season ? params.season : parseInt(params.info[1], 10),
+		episode: params.season ? parseInt(params.info[1], 10) : parseInt(params.info[2], 10),
+		show: params.fileName.substring(0, params.fileName.indexOf(params.info[0])).replace(/[\._]/gi, ' '),
+		format: params.format,
+		group: params.group[1],
+		screenSize: params.screenSize[1],
+		videoCodec: params.videoCodec[1],
+		other: params.other[1],
+		lang: params.lang,
+		tag: params.tag[1],
+		extension: path.extname(params.fileName)
 	};
 	return data;
 }
