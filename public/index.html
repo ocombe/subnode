@@ -65,7 +65,7 @@
                     <a class="pull-right paramsBtn glyphicon glyphicon-cog" modal-open="partials/config.html"></a>
                 </div>
             </div>
-            <div class="alert fade-in" ng-class="{hidden: !updateMsg, 'alert-danger': updateError}" ng-show="updateMsg">
+            <div class="alert fade-in" ng-class="{hidden: !updateMsg, 'alert-danger': updateError, 'alert-warning': !updateError}" ng-show="updateMsg">
                 <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span>
                 <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
                 <div translate="UPDATE_ERROR" translate-values="{{updateError}}" ng-show="updateError"></div>

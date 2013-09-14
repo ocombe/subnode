@@ -216,13 +216,17 @@ module.exports = {
 								return b.ctime - a.ctime;
 							});
 
-							lastEpisodes = filesList.splice(0, 10);
-							_.each(lastEpisodes, function(file) {
-								file.episode = fileScraper.scrape(appParams.rootFolder + '/' + file.episode);
-								if(file.episode && file.episode.file) {
-									file.showId = file.episode.file.replace(appParams.rootFolder + '/', '');
+							_.each(filesList, function(file) {
+								if(lastEpisodes.length < 10) {
+									file.episode = fileScraper.scrape(appParams.rootFolder + '/' + file.episode);
+									if(file.episode && file.episode.file) {
+										file.showId = file.episode.file.replace(appParams.rootFolder + '/', '');
+										file.showId = file.showId.substr(0, file.showId.indexOf('/'));
+										lastEpisodes.push(file);
+									}
+								} else {
+									return false;
 								}
-								file.showId = file.showId.substr(0, file.showId.indexOf('/'));
 							});
 							lastFetch = now;
 							return response.json(lastEpisodes);
