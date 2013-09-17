@@ -209,6 +209,7 @@ module.exports = {
 			if(req.params.refresh === 'false' && lastEpisodes.length > 0 && now - lastFetch <= 15 * 60 * 1000) {
 				return response.json(lastEpisodes);
 			} else {
+				lastEpisodes = [];
 				if(appParams.rootFolder) {
 					wrench.readdirRecursive(appParams.rootFolder, function(error, curFiles) {
 						if(curFiles == null) {
