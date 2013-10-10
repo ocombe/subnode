@@ -91,7 +91,7 @@ var getSubtitlesList = function(params, callback) {
 	request({uri: 'http://www.addic7ed.com/ajax_loadShow.php?show=' + params.id + '&season=' + params.fileInfo.season + '&langs=|' + aLang + '|&hd=0&hi=0'}, function(err, response, body) {
 		var self = this;
 		//Just a basic error check
-		if(!response ||(err && response.statusCode !== 200)) {
+		if(!response || err) {
 			console.log('Request error.');
 			return callback([]);
 		}
