@@ -7,7 +7,7 @@ exports.scrape = function(file) {
 	var data = false,
 		type,
 		regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})/gi,
-		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264|20)(\d{1,2}|\d)(\d{2})/gi,
+		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264|20\d\d)(\d{1,2}|\d)(\d{2})/gi,
 		alternate2 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[x\.\-_\s]*e?p?(\d{2})/gi,
 		alternate3 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)/i,
 		screenSize = /(1080\s?p|720\s?p|480\s?p)/i,
