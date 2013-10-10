@@ -41,7 +41,7 @@
     "forever-monitor": "~1.2.3"
   },
   "devDependencies": {
-	  "brunch": "~1.7.8",
+    "brunch": "~1.7.8",
     "auto-reload-brunch": ">= 1.6.4",
     "javascript-brunch": ">= 1.6",
     "css-brunch": ">= 1.6",

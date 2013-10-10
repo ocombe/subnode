@@ -95,7 +95,7 @@ module.exports = {
 				response.json(res);
 				if(res.success) {
 					console.log('Update complete, restarting server');
-					process.exit(0);
+					process.exit(3331);
 				}
 			});
 		});
@@ -268,6 +268,16 @@ module.exports = {
 			});
 		});
 
+		app.get('/exit', function(req, response) {
+			response.send('The server has been shut down.');
+			process.exit(3330);
+		});
+
+		app.get('/restart', function(req, response) {
+			response.redirect('/');
+			process.exit(3331);
+		});
+
 		return nconfParams.load(function() {
 			appParams = {
 				rootFolder: nconfParams.get('rootFolder'),
@@ -291,7 +301,5 @@ module.exports = {
 				return console.log("Listening on port " + (appParams.port || process.env.PORT || 3000) + ". Go to http://localhost:" + (appParams.port || process.env.PORT || 3000) + "/ and enjoy !");
 			});
 		});
-
-
 	}
 };

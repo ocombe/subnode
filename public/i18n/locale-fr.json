@@ -37,5 +37,7 @@
 	"UPDATE_MSG": "Une mise à jour de l'application est disponible: <a target='_blank' href='https://github.com/ocombe/subNode/commits/{{ last.commit.sha }}'>version {{last.name}}</a>. Votre version actuelle est la version {{current}}.",
 	"UPDATE_NOW": "Mettre à jour",
 	"UPDATE_CONFIRM": "Êtes-vous sur de vouloir mettre à jour l'application ?",
-	"UPDATE_ERROR": "La mise a jour a échoué. Message d'erreur: {{ err }}"
+	"UPDATE_ERROR": "La mise a jour a échoué. Message d'erreur: {{ err }}",
+	"SHUTDOWN": "Éteindre le serveur",
+	"RESTART": "Redémarrer le serveur"
 }
