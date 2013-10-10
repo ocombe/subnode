@@ -12,9 +12,9 @@ subNode.on('exit', function() {
 });
 
 subNode.on('exit:code', function(code, signal) {
-	if(code === 3330) {
+	if(code === 3330 || code === 2) {
 		subNode.stop();
-	} else if(code === 3331) {
+	} else if(code === 3331 || code === 3) {
 		subNode.restart();
 	}
 });
