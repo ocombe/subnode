@@ -6,9 +6,9 @@ exports.scrape = function(file) {
 	var fileName = path.basename(file);
 	var data = false,
 		type,
-		regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})/i,
-		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264)(\d{1,2}|\d)(\d{2})/i,
-		alternate2 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[x\.\-_\s]*e?p?(\d{2})/i,
+		regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})/gi,
+		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264|20)(\d{1,2}|\d)(\d{2})/gi,
+		alternate2 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[x\.\-_\s]*e?p?(\d{2})/gi,
 		alternate3 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)/i,
 		screenSize = /(1080\s?p|720\s?p|480\s?p)/i,
 		videoCodec = /(Xvid|DVDivX|DivX|[hx]\s?264|Rv10)/i,
@@ -43,6 +43,9 @@ exports.scrape = function(file) {
 	}
 	if(type) {
 		var info = regular.exec(fileName) || alternate.exec(fileName) || alternate2.exec(fileName);
+
+		if(fileName == 'castle.2009.603.hdtv-lol.mp4')
+			console.log(alternate.exec(fileName));
 		if(info != null) {
 			//file, fileName, type, info, format, screenSize, videoCodec, group, other, lang, tag
 			data = getData({
