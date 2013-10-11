@@ -32,12 +32,14 @@ exports.getShowId = function(showName, callback) {
 		matches.sort(function(a, b) {
 			return b.value - a.value;
 		});
-		if(matches[0].value > 0.8 || retry) { // todo propose the 5 top names
-			callback(matches[0].id);
+		if(matches.length === 0 && retry === 1 && showListData) {
+			checkNames(showListData, 2);
+		} else if((matches.length > 0 && matches[0].value > 0.8) || retry) { // todo: propose the 5 top names
+			callback(matches.length > 0 ? matches[0].id : null);
 		} else { // else, new show ? update the show list
 			getShowList(function(newData) {
 				if(newData != data) {
-					checkNames(data, true);
+					checkNames(data, 1);
 				} else {
 					callback(matches[0].id);
 				}
