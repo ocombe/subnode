@@ -6,10 +6,11 @@ exports.scrape = function(file) {
 	var fileName = path.basename(file);
 	var data = false,
 		type,
-		regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})/gi,
-		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264|20\d\d)(\d{1,2}|\d)(\d{2})/gi,
-		alternate2 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[x\.\-_\s]*e?p?(\d{2})/gi,
-		alternate3 = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)/i,
+		regular = /[\.\-_\s\[\(]+s?(\d{1,2}|\d)[xe\.\-_]p?(\d{2})\D/gi,
+		alternate = /[\.\-_\s\[\(]+(?!1080\s?p|720\s?p|480\s?p|[xh]264|20\d\d)(\d{1,2})(\d{2})/gi,
+		alternate2 = /[\.\-_\s\[\(]+s?(?!20\d\d)(\d{1,2})[x\.\-_\s]*e?p?(\d{2})\D/gi,
+		alternate3 = /[\.\-_\s\[\(]+s?(\d{1,2})[x\.\-_\s]*e?p?(\d{2})/gi,
+		alternate4 = /[\.\-_\s\[\(]+s?(\d{1,2})/i,
 		screenSize = /(1080\s?p|720\s?p|480\s?p)/i,
 		videoCodec = /(Xvid|DVDivX|DivX|[hx]\s?264|Rv10)/i,
 		format = {
@@ -42,10 +43,7 @@ exports.scrape = function(file) {
 		type = 'subtitle';
 	}
 	if(type) {
-		var info = regular.exec(fileName) || alternate.exec(fileName) || alternate2.exec(fileName);
-
-		if(fileName == 'castle.2009.603.hdtv-lol.mp4')
-			console.log(alternate.exec(fileName));
+		var info = regular.exec(fileName) || alternate.exec(fileName) || alternate2.exec(fileName) || alternate3.exec(fileName);
 		if(info != null) {
 			//file, fileName, type, info, format, screenSize, videoCodec, group, other, lang, tag
 			data = getData({
@@ -62,7 +60,7 @@ exports.scrape = function(file) {
 				tag: listToRegex(tag, 'i').exec(fileName) || ''
 			});
 		} else {
-			info = alternate3.exec(fileName);
+			info = alternate4.exec(fileName);
 			if(info) {
 				data = getData({
 					file: file,

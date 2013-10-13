@@ -2,7 +2,7 @@
   "author": "Olivier Combe <olivier.combe@gmail.com> (https://github.com/ocombe)",
   "name": "subnode",
   "description": "An app to easily get subtitles for your tv show",
-  "version": "1.1.13",
+  "version": "1.1.14",
   "engines": {
     "node": ">=0.8"
   },
@@ -29,25 +29,25 @@
     "wrench": "~1.5.1",
     "async": "~0.2.9",
     "request": "~2.27.0",
-    "natural": "~0.1.22",
+    "natural": "~0.1.23",
     "adm-zip": "~0.4.3",
     "sickbeard": "0.0.2",
     "nconf": "~0.6.7",
     "tvdb": "0.0.13",
     "express": "~3.4.0",
-    "lodash": "~2.0.0",
+    "lodash": "~2.2.1",
     "cheerio": "~0.12.3",
     "coffee-script": "~1.6.3",
     "forever-monitor": "~1.2.3"
   },
   "devDependencies": {
     "brunch": "~1.7.8",
-    "auto-reload-brunch": ">= 1.6.4",
-    "javascript-brunch": ">= 1.6",
-    "css-brunch": ">= 1.6",
-    "sass-brunch": ">= 1.6.1",
-    "uglify-js-brunch": ">= 1.6",
-    "clean-css-brunch": ">= 1.6",
-    "bower": ">= 1.1.2"
+    "auto-reload-brunch": ">=1.7.0",
+    "javascript-brunch": ">=1.7",
+    "css-brunch": ">=1.7",
+    "sass-brunch": ">=1.7.0",
+    "uglify-js-brunch": ">=1.7",
+    "clean-css-brunch": ">=1.7",
+    "bower": ">=1.2.7"
   }
 }
