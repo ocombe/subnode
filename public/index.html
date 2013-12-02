@@ -50,10 +50,6 @@
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <link rel="stylesheet" href="css/app.css">
         <script src="js/modernizr.js"></script>
-        <script>
-            window.brunch = window.brunch || {};
-            window.brunch['auto-reload'] = { enabled: true };
-        </script>
     </head>
     <body ng-controller="SubnodeCtrl">
         <div id="layout">
@@ -65,9 +61,10 @@
                     <a class="pull-right paramsBtn glyphicon glyphicon-cog" modal-open="partials/config.html"></a>
                 </div>
             </div>
-            <div class="alert fade-in" ng-class="{hidden: !updateMsg, 'alert-danger': updateError, 'alert-warning': !updateError}" ng-show="updateMsg">
-                <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span>
-                <a ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</a>.
+            <div class="alert fade-in update-msg ng-cloak" ng-class="{hidden: !updateMsg, 'alert-danger': updateError, 'alert-warning': !updateError}" ng-show="updateMsg">
+                <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span><br/><br/>
+                <a class="btn btn-info" href="https://github.com/ocombe/subNode/blob/master/CHANGELOG.md" target="_blank">{{ 'CHANGELOG' | translate }}</a>.
+                <button class="btn btn-success" ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</button>.
                 <div translate="UPDATE_ERROR" translate-values="{{updateError}}" ng-show="updateError"></div>
                 <loader loader-id="update"></loader>
             </div>
@@ -77,7 +74,7 @@
             <p class="copyright"><a href='https://github.com/ocombe/subNode' target='_blank'>subNode</a> {{ 'BY' | translate }} <a href="https://twitter.com/OCombe" target="_blank">Olivier Combe</a> © 2013</p>
             <a href="http://www.betaseries.com" target="_blank"><img src="img/betaseries.png"></a>
             <a href="http://www.addic7ed.com/" target="_blank"><img src="img/addic7ed.png"></a><br/><br/>
-            <div class="btn-toolbar">
+            <div class="btn-toolbar ng-cloak">
                 <a href="/exit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span> {{ 'SHUTDOWN' | translate }}</a>
                 <a href="/restart" class="btn btn-info"><span class="glyphicon glyphicon-repeat"></span> {{ 'RESTART' | translate }}</a>
             </div>

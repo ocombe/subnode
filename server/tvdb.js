@@ -6,17 +6,13 @@ var nconf = require('nconf'),
 	request = require('request'),
 	fs = require('fs'),
 	tvdbMirrors,
-	dataFiles = [];
+	Datastore = require('nedb'),
+	showDataFile = new Datastore({ filename: __dirname + '/data/thetvdb.db', autoload: true });
 
-var getDataFile = function(name, callback) {
-	if(!dataFiles[name]) {
-		dataFiles[name] = new nconf.Provider().file(name, __dirname + '/data/shows/' + name + '.db');
-		dataFiles[name].load(function() {
-			callback(dataFiles[name]);
-		});
-	} else {
-		callback(dataFiles[name]);
-	}
+var getDataFromFile = function(showName, callback) {
+	showDataFile.findOne({ showName: showName }, function (err, data) {
+		callback(err, data);
+	});
 }
 
 exports.getMirrors = function(callback) {
@@ -66,15 +62,17 @@ exports.getBanner = function(params, callback) {
 }
 
 exports.getBaseShowInfo = function(showName, callback) {
-	getDataFile(showName, function(dataFile) {
-		var showInfo = dataFile.get('tvShow');
+	getDataFromFile(showName, function(err, dataFile) {
+		if(err) {
+			return callback(err);
+		}
+		var showInfo = dataFile ? dataFile.tvShow : false;
 		if(!showInfo) {
 			tvdb.findTvShow(showName, function(err, data) {
 				if(err) return;
 				if(data && data.length > 0) {
-					dataFile.set('tvShow', data[0]);
-					dataFile.save(function(err) {
-						callback(null, data[0]);
+					showDataFile.update({ showName: showName }, { $set: { tvShow: data[0], showName: showName } }, { upsert: true }, function (err, numReplaced, upsert) {
+						callback(err, data[0]);
 					});
 				} else {
 					callback('Unable to find ' + showName + ' in the TVDB database');
@@ -91,19 +89,20 @@ exports.getFullShowInfo = function(params, callback) {
 		if(err) {
 			callback(err);
 		} else {
-			getDataFile(params.showName, function(dataFile) {
-				var lastUpdate = dataFile.get('lastUpdate'),
+			getDataFromFile(params.showName, function(err, dataFile) {
+				if(err) {
+					return callback(err);
+				}
+				var lastUpdate = dataFile ? dataFile.lastUpdate : false,
 					now = new Date().getTime();
 				if(showInfo.language !== params.lang || !lastUpdate || (now - lastUpdate >= 24 * 60 * 60 * 1000)) { // update if older than 24h
 					tvdb.getInfo(showInfo.id, function(err, data) {
 						if(err) {
 							callback(err);
 						} else {
-							dataFile.set('lastUpdate', now);
-							_.each(data, function(value, key) {
-								dataFile.set(key, value);
-							});
-							dataFile.save(function(err) {
+							data.lastUpdate = now;
+							data.showName = params.showName;
+							showDataFile.update({ showName: params.showName }, { $set: data }, { upsert: true }, function (err, numReplaced, upsert) {
 								callback(err, data);
 							});
 						}
@@ -111,7 +110,7 @@ exports.getFullShowInfo = function(params, callback) {
 				} else {
 					callback(null, {
 						tvShow: showInfo,
-						episodes: dataFile.get('episodes')
+						episodes: dataFile.episodes
 					});
 				}
 			});

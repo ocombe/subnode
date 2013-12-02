@@ -20,6 +20,7 @@
 	"SUBTITLES_LANG": "Langue des sous-titres",
 	"INTERFACE_LANG": "Langue de l'interface",
 	"AUTORENAME": "Renommer les sous-titres automatiquement pour correspondre au fichier vidéo",
+	"AUTORENAME_EXT": "Ajouter l'extension de langue au nom du fichier (xxx.fr.srt)",
 	"SAVE": "Enregistrer",
 	"CANCEL": "Annuler",
 	"CLOSE": "Fermer",
@@ -39,5 +40,6 @@
 	"UPDATE_CONFIRM": "Êtes-vous sur de vouloir mettre à jour l'application ?",
 	"UPDATE_ERROR": "La mise a jour a échoué. Message d'erreur: {{ err }}",
 	"SHUTDOWN": "Éteindre le serveur",
-	"RESTART": "Redémarrer le serveur"
+	"RESTART": "Redémarrer le serveur",
+	"CHANGELOG": "Liste des nouveautés"
 }

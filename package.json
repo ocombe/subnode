@@ -1,53 +1,60 @@
 {
-  "author": "Olivier Combe <olivier.combe@gmail.com> (https://github.com/ocombe)",
-  "name": "subnode",
-  "description": "An app to easily get subtitles for your tv show",
-  "version": "1.1.14",
-  "engines": {
-    "node": ">=0.8"
-  },
-  "scripts": {
-    "start": "node_modules/.bin/brunch watch --server",
-    "test": "node_modules/.bin/karma start test/karma.conf.js",
-    "postinstall": "coffee --output ./node_modules/tvdb/lib --compile ./node_modules/tvdb/src"
-  },
-  "main": "app.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ocombe/subNode"
-  },
-  "keywords": [
-    "subtitles",
-    "tv",
-    "show",
-    "tv show"
-  ],
-  "license": "BSD",
-  "gitHead": "386272067cd718cb0f4e04d80ad2ae4371b945df",
-  "readmeFilename": "README.md",
-  "dependencies": {
-    "wrench": "~1.5.1",
-    "async": "~0.2.9",
-    "request": "~2.27.0",
-    "natural": "~0.1.23",
-    "adm-zip": "~0.4.3",
-    "sickbeard": "0.0.2",
-    "nconf": "~0.6.7",
-    "tvdb": "0.0.13",
-    "express": "~3.4.0",
-    "lodash": "~2.2.1",
-    "cheerio": "~0.12.3",
-    "coffee-script": "~1.6.3",
-    "forever-monitor": "~1.2.3"
-  },
-  "devDependencies": {
-    "brunch": "~1.7.8",
-    "auto-reload-brunch": ">=1.7.0",
-    "javascript-brunch": ">=1.7",
-    "css-brunch": ">=1.7",
-    "sass-brunch": ">=1.7.0",
-    "uglify-js-brunch": ">=1.7",
-    "clean-css-brunch": ">=1.7",
-    "bower": ">=1.2.7"
-  }
+	"author": "Olivier Combe <olivier.combe@gmail.com> (https://github.com/ocombe)",
+	"name": "subnode",
+	"description": "An app to easily get subtitles for your tv show",
+	"version": "1.1.15",
+	"engines": {
+		"node": ">=0.8"
+	},
+	"scripts": {
+		"start": "node_modules/.bin/brunch watch --server",
+		"test": "node_modules/.bin/karma start test/karma.conf.js",
+		"postinstall": "coffee --output ./node_modules/tvdb/lib --compile ./node_modules/tvdb/src"
+	},
+	"node-main": "app.js",
+	"main": "public/node-webkit.html",
+	"window": {
+		"toolbar": false,
+		"width": 1200,
+		"height": 600
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/ocombe/subNode"
+	},
+	"keywords": [
+		"subtitles",
+		"tv",
+		"show",
+		"tv show"
+	],
+	"license": "BSD",
+	"gitHead": "386272067cd718cb0f4e04d80ad2ae4371b945df",
+	"readmeFilename": "README.md",
+	"dependencies": {
+		"wrench": "~1.5.4",
+		"async": "~0.2.9",
+		"request": "~2.27.0",
+		"natural": "~0.1.25",
+		"adm-zip": "~0.4.3",
+		"sickbeard": "0.0.2",
+		"nconf": "~0.6.9",
+		"tvdb": "0.0.13",
+		"express": "~3.4.6",
+		"lodash": "~2.4.0",
+		"cheerio": "~0.12.4",
+		"coffee-script": "~1.6.3",
+		"forever-monitor": "~1.2.3",
+		"nedb": "~0.9.1"
+	},
+	"devDependencies": {
+		"brunch": "~1.7.12",
+		"auto-reload-brunch": "1.7.1",
+		"javascript-brunch": ">=1.7",
+		"css-brunch": ">=1.7",
+		"sass-brunch": "1.7.0",
+		"uglify-js-brunch": ">=1.7",
+		"clean-css-brunch": ">=1.7",
+		"bower": ">=1.2.8"
+	}
 }

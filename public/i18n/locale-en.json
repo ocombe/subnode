@@ -20,6 +20,7 @@
 	"SUBTITLES_LANG": "Subtitles language",
 	"INTERFACE_LANG": "Interface language",
 	"AUTORENAME": "Autorename subtitles files to match video file name",
+	"AUTORENAME_EXT": "Add the language extension to the file name (xxx.en.srt)",
 	"SAVE": "Save",
 	"CANCEL": "Cancel",
 	"CLOSE": "Close",
@@ -39,5 +40,6 @@
 	"UPDATE_CONFIRM": "Are you sure that you want to update the application ?",
 	"UPDATE_ERROR": "The update has failed. Error message : {{ err }}",
 	"SHUTDOWN": "Shutdown the server",
-	"RESTART": "Restart the server"
+	"RESTART": "Restart the server",
+	"CHANGELOG": "Changelog"
 }

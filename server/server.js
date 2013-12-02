@@ -18,7 +18,6 @@ module.exports = {
 			upToDate;
 
 		var appParams = {},
-			tvdbMirrors,
 			lastEpisodes = [],
 			lastFetch = 0;
 
@@ -67,6 +66,7 @@ module.exports = {
 			appParams = req.body;
 			nconfParams.set("rootFolder", appParams.rootFolder);
 			nconfParams.set("autorename", appParams.autorename);
+			nconfParams.set("autorename_ext", appParams.autorename_ext);
 			nconfParams.set("subLang", appParams.subLang);
 			nconfParams.set("username", appParams.username);
 			nconfParams.set("password", appParams.password);
@@ -182,7 +182,8 @@ module.exports = {
 
 		app.post('/download', function(req, response) {
 			var folder = path.dirname(req.body.episode) + '/',
-				newName = path.basename(req.body.episode).replace(path.extname(req.body.episode), path.extname(req.body.subtitle)); // send false for no autorename
+				newName = appParams.autorename ? path.basename(req.body.episode).replace(path.extname(req.body.episode), (appParams.autorename_ext ? '.' + appParams.subLang : '') + path.extname(req.body.subtitle)) : false; // send false for no autorename
+
 			if(req.body.url.indexOf('betaseries') != -1) {
 				betaSeries.download({
 					url: req.body.url,
@@ -254,11 +255,7 @@ module.exports = {
 				path: __dirname + '/../banners/',
 				showName: req.params.showName
 			}, function(path) {
-				if(path === false) {
-					return response.end();
-				} else {
-					fs.createReadStream(path).pipe(response);
-				}
+				fs.createReadStream(path || __dirname + "/../public/img/generic_banner.jpg").pipe(response);
 			});
 		});
 
@@ -284,6 +281,7 @@ module.exports = {
 				sickbeardUrl: nconfParams.get('sickbeardUrl'),
 				sickbeardApiKey: nconfParams.get('sickbeardApiKey'),
 				autorename: nconfParams.get('autorename'),
+				autorename_ext: nconfParams.get('autorename_ext'),
 				subLang: nconfParams.get('subLang'),
 				username: nconfParams.get('username'),
 				password: nconfParams.get('password'),

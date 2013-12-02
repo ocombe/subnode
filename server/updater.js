@@ -85,7 +85,13 @@ var updater = function() {
 				return;
 			}
 
-			var request = https.get(url,function(res) {
+			var request = https.get({
+				hostname: url.host,
+				path: url.path,
+				headers: {
+					'User-Agent': 'subNode'
+				}
+			},function(res) {
 				var data = [];
 
 				res.on('data', function(chunk) {
@@ -98,8 +104,8 @@ var updater = function() {
 				})
 
 			}).on('error', function(e) {
-					throw 'WARN: updater says "' + e.message + '"';
-				});
+				throw 'WARN: updater says "' + e.message + '"';
+			});
 
 			request.setTimeout(timeout, function() {
 				request.abort();
