@@ -104,8 +104,8 @@ var updater = function() {
 				})
 
 			}).on('error', function(e) {
-				throw 'WARN: updater says "' + e.message + '"';
-			});
+					throw 'WARN: updater says "' + e.message + '"';
+				});
 
 			request.setTimeout(timeout, function() {
 				request.abort();
@@ -202,9 +202,13 @@ var updater = function() {
 
 		download: function(url, callback) {
 			console.log('Downloading new version...');
+			console.log(url);
 			request({
 				uri: url,
-				encoding: null
+				encoding: null,
+				headers: {
+					'User-Agent': 'subNode'
+				}
 			}, function(e,r, bodyBuffer) {
 				console.log('New version downloaded. Updating...');
 				var zip = new AdmZip(bodyBuffer);
