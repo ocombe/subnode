@@ -4,19 +4,27 @@ var request = require('request'),
 	fileScraper = require('./scraper.js'),
 	cheerio = require('cheerio'),
 	nconf = require('nconf'),
-	nconf = new nconf.Provider().file('addic7ed', __dirname + '/data/addic7ed.db'),
+	nconfParams = new nconf.Provider().file('config', __dirname + '/../appParams.json'),
+	Datastore = require('nedb'),
+	db = {},
 	natural = require('natural'),
 	_ = require('lodash'),
 	showListData,
 	additionalData,
 	lastUpdate;
 
-nconf.load(function() {
-	showListData = nconf.get('showListData');
-	additionalData = nconf.get('additional');
-	lastUpdate = nconf.get('lastUpdate');
-});
+db.showListData = new Datastore({ filename: __dirname + '/data/addic7ed.db', autoload: true });
+db.additionalData = new Datastore({ filename: __dirname + '/data/addic7ed_plus.db', autoload: true });
 
+nconfParams.load(function() {
+	db.showListData.find({}, function(err, docs) {
+		showListData = docs;
+	});
+	additionalData = db.additionalData.find({}, function(err, docs) {
+		additionalData = docs;
+	});
+	lastUpdate = nconfParams.get('lastAddic7edUpdate');
+});
 
 exports.getShowId = function(showName, callback) {
 	var checkNames = function(data, retry) {
@@ -70,11 +78,18 @@ var getShowList = function(callback) {
 		_.each(additionalData, function(a) {
 			data.push(a);
 		});
-		nconf.set('showListData', data);
-		lastUpdate = (new Date()).getTime()
-		nconf.set('lastUpdate', lastUpdate);
+		data.shift(); // remove "[Select a TV Show]" line
+
+		// replace showListData
+		db.showListData.remove({}, {multi: true}, function (err, numRemoved) {
+			db.showListData.insert(data);
+		});
+
+		lastUpdate = (new Date()).getTime();
+		nconfParams.set('lastAddic7edUpdate', lastUpdate);
+		nconfParams.save();
+
 		showListData = data;
-		nconf.save();
 		callback(data);
 	});
 }
