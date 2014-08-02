@@ -101,6 +101,9 @@ var getSubtitlesList = function(params, callback) {
 		case 'fr':
 			aLang = 8;
 			break;
+		case 'nl':
+			aLang = 17;
+			break;
 		default:
 			aLang = 1; // english
 			break;
@@ -149,6 +152,9 @@ exports.getSubtitles = function(params, callback) {
 	}
 	if(params.lang == 'fr') {
 		langFull = 'French';
+	}
+	if(params.lang == 'nl') {
+		langFull = 'Dutch';
 	}
 
 	exports.getShowId(params.showId ? params.showId : params.fileInfo.show, function(id) {
