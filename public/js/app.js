@@ -53,6 +53,10 @@ subNode.controller('ConfigCtrl', ['$scope', '$rootScope', '$translate', '$rest',
 		{
 			id: 'en',
 			name: 'English'
+		},
+		{
+			id: 'nl',
+			name: 'Dutch'
 		}
 	];
 
