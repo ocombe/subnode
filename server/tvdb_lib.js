@@ -2,7 +2,7 @@
 (function() {
 	var TVDB, Zip, fs, http, querystring, xmlParser, _;
 
-	xmlParser = new (require("../node_modules/tvdb/node_modules/xml2js/lib/xml2js.js")).Parser({
+	xmlParser = new (require("xml2js")).Parser({
 		explicitRoot: false,
 		explicitArray: false
 	});

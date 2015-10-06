@@ -38,7 +38,7 @@ exports.getBanner = function(params, callback) {
 					if(err) return;
 					if(tvShows && tvShows.length > 0 && tvShows[0].banner) {
 						var bannerUrl = tvdbMirrors[0].url + '/banners/' + tvShows[0].banner;
-						wrench.mkdirSyncRecursive(params.path, 0777);
+						wrench.mkdirSyncRecursive(params.path, '0777');
 						var stream = request(bannerUrl).on('end', function() {
 							callback(filename);
 						});
@@ -47,7 +47,7 @@ exports.getBanner = function(params, callback) {
 						callback(false);
 					}
 				});
-			}
+			};
 			if(!tvdbMirrors) {
 				tvdb.getMirrors(function(err, mirrors) {
 					if(err) return;
@@ -59,7 +59,7 @@ exports.getBanner = function(params, callback) {
 			}
 		}
 	});
-}
+};
 
 exports.getBaseShowInfo = function(showName, callback) {
 	getDataFromFile(showName, function(err, dataFile) {
@@ -82,7 +82,7 @@ exports.getBaseShowInfo = function(showName, callback) {
 			callback(null, showInfo);
 		}
 	})
-}
+};
 
 exports.getFullShowInfo = function(params, callback) {
 	exports.getBaseShowInfo(params.showName, function(err, showInfo) {
@@ -116,4 +116,4 @@ exports.getFullShowInfo = function(params, callback) {
 			});
 		}
 	});
-}
+};

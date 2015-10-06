@@ -1,95 +1,28 @@
 <!DOCTYPE html>
-<!--[if lte IE 7]>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2.js"></script><![endif]-->
-<!--[if lt IE 7]>
-<html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" class="ng-app:subNode">
-    <script defer src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
-    <script defer>window.attachEvent('onload', function() {
-        CFInstall.check({mode: 'overlay'})
-    })</script>
-    <script>
-        document.createElement('ng-include');
-        document.createElement('ng-pluralize');
-        document.createElement('ng-view');
-        document.createElement('loader');
-        document.createElement('modal');
-
-        // Optionally these for CSS
-        document.createElement('ng:include');
-        document.createElement('ng:pluralize');
-        document.createElement('ng:view');
-    </script>
-<![endif]-->
-<!--[if IE 7]>
-<html class="no-js lt-ie9 lt-ie8" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" class="ng-app:subNode">
-    <script>
-        document.createElement('ng-include');
-        document.createElement('ng-pluralize');
-        document.createElement('ng-view');
-        document.createElement('loader');
-        document.createElement('modal');
-
-        // Optionally these for CSS
-        document.createElement('ng:include');
-        document.createElement('ng:pluralize');
-        document.createElement('ng:view');
-    </script>
-<![endif]-->
-<!--[if IE 8]>
-<html class="no-js lt-ie9" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="subNode"><![endif]-->
-<!--[if gt IE 8]><!-->
-<html class="no-js" lang="en" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="subNode">
-    <!--<![endif]-->
+<html lang="en">
     <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title ng-bind-template="subNode"></title>
+        <meta charset="UTF-8">
+        <title>subNode</title>
         <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon" />
-        <meta name="description" content="">
-        <meta name="author" content="">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <link rel="stylesheet" href="css/app.css">
-        <script src="js/modernizr.js"></script>
-    </head>
-    <body ng-controller="SubnodeCtrl">
-        <div id="layout">
-            <div id="nav">
-                <div class="navbar navbar-fixed-top">
-                    <a class="navbar-brand hidden-sm" href="#"><img src="img/subnode.png"></a>
-                    <a class="navbar-brand visible-sm glyphicon glyphicon-home" href="#"></a>
-                    <select chosen ng-model="selectedTVShow" id="selectedTVShow" ng-change="changeShow()" data-placeholder="{{ 'CHOOSE_SHOW' | translate }}" ng-options="s as s for s in showList"></select>
-                    <a class="pull-right paramsBtn glyphicon glyphicon-cog" modal-open="partials/config.html"></a>
-                </div>
-            </div>
-            <div class="alert fade-in update-msg ng-cloak" ng-class="{hidden: !updateMsg, 'alert-danger': updateError, 'alert-warning': !updateError}" ng-show="updateMsg">
-                <span translate="UPDATE_MSG" translate-values="{{updateMsg}}"></span><br/><br/>
-                <a class="btn btn-info" href="https://github.com/ocombe/subNode/blob/master/CHANGELOG.md" target="_blank">{{ 'CHANGELOG' | translate }}</a>.
-                <button class="btn btn-success" ng-click='updateApp()'>{{ 'UPDATE_NOW' | translate }}</button>.
-                <div translate="UPDATE_ERROR" translate-values="{{updateError}}" ng-show="updateError"></div>
-                <loader loader-id="update"></loader>
-            </div>
-            <div id="mainView" ui-view="mainView" class="container"></div>
-        </div>
-        <footer class="panel-footer">
-            <p class="copyright"><a href='https://github.com/ocombe/subNode' target='_blank'>subNode</a> {{ 'BY' | translate }} <a href="https://twitter.com/OCombe" target="_blank">Olivier Combe</a> © 2013</p>
-            <a href="http://www.betaseries.com" target="_blank"><img src="img/betaseries.png"></a>
-            <a href="http://www.addic7ed.com/" target="_blank"><img src="img/addic7ed.png"></a><br/><br/>
-            <div class="btn-toolbar ng-cloak">
-                <a href="/exit" class="btn btn-danger"><span class="glyphicon glyphicon-off"></span> {{ 'SHUTDOWN' | translate }}</a>
-                <a href="/restart" class="btn btn-info"><span class="glyphicon glyphicon-repeat"></span> {{ 'RESTART' | translate }}</a>
-            </div>
-        </footer>
-        <modal></modal>
-        <script src="js/vendor.js"></script>
-        <script src="js/app.js"></script>
-        <script>
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        <base href="./">
 
-            ga('create', 'UA-42938495-1', {'cookieDomain': 'none'});
-            ga('send', 'pageview');
+        <link rel="stylesheet" href="css/app.css">
+
+        <!-- ES6-related imports -->
+        <script src="systemjs/dist/system.src.js"></script>
+        <script src="angular2/bundles/angular2.dev.js"></script>
+        <script src="angular2/bundles/router.dev.js"></script>
+        <script src="angular2/bundles/http.dev.js"></script>
+        <script src="config.js"></script>
+
+        <script>
+            //bootstrap the Angular2 application
+            System.import('app/bootstrap').catch(console.log.bind(console));
         </script>
+    </head>
+
+    <body>
+        <subNode>Loading subNode...</subNode>
     </body>
+
 </html>

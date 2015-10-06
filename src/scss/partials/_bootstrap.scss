@@ -1,0 +1,31 @@
+.list-group-item:first-child {
+    @include border-radius(2px 2px 0 0);
+}
+
+.list-group-item:last-child {
+    @include border-radius(0 0 2px 2px);
+}
+
+a.list-group-item.active {
+    z-index: auto;
+}
+
+.has-error .form-control {
+    padding-right: 12px;
+}
+
+.panel .list-group {
+    margin: 0 0 15px 0;
+}
+
+.panel .panel:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    background: #999;
+}
+
+.glyphicon:before {
+    vertical-align: middle;
+}

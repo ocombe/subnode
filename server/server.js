@@ -1,6 +1,11 @@
 module.exports = {
 	startServer: function() {
 		var express = require('express'),
+            methodOverride = require('method-override'),
+            errorHandler = require('errorhandler'),
+            compression = require('compression'),
+            static = require('serve-static'),
+            logger = require('morgan'),
 			app = express(),
 			nconf = require('nconf'),
 			nconfParams = new nconf.Provider().file('config', __dirname + '/../appParams.json'),
@@ -37,25 +42,21 @@ module.exports = {
 				res.header('WWW-Authenticate', 'Basic realm="Access restricted"');
 				res.send(401);
 			}
-		}
+		};
 
-		app.configure(function() {
-			app.use(express.errorHandler({
-				dumpExceptions: true,
-				showStack: true
-			}));
-			app.use(express.logger({
-				format: ':method :url'
-			}));
-			app.use(express.bodyParser());
-			app.use(express.compress()); // Gzip content
-			app.use(express.static(__dirname + "/../public"));
-			app.use(authenticate);
-			return app.use(express.methodOverride());
-		});
+        app.use(errorHandler({
+            dumpExceptions: true,
+            showStack: true
+        }));
+        app.use(logger(':method :url'));
+        app.use(compression()); // Gzip content
+        app.use(static(path.resolve(__dirname + "/../public")));
+        app.use(static(path.resolve(__dirname + "/../node_modules")));
+        app.use(authenticate);
+        app.use(methodOverride());
 
 		app.get('/', function(req, response) {
-			return response.sendfile('../public/index.html');
+			return response.sendFile(path.resolve(__dirname + '/../index.html'));
 		});
 
 		app.get('/params', function(req, response) {
@@ -102,7 +103,10 @@ module.exports = {
 
 		app.get('/showList', function(req, response) {
 			if(appParams && appParams.rootFolder) {
-				fs.readdir(appParams.rootFolder, function(err, folders) {
+				fs.readdir(path.resolve(appParams.rootFolder), function(err, folders) {
+                    if(err) {
+                        console.error(err);
+                    }
 					return response.json(folders ? folders.sort() : []);
 				});
 			} else {
