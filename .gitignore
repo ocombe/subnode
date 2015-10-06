@@ -10,23 +10,10 @@ npm-debug.log
 docs
 build
 vendor
-bower_components
 banners
-.bowerrc
 appParams.json
-bower.json
-config.js
-config.rb
-app
-scripts/production.bat
-scripts/production.sh
-scripts/server.bat
-scripts/server.sh
-public/js/*.map
-public/css/*.map
 .tagconfig
 server/data/shows/*
-todo.txt
 
 #################
 ## JetBrains
