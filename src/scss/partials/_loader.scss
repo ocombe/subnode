@@ -1,143 +1,31 @@
-$blockSize: 0.5em;
-
-// Play with these to see what you get
-$delay: .065s;
-$duration: .88s;
-$startingColor: #fdfdfd;
-$endingColor: #000;
-
-// Calculate some values
-$blockMargin: $blockSize / 3;
-$loaderSize: $blockSize * 3 + $blockMargin * 2;
-
-.loader {
+loader {
     display: inline-block;
-    margin: 4px 12px;
+    margin: 10px 6px;
     vertical-align: middle;
     line-height: 20px;
     position: relative;
-    width: $loaderSize;
-    height: $loaderSize;
-    //margin-left: -$loaderSize/2;
-    //margin-top: -$loaderSize/2;
-}
+    width: 26px;
+    height: 26px;
+    animation: pulse 1s ease-in-out infinite alternate;
 
-.navbar .loader {
-    margin: 10px 12px;
-}
-
-.panel-heading .loader {
-    margin-top: -3px;
-}
-
-// ie < 10
-.no-cssanimations .loader {
-    background: {
-        image: url('../img/loader.gif');
-        size: 100%;
-        repeat: no-repeat;
+    img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
     }
-}
 
-.loader-block {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: inline-block;
-    opacity: 0;
-    width: $blockSize;
-    height: $blockSize;
-    background: $startingColor;
-    animation: show $duration step-end infinite alternate, pulse $duration linear infinite alternate;
-}
-
-// Second
-.loader-block:nth-child(1) {
-    transform: translate(0, 0);
-    animation-delay: 1 * $delay;
-}
-
-// Ninth
-.loader-block:nth-child(2) {
-    transform: translate($blockSize + $blockMargin, 0);
-    animation-delay: 2 * $delay;
-}
-
-// Fourth
-.loader-block:nth-child(3) {
-    transform: translate(($blockSize * 2) + ($blockMargin * 2), 0);
-    animation-delay: 3 * $delay;
-}
-
-// Sixth
-.loader-block:nth-child(4) {
-    transform: translate(0, $blockSize + $blockMargin);
-    animation-delay: 5 * $delay;
-}
-
-// Third
-.loader-block:nth-child(5) {
-    transform: translate($blockSize + $blockMargin, $blockSize + $blockMargin);
-    animation-delay: 2 * $delay;
-}
-
-// Eighth
-.loader-block:nth-child(6) {
-    transform: translate(($blockSize * 2) + ($blockMargin * 2), $blockSize + $blockMargin);
-    animation-delay: 7 * $delay;
-}
-
-// Seventh
-.loader-block:nth-child(7) {
-    transform: translate(0, ($blockSize * 2) + ($blockMargin * 2));
-    animation-delay: 6 * $delay;
-}
-
-// Fifth
-.loader-block:nth-child(8) {
-    transform: translate($blockSize + $blockMargin, ($blockSize * 2) + ($blockMargin * 2));
-    animation-delay: 4 * $delay;
-}
-
-// First
-.loader-block:nth-child(9) {
-    transform: translate(($blockSize * 2) + ($blockMargin * 2), ($blockSize * 2) + ($blockMargin * 2));
-}
-
-@-webkit-keyframes pulse {
-    from,
-    40% {
-        background: $startingColor;
-    }
-    to {
-        background: $endingColor;
-    }
-}
-
-@-webkit-keyframes show {
-    from, 40% {
-        opacity: 0;
-    }
-    41%, to {
-        opacity: 1;
+    canvas {
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+        padding: 2px;
+        position: absolute;
+        top: -2px;
     }
 }
 
 @keyframes pulse {
-    from,
-    40% {
-        background: $startingColor;
-    }
-    to {
-        background: $endingColor;
-    }
-}
-
-@keyframes show {
-    from, 40% {
-        opacity: 0;
-    }
-    41%, to {
-        opacity: 1;
-    }
+    from { opacity: 0.35; }
 }

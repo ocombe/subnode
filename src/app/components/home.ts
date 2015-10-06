@@ -1,6 +1,7 @@
 import {Component, View, Inject, NgFor} from 'angular2/angular2';
 import {RestService} from '../services/rest';
 import ResolvedBinding = ng.ResolvedBinding;
+import {LoaderComponent} from "./loader";
 
 @Component({
     selector: 'home',
@@ -13,7 +14,7 @@ import ResolvedBinding = ng.ResolvedBinding;
                 <h2>
                     Derniers épisodes
                     <a class="refreshBtn glyphicon glyphicon-refresh" (click)="getLastEpisodes(true)"></a>
-                    <loader class="pull-right" loader-id="home" loader-active="true"></loader>
+                    <loader class="pull-right" loader-id="home" loader-active="true" [hidden]="!showLoader"></loader>
                 </h2>
             </div>
 
@@ -36,14 +37,19 @@ import ResolvedBinding = ng.ResolvedBinding;
             </div>
         </div>
 	`,
-    directives: [NgFor]
+    directives: [NgFor, LoaderComponent]
 })
 export class HomeComponent {
     rest: RestService;
     lastEpisodes: Array<string> = [];
+    showLoader: Boolean = false;
 
     getLastEpisodes(refresh: Boolean) {
-        this.lastEpisodes = this.rest.get(`lastEpisodes/${refresh}`).toPromise();
+        this.showLoader = true;
+        this.lastEpisodes = this.rest.get(`lastEpisodes/${refresh}`).toPromise().then(res => {
+            this.showLoader = false;
+            return res;
+        });
     }
 
     constructor(@Inject(RestService) rest: RestService) {
