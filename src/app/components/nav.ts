@@ -9,8 +9,7 @@ import {LoaderComponent} from "./loader";
     template: `
         <nav class="navbar navbar-fixed-top">
             <a class="navbar-brand hidden-sm" href="#"><img src="img/subnode.png"></a>
-            <a class="navbar-brand visible-sm glyphicon glyphicon-home" href="#"></a>
-            <loader></loader>
+            <!--<a class="navbar-brand visible-sm glyphicon glyphicon-home" href="#"></a>-->
             <show-selector></show-selector>
             <a class="pull-right paramsBtn glyphicon glyphicon-cog" modal-open="partials/config.html"></a>
         </nav>

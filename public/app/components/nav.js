@@ -32,7 +32,7 @@ System.register(['angular2/angular2', "../directives/showSelector", "./loader"],
                         selector: 'navbar'
                     }),
                     angular2_1.View({
-                        template: "\n        <nav class=\"navbar navbar-fixed-top\">\n            <a class=\"navbar-brand hidden-sm\" href=\"#\"><img src=\"img/subnode.png\"></a>\n            <a class=\"navbar-brand visible-sm glyphicon glyphicon-home\" href=\"#\"></a>\n            <loader></loader>\n            <show-selector></show-selector>\n            <a class=\"pull-right paramsBtn glyphicon glyphicon-cog\" modal-open=\"partials/config.html\"></a>\n        </nav>\n\t",
+                        template: "\n        <nav class=\"navbar navbar-fixed-top\">\n            <a class=\"navbar-brand hidden-sm\" href=\"#\"><img src=\"img/subnode.png\"></a>\n            <!--<a class=\"navbar-brand visible-sm glyphicon glyphicon-home\" href=\"#\"></a>-->\n            <show-selector></show-selector>\n            <a class=\"pull-right paramsBtn glyphicon glyphicon-cog\" modal-open=\"partials/config.html\"></a>\n        </nav>\n\t",
                         directives: [showSelector_1.ShowSelector, loader_1.LoaderComponent]
                     }), 
                     __metadata('design:paramtypes', [])

@@ -12,7 +12,7 @@ import {LoaderComponent} from "./loader";
         <div class="home">
             <div class="page-header">
                 <h2>
-                    Derniers épisodes
+                    'LAST_EPISODES'
                     <a class="refreshBtn glyphicon glyphicon-refresh" (click)="getLastEpisodes(true)"></a>
                     <loader class="pull-right" loader-id="home" loader-active="true" [hidden]="!showLoader"></loader>
                 </h2>
