@@ -1,6 +1,7 @@
 import {Component, View, Inject, Pipe, NgFor, NgClass} from 'angular2/angular2';
 import {RouteParams} from 'angular2/router';
 import {RestService} from "../services/rest";
+import {SeasonPipe} from "../pipes/season";
 import 'lodash';
 
 @Component({
@@ -30,14 +31,14 @@ import 'lodash';
                             <i class="glyphicon glyphicon-filter" title="{{ 'SHOW_ALL' }}" tooltip></i>
                         </a>
                         <a class="list-group-item" [ng-class]="{active: seasonFilter == epList.season, seasonCompact: compact}" *ng-for="#epList of tvShowData" ng-click="filter(epList.season)">
-                            <span [hidden]="compact" class="uncompacted">{{ 'SEASON' }} </span>{{epList.season }}
-                            <span [hidden]="!epList.missingSubs > 0 && !compact" class="uncompacted badge pull-right">{{ epList.missingSubs }}</span>
+                            <!--<span [hidden]="compact" class="uncompacted">{{ 'SEASON' }} </span>{{epList.season }}-->
+                            <!--<span [hidden]="!epList.missingSubs > 0 && !compact" class="uncompacted badge pull-right">{{ epList.missingSubs }}</span>-->
                         </a>
                     </div>
                 </div>
 
                 <div class="episodesList col-lg-9">
-                    <div class="panel panel-default list-group epListWrapper" *ng-for="#epList of tvShowData"><!-- | season: seasonFilter">-->
+                    <div class="panel panel-default list-group epListWrapper" *ng-for="#epList of tvShowData | season:seasonFilter">
                         <div class="panel-heading">
                             <span [hidden]="compact" class="uncompacted">{{ 'SEASON' }} </span>{{ epList.season }}
                         </div>
@@ -70,7 +71,7 @@ import 'lodash';
         </div>
   `,
     directives: [NgFor, NgClass],
-    //pipes: [SeasonPipe]
+    pipes: [SeasonPipe]
 
 
 //<i [hidden]="compact" class="info-sign pull-right" ng-show="showInfo"></i>
@@ -112,19 +113,5 @@ export class ShowComponent {
 
     unsubs(episodes) {
         return _.filter(episodes, ep => typeof ep['subtitle'] === 'undefined').length;
-    }
-}
-
-@Pipe({
-    name: 'season'
-})
-class SeasonPipe {
-    transform(seasons: Array<Object>, query: string) {
-        console.log('transform');
-        if(!query) {
-            return seasons;
-        }
-
-        return  [_.find(seasons, obj => obj['season'] === query)];
     }
 }

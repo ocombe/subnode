@@ -6,3 +6,4 @@
 /// <reference path="../node_modules/immutable/dist/immutable.d.ts" />
 /// <reference path="jquery/jquery.d.ts" />
 /// <reference path="select2/select2.d.ts" />
+/// <reference path="../node_modules/angular2/bundles/typings/angular2/test_lib.d.ts" />
