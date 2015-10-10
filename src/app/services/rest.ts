@@ -1,5 +1,5 @@
 import {Inject} from 'angular2/angular2';
-import {Http, HTTP_BINDINGS, Response} from 'angular2/http';
+import {Http, Response} from 'angular2/http';
 
 export class RestService {
     http: Http;

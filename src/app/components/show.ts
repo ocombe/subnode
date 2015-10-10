@@ -6,7 +6,8 @@ import {QualitySortPipe} from "../pipes/qualitySort";
 import {LoaderComponent} from "./loader";
 import  _ = require('lodash');
 import {Subtitle} from "../interfaces/Subtitle";
-import {Episode, EpisodesList} from "../interfaces/Episode";
+import {Episode} from "../interfaces/Episode";
+import {Season} from "../interfaces/Season";
 
 @Component({
     selector: 'shows',
@@ -79,10 +80,10 @@ export class ShowComponent {
     rest: RestService;
     showId: string;
     selectedEpisode: Object = {};
-    tvShowData: Array<EpisodesList> = [];
+    tvShowData: Array<Season> = [];
     subList: Array<Subtitle> = [];
     missingSubs: number = 0;
-    seasonFilter: Object;
+    seasonFilter: number;
     loading: Boolean = false;
 
     constructor(@Inject(RouteParams) params: RouteParams, @Inject(RestService) rest: RestService) {
@@ -98,13 +99,13 @@ export class ShowComponent {
 
     refresh() {
         this.tvShowData = [];
-        this.rest.get('show/' + this.showId).toPromise().then((show: Array<EpisodesList>) => {
+        this.rest.get('show/' + this.showId).toPromise().then((show: Array<Season>) => {
             this.tvShowData = show;
-            _.each(this.tvShowData, (epList: EpisodesList) => {
+            _.each(this.tvShowData, (epList: Season) => {
                 epList.missingSubs = this.unsubs(epList.episodes);
             });
             if (show.length > 0) {
-                this.seasonFilter = show[show.length - 1]['season']; // default filter on last season
+                this.seasonFilter = show[show.length - 1].season; // default filter on last season
             }
             //$("#selectedTVShow").val(this.showList.indexOf(this.showId)).trigger('liszt:updated');
         });

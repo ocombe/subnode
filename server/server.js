@@ -154,7 +154,7 @@ module.exports = {
 								}
 							}
 							episodesList.push({
-								season: i,
+								season: parseInt(i, 10),
 								episodes: episodes[i]
 							});
 						}

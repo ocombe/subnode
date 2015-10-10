@@ -28,7 +28,7 @@ System.register(['angular2/angular2', 'lodash'], function(exports_1) {
                     if (query.length === 0) {
                         return query;
                     }
-                    var s = Number(seasons[0]);
+                    var s = seasons[0];
                     var res = _.find(query, function (obj) { return obj.season === s; });
                     return res ? [res] : [];
                 };

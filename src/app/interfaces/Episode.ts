@@ -12,9 +12,3 @@ export interface Episode {
     videoCodec: string;
     subtitle: Subtitle;
 }
-
-export interface EpisodesList {
-    episodes: Array<Episode>;
-    season: string;
-    missingSubs: number;
-}

@@ -62,7 +62,7 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                             epList.missingSubs = _this.unsubs(epList.episodes);
                         });
                         if (show.length > 0) {
-                            _this.seasonFilter = show[show.length - 1]['season']; // default filter on last season
+                            _this.seasonFilter = show[show.length - 1].season; // default filter on last season
                         }
                         //$("#selectedTVShow").val(this.showList.indexOf(this.showId)).trigger('liszt:updated');
                     });
