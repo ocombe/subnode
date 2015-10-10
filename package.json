@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "adm-zip": "~0.4.3",
-    "angular2": "2.0.0-alpha.39",
+    "angular2": "2.0.0-alpha.40",
     "body-parser": "^1.14.1",
     "cheerio": "~0.19.0",
     "compression": "^1.6.0",
