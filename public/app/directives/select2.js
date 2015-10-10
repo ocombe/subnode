@@ -36,7 +36,7 @@ System.register(['angular2/angular2', 'select2'], function(exports_1) {
                         selector: 'select'
                     }),
                     __param(0, angular2_1.Inject(angular2_1.ElementRef)), 
-                    __metadata('design:paramtypes', [Object])
+                    __metadata('design:paramtypes', [angular2_1.ElementRef])
                 ], Select2);
                 return Select2;
             })();

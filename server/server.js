@@ -48,7 +48,7 @@ module.exports = {
             dumpExceptions: true,
             showStack: true
         }));
-        app.use(logger(':method :url'));
+        //app.use(logger(':method :url'));
         app.use(compression()); // Gzip content
         app.use(static(path.resolve(__dirname + "/../public")));
         app.use(static(path.resolve(__dirname + "/../node_modules")));

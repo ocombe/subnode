@@ -34,8 +34,8 @@ System.register(['angular2/angular2', 'angular2/router', './nav', './show', './h
                 function AppComponent() {
                 }
                 AppComponent = __decorate([
-                    angular2_1.Component({ selector: 'subNode' }),
-                    angular2_1.View({
+                    angular2_1.Component({
+                        selector: 'subNode',
                         template: "\n    <navbar></navbar>\n    <!--<a [router-link]=\"['./Dashboard']\">Dashboard</a>-->\n    <!--<a [router-link]=\"['./Characters']\">Characters</a>-->\n    <div id=\"mainView\" class=\"container\">\n        <router-outlet></router-outlet>\n    </div>\n    ",
                         directives: [router_1.ROUTER_DIRECTIVES, nav_1.NavbarComponent]
                     }),

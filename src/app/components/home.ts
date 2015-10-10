@@ -1,13 +1,11 @@
-import {Component, View, Inject, NgFor} from 'angular2/angular2';
+import {Component, Inject, NgFor} from 'angular2/angular2';
 import {RestService} from '../services/rest';
 import ResolvedBinding = ng.ResolvedBinding;
 import {LoaderComponent} from "./loader";
 
 @Component({
     selector: 'home',
-    bindings: [RestService]
-})
-@View({
+    bindings: [RestService],
     template: `
         <div class="home">
             <div class="page-header">
@@ -46,7 +44,7 @@ export class HomeComponent {
 
     getLastEpisodes(refresh: Boolean) {
         this.showLoader = true;
-        this.lastEpisodes = this.rest.get(`lastEpisodes/${refresh}`).toPromise().then(res => {
+        this.lastEpisodes = this.rest.get(`lastEpisodes/${refresh}`).toPromise().then((res: Array<string>) => {
             this.showLoader = false;
             return res;
         });

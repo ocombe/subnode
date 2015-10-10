@@ -58,13 +58,11 @@ System.register(['angular2/angular2'], function(exports_1) {
                 LoaderComponent = __decorate([
                     angular2_1.Component({
                         selector: 'loader',
-                        properties: ['hidden']
-                    }),
-                    angular2_1.View({
+                        properties: ['hidden'],
                         template: "\n        <canvas height=\"40px\" width=\"40px\"></canvas>\n        <img src=\"img/subnode-mask2.png\" alt=\"Loading...\">\n  ",
                     }),
                     __param(0, angular2_1.Inject(angular2_1.ElementRef)), 
-                    __metadata('design:paramtypes', [Object])
+                    __metadata('design:paramtypes', [angular2_1.ElementRef])
                 ], LoaderComponent);
                 return LoaderComponent;
             })();

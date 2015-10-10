@@ -1,11 +1,9 @@
-import {Component, View} from 'angular2/angular2';
+import {Component} from 'angular2/angular2';
 import {ShowSelector} from "../directives/showSelector";
 import {LoaderComponent} from "./loader";
 
 @Component({
-    selector: 'navbar'
-})
-@View({
+    selector: 'navbar',
     template: `
         <nav class="navbar navbar-fixed-top">
             <a class="navbar-brand hidden-sm" href="#"><img src="img/subnode.png"></a>

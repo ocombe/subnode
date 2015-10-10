@@ -69,7 +69,7 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                     __param(1, angular2_1.Inject(angular2_1.ElementRef)),
                     __param(2, angular2_1.Inject(router_1.Router)),
                     __param(3, angular2_1.Inject(router_1.Location)), 
-                    __metadata('design:paramtypes', [rest_1.RestService, Object, router_1.Router, router_1.Location])
+                    __metadata('design:paramtypes', [rest_1.RestService, angular2_1.ElementRef, router_1.Router, router_1.Location])
                 ], ShowSelector);
                 return ShowSelector;
             })();

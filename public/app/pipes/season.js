@@ -10,14 +10,16 @@ System.register(['angular2/angular2', 'lodash'], function(exports_1) {
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var angular2_1;
+    var angular2_1, _;
     var SeasonPipe;
     return {
         setters:[
             function (angular2_1_1) {
                 angular2_1 = angular2_1_1;
             },
-            function (_1) {}],
+            function (_1) {
+                _ = _1;
+            }],
         execute: function() {
             SeasonPipe = (function () {
                 function SeasonPipe() {
@@ -26,8 +28,8 @@ System.register(['angular2/angular2', 'lodash'], function(exports_1) {
                     if (query.length === 0) {
                         return query;
                     }
-                    var s = seasons[0];
-                    var res = _.find(query, function (obj) { return obj['season'] == s; });
+                    var s = Number(seasons[0]);
+                    var res = _.find(query, function (obj) { return obj.season === s; });
                     return res ? [res] : [];
                 };
                 SeasonPipe = __decorate([

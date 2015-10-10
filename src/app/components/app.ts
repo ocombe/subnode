@@ -1,12 +1,12 @@
-import {View, Component} from 'angular2/angular2';
+import {Component} from 'angular2/angular2';
 import {RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 import {NavbarComponent} from './nav';
 import {ShowComponent} from './show';
 import {HomeComponent} from './home';
 
-@Component({ selector: 'subNode' })
-@View({
-  template: `
+@Component({
+    selector: 'subNode',
+    template: `
     <navbar></navbar>
     <!--<a [router-link]="['./Dashboard']">Dashboard</a>-->
     <!--<a [router-link]="['./Characters']">Characters</a>-->
@@ -14,7 +14,7 @@ import {HomeComponent} from './home';
         <router-outlet></router-outlet>
     </div>
     `,
-  directives: [ROUTER_DIRECTIVES, NavbarComponent]
+    directives: [ROUTER_DIRECTIVES, NavbarComponent]
 })
 @RouteConfig([
   { path: '/', as: 'Home', component: HomeComponent },

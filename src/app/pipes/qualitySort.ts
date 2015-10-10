@@ -1,17 +1,18 @@
 import {PipeTransform, Pipe} from 'angular2/angular2';
-import 'lodash';
+import _ = require('lodash');
+import {Subtitle} from "../interfaces/Subtitle";
 
-var cachedInput;
+var cachedInput: Array<Object>;
 
 @Pipe({name: 'qualitySort'})
 export class QualitySortPipe implements PipeTransform {
-    transform(input:any, seasons:string[]):any {
+    transform(input:Array<Subtitle>, seasons:string[]):any {
         if(!input || cachedInput === input) {
             return input;
         }
 
-        cachedInput = input.sort(function(a, b) {
-            return a['quality'] == b['quality'] ? _.max(b.content, 'score')['score'] - _.max(a.content, 'score')['score'] : b['quality'] - a['quality'];
+        cachedInput = input.sort(function(a: Subtitle, b: Subtitle) {
+            return a.quality == b.quality ? _.max(b.content, 'score').score - _.max(a.content, 'score').score : b.quality - a.quality;
         });
 
         return cachedInput;

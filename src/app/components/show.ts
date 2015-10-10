@@ -1,16 +1,16 @@
-import {Component, View, Inject, Pipe, NgFor, NgClass, NgIf} from 'angular2/angular2';
+import {Component, Inject, Pipe, NgFor, NgClass, NgIf} from 'angular2/angular2';
 import {RouteParams} from 'angular2/router';
 import {RestService} from "../services/rest";
 import {SeasonPipe} from "../pipes/season";
 import {QualitySortPipe} from "../pipes/qualitySort";
 import {LoaderComponent} from "./loader";
-import 'lodash';
+import  _ = require('lodash');
+import {Subtitle} from "../interfaces/Subtitle";
+import {Episode, EpisodesList} from "../interfaces/Episode";
 
 @Component({
     selector: 'shows',
-    bindings: [RestService]
-})
-@View({
+    bindings: [RestService],
     template: `
         <div class='show'>
             <div class="page-header">
@@ -74,17 +74,13 @@ import 'lodash';
   `,
     directives: [NgFor, NgClass, LoaderComponent, NgIf],
     pipes: [SeasonPipe, QualitySortPipe]
-
-
-//<i [hidden]="compact" class="info-sign pull-right" ng-show="showInfo"></i>
-//<i ng-show="ep.subtitle && !compact" class="glyphicon glyphicon-paperclip pull-right"></i>
 })
 export class ShowComponent {
     rest: RestService;
     showId: string;
     selectedEpisode: Object = {};
-    tvShowData: Array<Object> = [];
-    subList: Array<Object> = [];
+    tvShowData: Array<EpisodesList> = [];
+    subList: Array<Subtitle> = [];
     missingSubs: number = 0;
     seasonFilter: Object;
     loading: Boolean = false;
@@ -102,23 +98,23 @@ export class ShowComponent {
 
     refresh() {
         this.tvShowData = [];
-        this.rest.get('show/' + this.showId).toPromise().then(show => {
+        this.rest.get('show/' + this.showId).toPromise().then((show: Array<EpisodesList>) => {
             this.tvShowData = show;
-            _.each(this.tvShowData, epList => {
-                epList['missingSubs'] = this.unsubs(epList['episodes']);
+            _.each(this.tvShowData, (epList: EpisodesList) => {
+                epList.missingSubs = this.unsubs(epList.episodes);
             });
             if (show.length > 0) {
-                this.seasonFilter = show[show.length - 1].season; // default filter on last season
+                this.seasonFilter = show[show.length - 1]['season']; // default filter on last season
             }
             //$("#selectedTVShow").val(this.showList.indexOf(this.showId)).trigger('liszt:updated');
         });
     }
 
-    unsubs(episodes) {
-        return _.filter(episodes, ep => typeof ep['subtitle'] === 'undefined').length;
+    unsubs(episodes: Array<Episode>) {
+        return _.filter(episodes, ep => typeof ep.subtitle === 'undefined').length;
     }
 
-    filter(season) {
+    filter(season: number) {
         this.seasonFilter = season;
         this.expand();
     }

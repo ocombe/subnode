@@ -10,14 +10,16 @@ System.register(['angular2/angular2', 'lodash'], function(exports_1) {
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var angular2_1;
+    var angular2_1, _;
     var cachedInput, QualitySortPipe;
     return {
         setters:[
             function (angular2_1_1) {
                 angular2_1 = angular2_1_1;
             },
-            function (_1) {}],
+            function (_1) {
+                _ = _1;
+            }],
         execute: function() {
             QualitySortPipe = (function () {
                 function QualitySortPipe() {
@@ -27,7 +29,7 @@ System.register(['angular2/angular2', 'lodash'], function(exports_1) {
                         return input;
                     }
                     cachedInput = input.sort(function (a, b) {
-                        return a['quality'] == b['quality'] ? _.max(b.content, 'score')['score'] - _.max(a.content, 'score')['score'] : b['quality'] - a['quality'];
+                        return a.quality == b.quality ? _.max(b.content, 'score').score - _.max(a.content, 'score').score : b.quality - a.quality;
                     });
                     return cachedInput;
                 };

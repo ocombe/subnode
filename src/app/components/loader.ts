@@ -1,11 +1,9 @@
-import {Component, View, Inject, ElementRef, OnChanges, SimpleChange} from 'angular2/angular2';
+import {Component, Inject, ElementRef, OnChanges, SimpleChange} from 'angular2/angular2';
 import {RouteParams} from 'angular2/router';
 
 @Component({
     selector: 'loader',
-    properties: ['hidden']
-})
-@View({
+    properties: ['hidden'],
     template: `
         <canvas height="40px" width="40px"></canvas>
         <img src="img/subnode-mask2.png" alt="Loading...">
