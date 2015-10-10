@@ -1,20 +1,34 @@
 var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
+    sass = require('gulp-sass'),
     minifyCss = require('gulp-minify-css'),
     autoprefixer = require('gulp-autoprefixer'),
-    plumber = require('gulp-plumber'),
     importOnce = require('node-sass-import-once'), // allow css imports in sass
-    browserSync = require('browser-sync').create();
+    del = require('del'),
+    typescript = require('gulp-typescript'),
+    browserSync = require('browser-sync').create(),
+    spawn = require('child_process').spawn,
+    batch = require('gulp-batch');
 
 var PATHS = {
-    src: 'src/**/*.ts',
-    typings: 'typings/tsd.d.ts'
+    ts: './src/**/*.ts',
+    sass: './src/scss/**/*.scss',
+    typings: './typings/tsd.d.ts',
+    html: './public/**/*.html',
+    server: './server/**/*.js'
 };
 
-gulp.task('ts2js', function() {
-    var typescript = require('gulp-typescript');
-    var tsResult = gulp.src([PATHS.src, PATHS.typings])
-        .pipe(plumber())
+gulp.task(clean);
+gulp.task(sass2css);
+gulp.task(ts2js);
+gulp.task(watch);
+gulp.task('default', gulp.series(clean, gulp.parallel(ts2js, sass2css)));
+gulp.task('dev', gulp.series('default', dev));
+
+
+/* Define our tasks using plain functions */
+function ts2js() {
+    var tsResult = gulp.src([PATHS.ts, PATHS.typings])
         .pipe(typescript({
             noImplicitAny: true,
             module: 'system',
@@ -25,13 +39,53 @@ gulp.task('ts2js', function() {
 
     return tsResult.js.pipe(gulp.dest('public'))
         .pipe(browserSync.stream());
-});
+}
 
-gulp.task('sass', function() {
-    var sass = require('gulp-sass');
+function clean() {
+    // You can use multiple globbing patterns as you would with `gulp.src`
+    // If you are using del 2.0 or above, return its promise
+    return del(['public/app']);
+}
 
+function spawnServer() {
+    var server = spawn('node', ['./server/serverWrapper.js'], {
+        detached: true
+    });
+
+    server.stdout.on('data', function(data) {
+        console.log('' + data);
+    });
+
+    server.stderr.on('data', function(data) {
+        console.log('' + data);
+    });
+
+    server.unref();
+
+    return server;
+}
+
+// Rerun the task when a file changes
+function watch(server) {
+
+    gulp.watch(PATHS.ts, batch(function(events, done) {
+        gulp.series(ts2js)(done);
+    }));
+    gulp.watch(PATHS.sass, batch(function(events, done) {
+        gulp.series(sass2css)(done);
+    }));
+    gulp.watch(PATHS.html, browserSync.reload);
+    if(typeof server !== 'undefined') {
+        gulp.watch(PATHS.server, function() {
+            console.log('Restarting server');
+            server.kill();
+            server = spawnServer();
+        });
+    }
+}
+
+function sass2css() {
     return gulp.src("src/scss/*.scss")
-        .pipe(plumber())
         .pipe(sourcemaps.init())
         .pipe(sass({
             importer: importOnce
@@ -48,29 +102,10 @@ gulp.task('sass', function() {
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest("./public/css"))
         .pipe(browserSync.stream({match: '**/*.css'}));
-});
 
-var spawnServer = function() {
-    var spawn = require('child_process').spawn;
+}
 
-    var server = spawn('node', ['./server/serverWrapper.js'], {
-        detached: true
-    });
-
-    server.stdout.on('data', function (data) {
-        console.log('' + data);
-    });
-
-    server.stderr.on('data', function (data) {
-        console.log('' + data);
-    });
-
-    server.unref();
-
-    return server;
-};
-
-gulp.task('dev', ['default'], function() {
+function dev(done) {
     var server = spawnServer();
 
     browserSync.init({
@@ -79,14 +114,27 @@ gulp.task('dev', ['default'], function() {
         open: false
     });
 
-    gulp.watch(PATHS.src, ['ts2js']);
-    gulp.watch("src/scss/**/*.scss", ['sass']);
-    gulp.watch("./public/**/*.html").on('change', browserSync.reload);
-    gulp.watch('./server/**/*.js').on('change', function() {
-        console.log('Restarting server');
-        server.kill();
-        server = spawnServer();
-    })
-});
+    process.stdin.resume();//so the program will not close instantly
 
-gulp.task('default', ['ts2js', 'sass']);
+    function exitHandler(options, err) {
+        if(err) {
+            console.error(err.stack);
+        }
+        if(options.exit) {
+            done();
+            server.kill(); // kill the server as well
+            process.exit();
+        }
+    }
+
+    //do something when app is closing
+    process.on('exit', exitHandler.bind(null, {exit: true}));
+
+    //catches ctrl+c event
+    process.on('SIGINT', exitHandler.bind(null, {exit: true}));
+
+    //catches uncaught exceptions
+    process.on('uncaughtException', exitHandler.bind(null, {exit: true}));
+
+    return watch(server);
+}
