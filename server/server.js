@@ -5,6 +5,7 @@ module.exports = {
             errorHandler = require('errorhandler'),
             compression = require('compression'),
             static = require('serve-static'),
+            bodyParser = require('body-parser'),
             logger = require('morgan'),
 			app = express(),
 			nconf = require('nconf'),
@@ -54,6 +55,7 @@ module.exports = {
         app.use(static(path.resolve(__dirname + "/../node_modules")));
         app.use(authenticate);
         app.use(methodOverride());
+        app.use(bodyParser.json());
 
 		app.get('/', function(req, response) {
 			return response.sendFile(path.resolve(__dirname + '/../index.html'));

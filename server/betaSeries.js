@@ -16,7 +16,7 @@ exports.serialize = function(obj, prefix) {
         str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
     }
     return str.join("&");
-}
+};
 
 exports.getFromApi = function(path, params, callback) {
     if(typeof params.key == 'undefined') {
@@ -30,7 +30,7 @@ exports.getFromApi = function(path, params, callback) {
             callback(JSON.parse(body));
         }
     });
-}
+};
 
 exports.getShowUrl = function(showName, callback) {
 	showName = showName.replace(/:/g, '');
@@ -67,7 +67,7 @@ exports.getShowUrl = function(showName, callback) {
 	        }
         }
     });
-}
+};
 
 exports.getSubtitles = function(params, callback) {
 	if(typeof params.showId == 'function' && typeof callback == 'undefined') {
@@ -96,6 +96,8 @@ exports.getSubtitles = function(params, callback) {
 					});
 					if(tempContent.length > 0) {
 						sub.content = tempContent.sort(function(a, b) { return b.score - a.score; });
+                        sub.season = Number(sub.season);
+                        sub.episode = Number(sub.episode);
 						subtitles.push(sub);
 					} else {
 						delete sub;
@@ -109,7 +111,7 @@ exports.getSubtitles = function(params, callback) {
 			callback([]);
 		}
     });
-}
+};
 
 exports.download = function(params, callback) {
 	var request = http.get(params.url.replace('https', 'http'), function(response) {
@@ -148,4 +150,4 @@ exports.download = function(params, callback) {
 				}
 			});
 	});
-}
+};

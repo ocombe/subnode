@@ -32,6 +32,11 @@ System.register(['angular2/angular2', 'angular2/http'], function(exports_1) {
                     return this.http.get(route)
                         .map(function (res) { return res.json(); });
                 };
+                RestService.prototype.post = function (route, params) {
+                    return this.http.post(route, JSON.stringify(params), {
+                        headers: new http_1.Headers({ "Content-Type": "application/json" })
+                    }).map(function (res) { return res.json(); });
+                };
                 RestService = __decorate([
                     __param(0, angular2_1.Inject(http_1.Http)), 
                     __metadata('design:paramtypes', [http_1.Http])

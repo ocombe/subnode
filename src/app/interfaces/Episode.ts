@@ -1,5 +1,5 @@
 import {Subtitle} from "./Subtitle";
-export interface Episode {
+export interface Episode extends Object {
     episode: number;
     extension: string;
     file: string;

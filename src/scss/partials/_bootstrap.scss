@@ -34,6 +34,7 @@ a.list-group-item.active {
     display: inline-block;
     min-width: 10px;
     padding: 3px 7px;
+    margin: 2px 0 0 10px;
     font-size: 12px;
     font-weight: bold;
     color: white;
@@ -48,4 +49,23 @@ a.list-group-item.active {
 a.list-group-item.active > .badge, .nav-pills > .active > a > .badge {
     color: #466072;
     background-color: white;
+}
+
+.nav-tabs {
+    .nav-link {
+        cursor: pointer;
+
+        &.active {
+            @include plain-hover-focus {
+                color: $component-active-color;
+                cursor: default;
+                background-color: $component-active-bg;
+            }
+        }
+    }
+}
+
+button.close {
+    padding: 10px;
+    margin: -10px;
 }

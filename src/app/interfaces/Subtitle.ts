@@ -7,11 +7,24 @@ export interface SubtitleContent extends Episode {
 export interface Subtitle {
     title: string;
     season: number;
-    episode: Episode,
+    episode: number,
     language: string;
     source: string;
     file: string;
     url: string;
     quality: number;
     content: Array<SubtitleContent>;
+    downloaded?: Boolean;
+}
+
+export interface SubtitlePack {
+    content: Subtitle;
+    episode: number;
+    file: string;
+    language: string;
+    quality: number;
+    season: number;
+    source: string;
+    title: string;
+    url: string;
 }

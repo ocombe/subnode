@@ -59,7 +59,7 @@ exports.getShowId = function(showName, callback) {
 	} else {
 		getShowList(checkNames);
 	}
-}
+};
 
 var getShowList = function(callback) {
 	request({uri: 'http://www.addic7ed.com/ajax_getShows.php'}, function(err, response, body) {
@@ -92,7 +92,7 @@ var getShowList = function(callback) {
 		showListData = data;
 		callback(data);
 	});
-}
+};
 
 
 var getSubtitlesList = function(params, callback) {
@@ -125,8 +125,8 @@ var getSubtitlesList = function(params, callback) {
 				subInfo.score = fileScraper.score(params.fileInfo, subInfo, params.lang);
 				subs.push({
 					title: fileName,
-					season: params.fileInfo.season,
-					episode: params.fileInfo.episode,
+					season: Number(params.fileInfo.season),
+					episode: Number(params.fileInfo.episode),
 					language: params.lang,
 					source: 'addic7ed',
 					file: fileName,
@@ -142,7 +142,7 @@ var getSubtitlesList = function(params, callback) {
 			callback(subs);
 		}
 	});
-}
+};
 
 exports.getSubtitles = function(params, callback) {
 	var langFull = 'English';
@@ -176,7 +176,7 @@ exports.getSubtitles = function(params, callback) {
 			}
 		}
 	});
-}
+};
 
 exports.download = function(params, callback) {
 	var request = http.get({
@@ -205,4 +205,4 @@ exports.download = function(params, callback) {
 			callback(null, success);
 		}
 	});
-}
+};

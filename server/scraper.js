@@ -35,7 +35,7 @@ exports.scrape = function(file) {
 			'en': ['VO', 'EN', 'English'],
 			'fr': ['VF', 'FR', 'French']
 		},
-		tag = ['No\s?-?TAG', 'TAG']
+		tag = ['No\s?-?TAG', 'TAG'];
 
 	if(/\.(3g2|3gp|3gp2|asf|avi|divx|flv|m4v|mk2|mka|mkv|mov|mp4|mp4a|mpeg|mpg|ogg|ogm|ogv|qt|ra|ram|rm|ts|wav|webm|wma|wmv)$/i.test(fileName)) {
 		type = 'video';
@@ -80,11 +80,11 @@ exports.scrape = function(file) {
 		}
 	}
 	return data;
-}
+};
 
 var listToRegex = function(list, modifiers) {
 	return new RegExp('[\\.\\-_\\s\\[\\(]+(' + list.join('|') + ')[\\.\\-_\\s\\[\\(]+', modifiers);
-}
+};
 
 var findIt = function(str, regData) {
 	var found;
@@ -95,7 +95,7 @@ var findIt = function(str, regData) {
 		}
 	});
 	return found;
-}
+};
 
 var getData = function(params) {
 	var data = {
@@ -115,7 +115,7 @@ var getData = function(params) {
 		extension: path.extname(params.fileName)
 	};
 	return data;
-}
+};
 
 exports.score = function(file, sub, lang) {
 	var score = 0;
@@ -134,4 +134,4 @@ exports.score = function(file, sub, lang) {
 		score++;
 	}
 	return score;
-}
+};

@@ -1,13 +1,14 @@
 import {Component, Inject, Pipe, NgFor, NgClass, NgIf} from 'angular2/angular2';
 import {RouteParams} from 'angular2/router';
-import {RestService} from "../services/rest";
+import {RestService, RestResponse} from "../services/rest";
 import {SeasonPipe} from "../pipes/season";
 import {QualitySortPipe} from "../pipes/qualitySort";
 import {LoaderComponent} from "./loader";
-import  _ = require('lodash');
-import {Subtitle} from "../interfaces/Subtitle";
+import {Subtitle, SubtitlePack} from "../interfaces/Subtitle";
 import {Episode} from "../interfaces/Episode";
 import {Season} from "../interfaces/Season";
+import  _ = require('lodash');
+import 'bootstrap/dist/js/bootstrap.js'
 
 @Component({
     selector: 'shows',
@@ -16,57 +17,45 @@ import {Season} from "../interfaces/Season";
         <div class='show'>
             <div class="page-header">
                 <img [src]="'banner/' + showId" image-fallback="showId" overview="showInfo.tvShow.overview">
-
-                <!--<div id="overview" class="panel panel-default fade-in" ng-show='overview'>-->
-                    <!--<div class="panel-heading">-->
-                        <!--{{ overview.header }}-->
-                        <!--<button type="button" class="close" ng-click="hideOverview()">&times;</button>-->
-                    <!--</div>-->
-                    <!--<div class="content">{{ overview.content }}</div>-->
-                <!--</div>-->
             </div>
 
-            <div class="row" [ng-class]="{compact: compact}">
-                <div class="seasonsList col-lg-3">
-                    <div class="list-group">
-                        <a class="list-group-item" [ng-class]="{active: !seasonFilter, seasonCompact: compact, ellipsis: !show}" (click)="filter()">
-                            <span [hidden]="compact" class="uncompacted">{{ 'SHOW_ALL' }}</span>
-                            <i class="glyphicon glyphicon-filter" title="{{ 'SHOW_ALL' }}" tooltip></i>
-                        </a>
-                        <a class="list-group-item" [ng-class]="{active: seasonFilter == epList.season, seasonCompact: compact}" *ng-for="#epList of tvShowData" (click)="filter(epList.season)">
-                            <span [hidden]="compact" class="uncompacted">{{ 'SEASON' }} </span>{{epList.season }}
-                            <span [hidden]="!epList.missingSubs > 0 && !compact" class="uncompacted badge pull-right">{{ epList.missingSubs }}</span>
-                        </a>
-                    </div>
-                </div>
+            <ul class="nav nav-tabs">
+              <li class="nav-item" *ng-for="#epList of tvShowData" (click)="seasonFilter = epList.season">
+                <span class="nav-link" [ng-class]="{active: seasonFilter == epList.season}">
+                    {{ 'SEASON' }} {{epList.season }}
+                    <span *ng-if="epList.missingSubs > 0" class="badge pull-right">{{ epList.missingSubs }}</span>
+                </span>
+              </li>
+            </ul>
 
-                <div class="episodesList col-lg-9">
+            <div class="row">
+                <div class="episodesList col-sm-12">
                     <div class="card list-group epListWrapper" *ng-for="#epList of tvShowData | season:seasonFilter">
-                        <div class="card-header">
-                            <span [hidden]="compact" class="uncompacted">{{ 'SEASON' }} </span>{{ epList.season }}
-                        </div>
                         <div *ng-for="#ep of epList.episodes" class="episode alert" [ng-class]="{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}">
-                            <a ng-click="searchSubs($event)"><span [hidden]="!compact">{{ ep.episode | number:'1.0-0' }}</span><span [hidden]="compact" class="name ellipsis">{{ ep.name }}</span></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="subtitlesList fade-in" [ng-class]="{'col-lg-10': compact, in: compact}" [hidden]="!subtitlesListShow">
-                    <div class="card card-default">
-                        <div class="card-header">
-                            {{ selectedEpisode.name }}
-                            <button type="button" class="close" ng-click="expand()">&times;</button>
-                            <loader class="pull-right" [hidden]="!loading"></loader>
-                        </div>
-                        <div [hidden]="subList.length !== 0 || !loadingDone">{{ 'NO_RESULT' }}</div>
-                        <div class="card list-group subPackWrapper fade-in" *ng-for="#subPack of subList | qualitySort">
-                            <div class="card-header qualite{{ subPack.quality }}">
-                                <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' }}: {{ subPack.source }}</span>
-                                {{ subPack.file }}
+                            <div class="name ellipsis" (click)="searchSubs(ep)">
+                                <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}
+                                <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip pull-right"></i>
                             </div>
-                            <a *ng-for="#sub of subPack.content" class="subtitle list-group-item" ng-click="downloadSub($event)">
-                                <span class="name"><span class="label">{{ sub.score }}</span> {{ sub.name }}</span>
-                            </a>
+                            <loader [hidden]="!loading" *ng-if="selectedEpisode === ep"></loader>
+
+                            <div class="subtitlesList col-sm-12 fade-in" *ng-if="selectedEpisode === ep">
+                                <div class="card" [hidden]="subList.length !== 0 || !loadingDone">
+                                    <div class="subtitle">{{ 'NO_RESULT' }}</div>
+                                </div>
+                                <div class="card list-group subPackWrapper fade-in" *ng-for="#subPack of subList | qualitySort">
+                                    <div class="card-header qualite{{ subPack.quality }}">
+                                        <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' }}: {{ subPack.source }}</span>
+                                        {{ subPack.file }}
+                                    </div>
+                                    <a *ng-for="#sub of subPack.content" class="subtitle list-group-item" (click)="downloadSub(sub, subPack, $event)">
+                                        <div class="name">
+                                            <span class="label">{{ sub.score }}</span> {{ sub.name }}
+                                            <i *ng-if="sub.downloaded" class="success glyphicon glyphicon-ok"></i>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -79,12 +68,13 @@ import {Season} from "../interfaces/Season";
 export class ShowComponent {
     rest: RestService;
     showId: string;
-    selectedEpisode: Object = {};
+    selectedEpisode: Episode;
     tvShowData: Array<Season> = [];
     subList: Array<Subtitle> = [];
     missingSubs: number = 0;
     seasonFilter: number;
     loading: Boolean = false;
+    loadingDone: Boolean = false;
 
     constructor(@Inject(RouteParams) params: RouteParams, @Inject(RestService) rest: RestService) {
         this.rest = rest;
@@ -100,12 +90,12 @@ export class ShowComponent {
     refresh() {
         this.tvShowData = [];
         this.rest.get('show/' + this.showId).toPromise().then((show: Array<Season>) => {
-            this.tvShowData = show;
+            this.tvShowData = show.reverse();
             _.each(this.tvShowData, (epList: Season) => {
                 epList.missingSubs = this.unsubs(epList.episodes);
             });
             if (show.length > 0) {
-                this.seasonFilter = show[show.length - 1].season; // default filter on last season
+                this.seasonFilter = show[0].season; // default filter on last season
             }
             //$("#selectedTVShow").val(this.showList.indexOf(this.showId)).trigger('liszt:updated');
         });
@@ -115,20 +105,54 @@ export class ShowComponent {
         return _.filter(episodes, ep => typeof ep.subtitle === 'undefined').length;
     }
 
-    filter(season: number) {
-        this.seasonFilter = season;
-        this.expand();
+    searchSubs(ep: Episode) {
+        if(ep === this.selectedEpisode) {
+            this.selectedEpisode = undefined;
+            return;
+        }
+        this.loading = true;
+        this.loadingDone = false;
+        this.selectedEpisode = ep;
+        this.subList = [];
+
+        var showSubs = (subtitles: Array<Subtitle>) => {
+            if(subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
+                this.subList = this.subList.concat(subtitles);
+            }
+        };
+
+        var providers:Array<any> = [];
+        //if($scope.params.providers.indexOf('addic7ed') !== -1) {
+        providers.push(this.rest.get('addic7ed/' + this.showId + '/' + ep.name).toPromise().then(showSubs));
+        //}
+
+        //if($scope.params.providers.indexOf('betaSeries') !== -1) {
+        providers.push(this.rest.get('betaSeries/' + this.showId + '/' + ep.name).toPromise().then(showSubs));
+        //}
+
+        Promise.all(providers).then(() => {
+            this.loading = false;
+            this.loadingDone = true;
+        });
     }
 
-    expand() {
-        /*$loader.loading('subtitles', false);
-        $scope.compact = false;
-        $('.seasonsList').addClass('col-lg-3').removeClass('col-lg-1');
-        $('.episodesList').addClass('col-lg-9').removeClass('col-lg-1');
-        $('.episode.active').removeClass('active');
-        $scope.subtitlesListShow = false;
-        $timeout(function () {
-            $('.episodesList, .seasonsList').removeClass('compacted');
-        }, 750);*/
+    downloadSub(sub: Subtitle, subPack: SubtitlePack, $event: MouseEvent) {
+        this.loading = true;
+        this.rest.post('download', {
+            episode: this.selectedEpisode.file,
+            url: subPack.url,
+            subtitle: sub.file
+        }).toPromise().then((res: RestResponse) => {
+            this.loading = false;
+            var $name = $($event.target),
+                $icons = $name.find('i');
+            if($icons.length > 0) {
+                $icons.remove();
+            }
+            if(res.success) {
+                sub.downloaded = true;
+                this.selectedEpisode.subtitle = sub;
+            }
+        });
     }
 }

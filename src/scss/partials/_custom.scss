@@ -16,14 +16,8 @@ a {
     margin: auto;
 }
 
-.seasonCompact {
-    text-align: center;
-    padding: 10px 0;
-}
-
 .name {
     overflow: hidden;
-    display: inline-block;
     max-width: 100%;
 }
 
@@ -35,12 +29,14 @@ a {
 }
 
 .episode, .subtitle {
+    position: relative;
     @include border-radius(0);
     margin: 0;
-    padding: 5px 10px;
+    padding: 0;
     line-height: 20px;
     overflow: auto;
     width: 100%;
+    cursor: pointer;
     border: {
         left: none;
         right: none;
@@ -64,23 +60,28 @@ a {
         vertical-align: middle;
         margin-left: 10px;
     }
+    .name {
+        display: block;
+
+        .label {
+            font-size: 90%;
+            @include border-radius(2px);
+        }
+        .glyphicon:before {
+            vertical-align: baseline;
+        }
+    }
 }
 
-.compact {
-    .episodesList {
-        & > .panel {
-            padding: 15px 0 0;
-            text-align: center;
-
-            & > .panel-heading {
-                margin: -15px 0px 0px;
-            }
-        }
-
-        .episode {
-            padding: 5px 0;
-            margin: 0;
-        }
+.episode {
+    loader {
+        position: absolute;
+        right: 10px;
+        top: 8px;
+        margin: -2px 6px 0;
+    }
+    .name {
+        padding: 10px 15px;
     }
 }
 
@@ -94,18 +95,6 @@ a {
     .glyphicon-filter {
         display: none;
     }
-
-    &.compacted {
-        @include transition(all .5s ease-in-out);
-
-        .uncompacted {
-            display: none;
-        }
-
-        .glyphicon-filter {
-            display: inline-block;
-        }
-    }
 }
 
 .subPackWrapper, .epListWrapper {
@@ -117,7 +106,18 @@ a {
     }
 }
 
+.subPackWrapper {
+    margin: 6px 0;
+}
+
+.epListWrapper {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
 .subtitlesList {
+    margin-top: .75rem;
+
     .qualite, .qualite5 {
         background-color: #468847;
         color: #fff;
@@ -146,20 +146,6 @@ a {
     }
 }
 
-.compact .glyphicon-filter {
-    display: block;
-}
-
-.subtitle .name {
-    .label {
-        font-size: 90%;
-        @include border-radius(2px);
-    }
-    .glyphicon:before {
-        vertical-align: baseline;
-    }
-}
-
 #mainView {
     .page-header {
         margin-top: 0;
@@ -184,6 +170,7 @@ a {
         margin-bottom: 20px;
         overflow: auto;
         padding: 4px;
+        border-radius: 3px;
 
         &:hover {
             box-shadow: 0 0 8px rgba(0,0,0,0.5);
