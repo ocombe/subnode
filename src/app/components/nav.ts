@@ -15,5 +15,4 @@ import {LoaderComponent} from "./loader";
     directives: [ShowSelector, LoaderComponent]
 })
 export class NavbarComponent {
-
 }

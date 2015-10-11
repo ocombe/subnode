@@ -1,7 +1,8 @@
-import {Component, Inject, NgFor} from 'angular2/angular2';
+import {Component, Inject, NgFor, ChangeDetectionStrategy} from 'angular2/angular2';
 import {RestService} from '../services/rest';
 import ResolvedBinding = ng.ResolvedBinding;
 import {LoaderComponent} from "./loader";
+import {TranslatePipe} from "../pipes/translate";
 
 @Component({
     selector: 'home',
@@ -10,7 +11,7 @@ import {LoaderComponent} from "./loader";
         <div class="home">
             <div class="page-header">
                 <h2>
-                    'LAST_EPISODES'
+                    {{ 'LAST_EPISODES' | translate }}
                     <a class="refreshBtn glyphicon glyphicon-refresh" (click)="getLastEpisodes(true)"></a>
                     <loader class="pull-right" loader-id="home" loader-active="true" [hidden]="!showLoader"></loader>
                 </h2>
@@ -35,9 +36,13 @@ import {LoaderComponent} from "./loader";
             </div>
         </div>
 	`,
-    directives: [NgFor, LoaderComponent]
+    directives: [NgFor, LoaderComponent],
+    pipes: [TranslatePipe]
 })
 export class HomeComponent {
+    /*onChanges(changes: {[hidden: string]: SimpleChange}) {
+        console.log('on changes', changes);
+    }*/
     rest: RestService;
     lastEpisodes: Array<string> = [];
     showLoader: Boolean = false;

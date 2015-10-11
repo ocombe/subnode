@@ -40,7 +40,7 @@ export class ShowSelector {
 
         rest.get('showList').toPromise().then((showList: Array<string>) => {
             this.showList = showList;
-            if(location.path().startsWith('/show/')) {
+            if (location.path().startsWith('/show/')) {
                 // wait for the select to be populated
                 window.setTimeout(() => {
                     var show = location.path().replace('/show/', '');

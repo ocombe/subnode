@@ -10,9 +10,6 @@ System.register(['angular2/angular2', 'angular2/http'], function(exports_1) {
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var __param = (this && this.__param) || function (paramIndex, decorator) {
-        return function (target, key) { decorator(target, key, paramIndex); }
-    };
     var angular2_1, http_1;
     var RestService;
     return {
@@ -38,7 +35,7 @@ System.register(['angular2/angular2', 'angular2/http'], function(exports_1) {
                     }).map(function (res) { return res.json(); });
                 };
                 RestService = __decorate([
-                    __param(0, angular2_1.Inject(http_1.Http)), 
+                    angular2_1.Injectable(), 
                     __metadata('design:paramtypes', [http_1.Http])
                 ], RestService);
                 return RestService;

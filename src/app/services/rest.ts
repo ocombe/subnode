@@ -1,10 +1,11 @@
-import {Inject} from 'angular2/angular2';
+import {Injectable} from 'angular2/angular2';
 import {Http, Response, Headers} from 'angular2/http';
 
+@Injectable()
 export class RestService {
     http: Http;
 
-    constructor(@Inject(Http) http: Http) {
+    constructor(http: Http) {
         this.http = http;
     }
 

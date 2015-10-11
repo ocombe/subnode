@@ -1,4 +1,4 @@
-import {Component, Inject, Pipe, NgFor, NgClass, NgIf} from 'angular2/angular2';
+import {Component, Injectable, Pipe, NgFor, NgClass, NgIf} from 'angular2/angular2';
 import {RouteParams} from 'angular2/router';
 import {RestService, RestResponse} from "../services/rest";
 import {SeasonPipe} from "../pipes/season";
@@ -9,7 +9,9 @@ import {Episode} from "../interfaces/Episode";
 import {Season} from "../interfaces/Season";
 import  _ = require('lodash');
 import 'bootstrap/dist/js/bootstrap.js'
+import {TranslatePipe} from "../pipes/translate";
 
+@Injectable()
 @Component({
     selector: 'shows',
     bindings: [RestService],
@@ -22,7 +24,7 @@ import 'bootstrap/dist/js/bootstrap.js'
             <ul class="nav nav-tabs">
               <li class="nav-item" *ng-for="#epList of tvShowData" (click)="seasonFilter = epList.season">
                 <span class="nav-link" [ng-class]="{active: seasonFilter == epList.season}">
-                    {{ 'SEASON' }} {{epList.season }}
+                    {{ 'SEASON' | translate }} {{epList.season }}
                     <span *ng-if="epList.missingSubs > 0" class="badge pull-right">{{ epList.missingSubs }}</span>
                 </span>
               </li>
@@ -40,11 +42,11 @@ import 'bootstrap/dist/js/bootstrap.js'
 
                             <div class="subtitlesList col-sm-12 fade-in" *ng-if="selectedEpisode === ep">
                                 <div class="card" [hidden]="subList.length !== 0 || !loadingDone">
-                                    <div class="subtitle">{{ 'NO_RESULT' }}</div>
+                                    <div class="subtitle">{{ 'NO_RESULT' | translate }}</div>
                                 </div>
                                 <div class="card list-group subPackWrapper fade-in" *ng-for="#subPack of subList | qualitySort">
                                     <div class="card-header qualite{{ subPack.quality }}">
-                                        <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' }}: {{ subPack.source }}</span>
+                                        <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
                                         {{ subPack.file }}
                                     </div>
                                     <a *ng-for="#sub of subPack.content" class="subtitle list-group-item" (click)="downloadSub(sub, subPack, $event)">
@@ -63,7 +65,7 @@ import 'bootstrap/dist/js/bootstrap.js'
         </div>
   `,
     directives: [NgFor, NgClass, LoaderComponent, NgIf],
-    pipes: [SeasonPipe, QualitySortPipe]
+    pipes: [SeasonPipe, QualitySortPipe, TranslatePipe]
 })
 export class ShowComponent {
     rest: RestService;
@@ -76,7 +78,7 @@ export class ShowComponent {
     loading: Boolean = false;
     loadingDone: Boolean = false;
 
-    constructor(@Inject(RouteParams) params: RouteParams, @Inject(RestService) rest: RestService) {
+    constructor(params: RouteParams, rest: RestService) {
         this.rest = rest;
         this.showId = params.get('id');
         this.refresh(); // init
@@ -106,7 +108,7 @@ export class ShowComponent {
     }
 
     searchSubs(ep: Episode) {
-        if(ep === this.selectedEpisode) {
+        if (ep === this.selectedEpisode) {
             this.selectedEpisode = undefined;
             return;
         }
@@ -116,12 +118,12 @@ export class ShowComponent {
         this.subList = [];
 
         var showSubs = (subtitles: Array<Subtitle>) => {
-            if(subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
+            if (subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
                 this.subList = this.subList.concat(subtitles);
             }
         };
 
-        var providers:Array<any> = [];
+        var providers: Array<any> = [];
         //if($scope.params.providers.indexOf('addic7ed') !== -1) {
         providers.push(this.rest.get('addic7ed/' + this.showId + '/' + ep.name).toPromise().then(showSubs));
         //}
@@ -146,10 +148,10 @@ export class ShowComponent {
             this.loading = false;
             var $name = $($event.target),
                 $icons = $name.find('i');
-            if($icons.length > 0) {
+            if ($icons.length > 0) {
                 $icons.remove();
             }
-            if(res.success) {
+            if (res.success) {
                 sub.downloaded = true;
                 this.selectedEpisode.subtitle = sub;
             }

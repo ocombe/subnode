@@ -10,8 +10,8 @@ import {RouteParams} from 'angular2/router';
   `,
 })
 export class LoaderComponent implements OnChanges {
-    canvas : HTMLCanvasElement = null;
-    context : CanvasRenderingContext2D = null;
+    canvas: HTMLCanvasElement = null;
+    context: CanvasRenderingContext2D = null;
     time: number = 0;
     element: HTMLElement;
 
@@ -24,7 +24,7 @@ export class LoaderComponent implements OnChanges {
     }
 
     onChanges(changes: {[hidden: string]: SimpleChange}) {
-        if(changes['hidden'].currentValue === false) {
+        if (changes['hidden'].currentValue === false) {
             this.element.hidden = false;
             this.makeNoise();
         } else {
