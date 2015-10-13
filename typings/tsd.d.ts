@@ -8,3 +8,5 @@
 /// <reference path="select2/select2.d.ts" />
 /// <reference path="../node_modules/angular2/bundles/typings/angular2/test_lib.d.ts" />
 /// <reference path="lodash/lodash.d.ts" />
+/// <reference path="../node_modules/ng2-translate/index.d.ts" />
+/// <reference path="node/node.d.ts" />

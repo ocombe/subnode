@@ -1,4 +1,4 @@
-import {bind, bootstrap} from 'angular2/angular2';
+import {bind, bootstrap, FORM_BINDINGS} from 'angular2/angular2';
 import {routerBindings, HashLocationStrategy, LocationStrategy} from 'angular2/router';
 import {HTTP_BINDINGS} from 'angular2/http';
 import {AppComponent} from './components/app';
@@ -7,5 +7,6 @@ import {AppComponent} from './components/app';
 bootstrap(AppComponent, [
 	routerBindings(AppComponent),
     HTTP_BINDINGS,
+    FORM_BINDINGS,
 	bind(LocationStrategy).toClass(HashLocationStrategy)
 ]);

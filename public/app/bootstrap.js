@@ -19,6 +19,7 @@ System.register(['angular2/angular2', 'angular2/router', 'angular2/http', './com
             angular2_1.bootstrap(app_1.AppComponent, [
                 router_1.routerBindings(app_1.AppComponent),
                 http_1.HTTP_BINDINGS,
+                angular2_1.FORM_BINDINGS,
                 angular2_1.bind(router_1.LocationStrategy).toClass(router_1.HashLocationStrategy)
             ]);
         }

@@ -2,7 +2,7 @@ import {Component, Inject, NgFor, ChangeDetectionStrategy} from 'angular2/angula
 import {RestService} from '../services/rest';
 import ResolvedBinding = ng.ResolvedBinding;
 import {LoaderComponent} from "./loader";
-import {TranslatePipe} from "../pipes/translate";
+import {TranslatePipe} from "ng2-translate";
 
 @Component({
     selector: 'home',

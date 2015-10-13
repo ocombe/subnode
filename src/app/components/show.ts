@@ -9,7 +9,7 @@ import {Episode} from "../interfaces/Episode";
 import {Season} from "../interfaces/Season";
 import  _ = require('lodash');
 import 'bootstrap/dist/js/bootstrap.js'
-import {TranslatePipe} from "../pipes/translate";
+import {TranslatePipe} from "ng2-translate";
 
 @Injectable()
 @Component({
@@ -89,13 +89,17 @@ export class ShowComponent {
         return this.showId;
     }
 
+    updateMissingSubs() {
+        _.each(this.tvShowData, (epList: Season) => {
+            epList.missingSubs = this.unsubs(epList.episodes);
+        });
+    }
+
     refresh() {
         this.tvShowData = [];
         this.rest.get('show/' + this.showId).toPromise().then((show: Array<Season>) => {
             this.tvShowData = show.reverse();
-            _.each(this.tvShowData, (epList: Season) => {
-                epList.missingSubs = this.unsubs(epList.episodes);
-            });
+            this.updateMissingSubs();
             if (show.length > 0) {
                 this.seasonFilter = show[0].season; // default filter on last season
             }
@@ -154,6 +158,7 @@ export class ShowComponent {
             if (res.success) {
                 sub.downloaded = true;
                 this.selectedEpisode.subtitle = sub;
+                this.updateMissingSubs();
             }
         });
     }
