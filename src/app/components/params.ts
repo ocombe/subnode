@@ -1,7 +1,7 @@
-import {Component, Injectable, FORM_DIRECTIVES, FORM_BINDINGS, NgFor, NgClass, Validators, ControlGroup, Control} from 'angular2/angular2';
+import {Component, Injectable, FORM_DIRECTIVES, NgFor, NgClass, Validators, ControlGroup, Control} from 'angular2/angular2';
 import {ShowSelector} from "../directives/showSelector";
 import {LoaderComponent} from "./loader";
-import {TranslatePipe} from "ng2-translate";
+import {TranslatePipe} from "ng2-translate/ng2-translate";
 
 @Injectable()
 @Component({

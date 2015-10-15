@@ -6,7 +6,6 @@ System.config({
     map: {
         'jquery': 'jquery/dist/jquery.js',
         'select2': 'select2/dist/js/select2.js',
-        'lodash': 'lodash/index.js',
-        'ng2-translate': 'ng2-translate/index.js'
+        'lodash': 'lodash/index.js'
     }
 });

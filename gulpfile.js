@@ -23,7 +23,8 @@ gulp.task(sass2css);
 gulp.task(ts2js);
 gulp.task(watch);
 gulp.task('default', gulp.series(clean, gulp.parallel(ts2js, sass2css)));
-gulp.task('dev', gulp.series('default', dev));
+gulp.task(dev);
+gulp.task('run', gulp.series('default', dev));
 
 
 /* Define our tasks using plain functions */

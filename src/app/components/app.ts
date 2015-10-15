@@ -3,13 +3,13 @@ import {RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 import {NavbarComponent} from './nav';
 import {ShowComponent} from './show';
 import {HomeComponent} from './home';
-import {TranslateService} from 'ng2-translate';
+import {TranslateService} from 'ng2-translate/ng2-translate';
 import {ParamsComponent} from "./params";
 
 @Injectable()
 @Component({
     selector: 'subNode',
-    bindings: [TranslateService],
+    providers: [TranslateService],
     template: `
         <navbar></navbar>
         <!--<a [router-link]="['./Dashboard']">Dashboard</a>-->

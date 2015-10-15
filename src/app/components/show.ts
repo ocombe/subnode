@@ -9,12 +9,12 @@ import {Episode} from "../interfaces/Episode";
 import {Season} from "../interfaces/Season";
 import  _ = require('lodash');
 import 'bootstrap/dist/js/bootstrap.js'
-import {TranslatePipe} from "ng2-translate";
+import {TranslatePipe} from "ng2-translate/ng2-translate";
 
 @Injectable()
 @Component({
     selector: 'shows',
-    bindings: [RestService],
+    providers: [RestService],
     template: `
         <div class='show'>
             <div class="page-header">

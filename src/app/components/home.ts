@@ -1,12 +1,11 @@
 import {Component, Inject, NgFor, ChangeDetectionStrategy} from 'angular2/angular2';
 import {RestService} from '../services/rest';
-import ResolvedBinding = ng.ResolvedBinding;
 import {LoaderComponent} from "./loader";
-import {TranslatePipe} from "ng2-translate";
+import {TranslatePipe} from "ng2-translate/ng2-translate";
 
 @Component({
     selector: 'home',
-    bindings: [RestService],
+    providers: [RestService],
     template: `
         <div class="home">
             <div class="page-header">

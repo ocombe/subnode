@@ -8,7 +8,7 @@ import {Router, Location} from 'angular2/router';
  */
 @Component({
     selector: 'show-selector',
-    bindings: [RestService]
+    providers: [RestService]
 })
 @View({
     template: `
@@ -34,7 +34,7 @@ export class ShowSelector {
         this.select = element.nativeElement.querySelector('select');
 
         this.$select = $(this.select).select2()
-            .on('change', e => {
+            .on('change', (e: JQueryEventObject) => {
                 this.showSelected();
             });
 

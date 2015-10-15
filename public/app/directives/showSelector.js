@@ -59,7 +59,7 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                 ShowSelector = __decorate([
                     angular2_1.Component({
                         selector: 'show-selector',
-                        bindings: [rest_1.RestService]
+                        providers: [rest_1.RestService]
                     }),
                     angular2_1.View({
                         template: "\n        <select data-placeholder=\"Select a show\">\n            <option *ng-for=\"#show of showList\" [value]=\"show\">{{show}}</option>\n        </select>\n    ",

@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', 'angular2/router', './nav', './show', './home', 'ng2-translate', "./params"], function(exports_1) {
+System.register(['angular2/angular2', 'angular2/router', './nav', './show', './home', 'ng2-translate/ng2-translate', "./params"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -47,7 +47,7 @@ System.register(['angular2/angular2', 'angular2/router', './nav', './show', './h
                     angular2_1.Injectable(),
                     angular2_1.Component({
                         selector: 'subNode',
-                        bindings: [ng2_translate_1.TranslateService],
+                        providers: [ng2_translate_1.TranslateService],
                         template: "\n        <navbar></navbar>\n        <!--<a [router-link]=\"['./Dashboard']\">Dashboard</a>-->\n        <!--<a [router-link]=\"['./Characters']\">Characters</a>-->\n        <div id=\"mainView\" class=\"container\">\n            <router-outlet></router-outlet>\n        </div>\n\n        <params></params>\n    ",
                         directives: [router_1.ROUTER_DIRECTIVES, nav_1.NavbarComponent, params_1.ParamsComponent]
                     }),
