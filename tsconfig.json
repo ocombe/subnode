@@ -6,8 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "declaration": false,
-    "out": "public/app.js"
+    "declaration": false
   },
   "exclude": [
     "node_modules"

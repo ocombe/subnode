@@ -1,7 +1,8 @@
 import {Component, Injectable, FORM_DIRECTIVES, NgFor, NgClass, Validators, ControlGroup, Control} from 'angular2/angular2';
 import {ShowSelector} from "../directives/showSelector";
 import {LoaderComponent} from "./loader";
-import {TranslatePipe} from "ng2-translate/ng2-translate";
+import {TranslateService, TranslatePipe} from "ng2-translate/ng2-translate";
+import {RestService} from '../services/rest';
 
 @Injectable()
 @Component({
@@ -21,7 +22,7 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
 
                                 <div class="col-lg-8">
                                     <select id="lang" name="lang" ng-control="lang" ng-change="selectLangChange()" class="form-control" required>
-                                        <option *ng-for="#lang of languages" value="lang.id">{{ lang.name }}</option>
+                                        <option *ng-for="#lang of languages" [value]="lang.id">{{ lang.name }}</option>
                                     </select>
                                 </div>
 
@@ -84,7 +85,7 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
                                 <label class="col-lg-4 control-label" for="username">{{'PROVIDERS' | translate}}</label>
 
                                 <div class="col-lg-8">
-                                    <select chosen id="providers" multiple="true" name="providers" ng-control="providers" class="form-control" placeholder="'PROVIDERS_PLACEHOLDER' | translate" required>
+                                    <select chosen id="providers" (change)="test($event)" multiple="true" name="providers" ng-control="providers" class="form-control" placeholder="'PROVIDERS_PLACEHOLDER' | translate" required>
                                         <option value="betaSeries">BetaSeries</option>
                                         <option value="addic7ed">Addic7ed</option>
                                     </select>
@@ -127,7 +128,7 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <loader></loader>
+                        <loader [hidden]="!loading"></loader>
                         <button type="submit" class="btn btn-success" disabled="!paramsForm.valid || sending" ng-click="saveParams()">{{ 'SAVE' | translate }}</button>
                         <span class="btn btn-default" data-dismiss="modal">{{ 'CLOSE' | translate }}</span>
                     </div>
@@ -138,27 +139,66 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
     directives: [FORM_DIRECTIVES, LoaderComponent, NgFor, NgClass],
     pipes: [TranslatePipe]
 })
+@Injectable()
 export class ParamsComponent {
+    private rest: RestService;
+    private translate;
     paramsForm: ControlGroup;
+    loading: Boolean = false;
 
     languages: Array<Object> = [{
         id: 'fr',
-        name: 'French'
+        name: 'Français'
     }];
 
-    constructor() {
-        this.paramsForm = new ControlGroup({
-            lang: new Control("", Validators.required),
-            rootFolder: new Control("", Validators.required),
-            username: new Control(""),
-            password: new Control(""),
-            password2: new Control(""),
-            providers: new Control("", Validators.required),
-            subLang: new Control("", Validators.required),
-            autorename: new Control("", Validators.required),
-            autorename_ext: new Control("")
+    lang: Control = new Control("", Validators.required);
+    rootFolder: Control = new Control("", Validators.required);
+    username: Control = new Control("");
+    password: Control = new Control("");
+    password2: Control = new Control("");
+    providers: Control = new Control("", Validators.required);
+    subLang: Control = new Control("", Validators.required);
+    autorename: Control = new Control("", Validators.required);
+    autorename_ext: Control = new Control("");
+
+    paramsForm: ControlGroup = new ControlGroup({
+        lang: this.lang,
+        rootFolder: this.rootFolder,
+        username: this.username,
+        password: this.password,
+        password2: this.password2,
+        providers: this.providers,
+        subLang: this.subLang,
+        autorename: this.autorename,
+        autorename_ext: this.autorename_ext
+    });
+
+    constructor(rest: RestService, translate: TranslateService) {
+        this.rest = rest;
+        this.translate = translate;
+
+        this.rest.get('params').toPromise().then(params => {
+            //if(typeof params.rootFolder === 'undefined') {
+                $('#paramsModal').modal();
+            //}
+
+            this.lang.updateValue(this.translate.currentLanguage, {});
+            this.rootFolder.updateValue(params.rootFolder, {});
+            this.username.updateValue(params.username, {});
+            this.password.updateValue(params.password, {});
+            this.password2.updateValue(params.password, {});
+            this.providers.updateValue(params.providers, {});
+            this.subLang.updateValue(params.subLang, {});
+            this.autorename.updateValue(params.autorename, {});
+            this.autorename_ext.updateValue(params.autorename_ext, {});
         });
 
         //console.log(this.paramsForm);
+    }
+
+    test(event) {
+        console.log('change', event.target.value, this.providers);
+        var selected = _.pluck(_.filter(event.target.options, {selected: true}), 'value');
+        // todo update provider or use something that supports multiple values
     }
 }

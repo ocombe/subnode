@@ -14,7 +14,6 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
 @Injectable()
 @Component({
     selector: 'shows',
-    providers: [RestService],
     template: `
         <div class='show'>
             <div class="page-header">

@@ -5,7 +5,6 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
 
 @Component({
     selector: 'home',
-    providers: [RestService],
     template: `
         <div class="home">
             <div class="page-header">

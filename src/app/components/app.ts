@@ -9,7 +9,6 @@ import {ParamsComponent} from "./params";
 @Injectable()
 @Component({
     selector: 'subNode',
-    providers: [TranslateService],
     template: `
         <navbar></navbar>
         <!--<a [router-link]="['./Dashboard']">Dashboard</a>-->
@@ -32,5 +31,6 @@ export class AppComponent {
         userLang = /(fr|en)/gi.test(userLang) ? userLang : 'en';
         translate.setDefault('en');
         translate.use(userLang);
+        console.log(1, translate);
     }
 }

@@ -42,12 +42,12 @@ System.register(['angular2/angular2', 'angular2/router', './nav', './show', './h
                     userLang = /(fr|en)/gi.test(userLang) ? userLang : 'en';
                     translate.setDefault('en');
                     translate.use(userLang);
+                    console.log(1, translate);
                 }
                 AppComponent = __decorate([
                     angular2_1.Injectable(),
                     angular2_1.Component({
                         selector: 'subNode',
-                        providers: [ng2_translate_1.TranslateService],
                         template: "\n        <navbar></navbar>\n        <!--<a [router-link]=\"['./Dashboard']\">Dashboard</a>-->\n        <!--<a [router-link]=\"['./Characters']\">Characters</a>-->\n        <div id=\"mainView\" class=\"container\">\n            <router-outlet></router-outlet>\n        </div>\n\n        <params></params>\n    ",
                         directives: [router_1.ROUTER_DIRECTIVES, nav_1.NavbarComponent, params_1.ParamsComponent]
                     }),
