@@ -1,5 +1,4 @@
 import {PipeTransform, Pipe} from 'angular2/angular2';
-import _ = require('lodash');
 import {Season} from "../interfaces/Season";
 
 @Pipe({name: 'season'})

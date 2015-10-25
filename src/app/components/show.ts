@@ -7,8 +7,6 @@ import {LoaderComponent} from "./loader";
 import {Subtitle, SubtitlePack} from "../interfaces/Subtitle";
 import {Episode} from "../interfaces/Episode";
 import {Season} from "../interfaces/Season";
-import  _ = require('lodash');
-import 'bootstrap/dist/js/bootstrap.js'
 import {TranslatePipe} from "ng2-translate/ng2-translate";
 import {ParamsComponent} from "./params";
 
@@ -83,7 +81,6 @@ export class ShowComponent implements OnActivate {
     constructor(private params: RouteParams, private rest: RestService) {
         this.rest = rest;
         this.showId = params.get('id');
-        console.log(ParamsComponent);
     }
 
     updateMissingSubs() {

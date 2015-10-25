@@ -22,9 +22,10 @@ gulp.task(clean);
 gulp.task(sass2css);
 gulp.task(ts2js);
 gulp.task(watch);
-gulp.task('default', gulp.series(clean, gulp.parallel(ts2js, sass2css)));
+gulp.task('default', gulp.series(clean, gulp.parallel(vendor, ts2js, sass2css)));
 gulp.task(dev);
 gulp.task('run', gulp.series('default', dev));
+gulp.task(vendor);
 
 
 /* Define our tasks using plain functions */
@@ -45,7 +46,7 @@ function ts2js() {
 function clean() {
     // You can use multiple globbing patterns as you would with `gulp.src`
     // If you are using del 2.0 or above, return its promise
-    return del(['public/app']);
+    return del(['public/app', 'public/js']);
 }
 
 function spawnServer() {
@@ -138,4 +139,25 @@ function dev(done) {
     process.on('uncaughtException', exitHandler.bind(null, {exit: true}));
 
     return watch(server);
+}
+
+function vendor() {
+    var uglify = require('gulp-uglify'),
+        concat = require('gulp-concat');
+
+    return gulp.src([
+            'node_modules/systemjs/dist/system.src.js',
+            'node_modules/angular2/bundles/angular2.min.js',
+            'node_modules/angular2/bundles/router.dev.min.js',
+            'node_modules/angular2/bundles/http.min.js',
+            'node_modules/lodash/index.js',
+            'node_modules/jquery/dist/jquery.js',
+            'node_modules/select2/dist/js/select2.js',
+            'node_modules/bootstrap/dist/js/bootstrap.js'
+        ])
+        .pipe(sourcemaps.init())
+        .pipe(uglify())
+        .pipe(concat('vendor.js'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('public/js/'));
 }

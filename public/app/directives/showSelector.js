@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/router', "../services/router"], function(exports_1) {
+System.register(['angular2/angular2', "../services/rest", 'angular2/router', "../services/router"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -17,7 +17,6 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
             function (angular2_1_1) {
                 angular2_1 = angular2_1_1;
             },
-            function (_1) {},
             function (rest_1_1) {
                 rest_1 = rest_1_1;
             },
@@ -60,6 +59,7 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                         }
                         else {
                             _this.lastValue = '';
+                            _this.$select.select2('val', '');
                         }
                     });
                 }

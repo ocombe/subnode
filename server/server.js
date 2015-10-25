@@ -1,10 +1,8 @@
 module.exports = {
 	startServer: function() {
 		var express = require('express'),
-            methodOverride = require('method-override'),
             errorHandler = require('errorhandler'),
             compression = require('compression'),
-            static = require('serve-static'),
             bodyParser = require('body-parser'),
             logger = require('morgan'),
 			app = express(),
@@ -50,11 +48,14 @@ module.exports = {
             showStack: true
         }));
         //app.use(logger(':method :url'));
-        app.use(compression()); // Gzip content
-        app.use(static(path.resolve(__dirname + "/../public")));
-        app.use(static(path.resolve(__dirname + "/../node_modules")));
-        app.use(authenticate);
-        app.use(methodOverride());
+        app.use(compression({filter: shouldCompress}))
+
+        function shouldCompress(req, res) {
+            return true;
+        }
+        app.use(express.static(path.resolve(__dirname + "/../public")));
+        app.use(express.static(path.resolve(__dirname + "/../node_modules")));
+        //app.use(authenticate);
         app.use(bodyParser.json());
 
 		app.get('/api/params', function(req, response) {

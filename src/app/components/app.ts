@@ -30,7 +30,7 @@ import {FooterComponent} from "./footer";
 export class AppComponent {
     constructor(translate: TranslateService) {
         var userLang = navigator.language.split('-')[0]; // use navigator lang if available
-        userLang = /(fr|en)/gi.test(userLang) ? userLang : 'en';
+        userLang = /(fr|en|pl)/gi.test(userLang) ? userLang : 'en';
         translate.setDefaultLang('en');
         translate.use(userLang);
     }

@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', 'angular2/router', "../services/rest", "../pipes/season", "../pipes/qualitySort", "./loader", 'lodash', 'bootstrap/dist/js/bootstrap.js', "ng2-translate/ng2-translate", "./params"], function(exports_1) {
+System.register(['angular2/angular2', 'angular2/router', "../services/rest", "../pipes/season", "../pipes/qualitySort", "./loader", "ng2-translate/ng2-translate", "./params"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -10,7 +10,7 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var angular2_1, router_1, rest_1, season_1, qualitySort_1, loader_1, _, ng2_translate_1, params_1;
+    var angular2_1, router_1, rest_1, season_1, qualitySort_1, loader_1, ng2_translate_1, params_1;
     var ShowComponent;
     return {
         setters:[
@@ -32,10 +32,6 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
             function (loader_1_1) {
                 loader_1 = loader_1_1;
             },
-            function (_1) {
-                _ = _1;
-            },
-            function (_2) {},
             function (ng2_translate_1_1) {
                 ng2_translate_1 = ng2_translate_1_1;
             },
@@ -54,7 +50,6 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     this.loadingDone = false;
                     this.rest = rest;
                     this.showId = params.get('id');
-                    console.log(params_1.ParamsComponent);
                 }
                 ShowComponent.prototype.onActivate = function (nextInstruction, prevInstruction) {
                     return this.refresh(); // init

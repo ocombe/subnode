@@ -42,7 +42,7 @@ System.register(['angular2/angular2', 'angular2/router', './nav', './show', './h
             AppComponent = (function () {
                 function AppComponent(translate) {
                     var userLang = navigator.language.split('-')[0]; // use navigator lang if available
-                    userLang = /(fr|en)/gi.test(userLang) ? userLang : 'en';
+                    userLang = /(fr|en|pl)/gi.test(userLang) ? userLang : 'en';
                     translate.setDefaultLang('en');
                     translate.use(userLang);
                 }
