@@ -1,10 +1,11 @@
-import {Component, Injectable} from 'angular2/angular2';
+import {Component, Injectable, provide} from 'angular2/angular2';
 import {RouteConfig, ROUTER_DIRECTIVES} from 'angular2/router';
 import {NavbarComponent} from './nav';
 import {ShowComponent} from './show';
 import {HomeComponent} from './home';
 import {TranslateService} from 'ng2-translate/ng2-translate';
 import {ParamsComponent} from "./params";
+import {FooterComponent} from "./footer";
 
 @Injectable()
 @Component({
@@ -17,9 +18,10 @@ import {ParamsComponent} from "./params";
             <router-outlet></router-outlet>
         </div>
 
+        <footer></footer>
         <params></params>
     `,
-    directives: [ROUTER_DIRECTIVES, NavbarComponent, ParamsComponent]
+    directives: [ROUTER_DIRECTIVES, NavbarComponent, ParamsComponent, FooterComponent]
 })
 @RouteConfig([
     {path: '/', as: 'Home', component: HomeComponent},
@@ -29,8 +31,7 @@ export class AppComponent {
     constructor(translate: TranslateService) {
         var userLang = navigator.language.split('-')[0]; // use navigator lang if available
         userLang = /(fr|en)/gi.test(userLang) ? userLang : 'en';
-        translate.setDefault('en');
+        translate.setDefaultLang('en');
         translate.use(userLang);
-        console.log(1, translate);
     }
 }

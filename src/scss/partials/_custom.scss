@@ -73,14 +73,19 @@ a {
     }
 }
 
+.no-subtitle {
+    cursor: default;
+}
+
 .episode {
-    loader {
+    loader, .glyphicon-paperclip {
         position: absolute;
         right: 10px;
         top: 8px;
         margin: -2px 6px 0;
     }
     .name {
+        margin-right: 25px;
         padding: 10px 15px;
     }
 }
@@ -116,7 +121,7 @@ a {
 }
 
 .subtitlesList {
-    margin-top: .75rem;
+    margin: .75rem 0;
 
     .qualite, .qualite5 {
         background-color: #468847;
@@ -184,10 +189,43 @@ a {
     .card-title {
         text-transform: capitalize;
         @include ellipsis();
+        font-size: 1.5rem;
+        display: block;
+        @include media-breakpoint-down(md) {
+            text-align: center;
+        }
+    }
+    .card-text {
+        font-size: 1.1rem;
+    }
+    .card-subtitle {
+        font-size: 0.85rem;
+    }
+    .card-title, .card-text, .card-subtitle {
+        line-height: 2rem;
+        margin: 0;
+    }
+    .card-text-wrapper {
+        @include media-breakpoint-down(md) {
+            text-align: center;
+        }
+
+        @include media-breakpoint-up(lg) {
+            display: flex;
+            flex-wrap: wrap;
+            margin-left: -.9375rem;
+            margin-right: -.9375rem;
+        }
     }
     .imgWrapper {
         vertical-align: middle;
         text-align: right;
+        @include media-breakpoint-up(lg) {
+            line-height: 136px;
+        }
+        @include media-breakpoint-down(md) {
+            padding-bottom: 1.25rem;
+        }
 
         img {
             max-width: 100%;
@@ -215,12 +253,23 @@ a {
     }
 }
 
-footer.panel-footer {
+footer {
+    padding: 10px 15px;
+    background-color: $panel-footer-bg;
+    border-top: 1px solid #dddddd;
+    border-bottom-right-radius: 1px;
+    border-bottom-left-radius: 1px;
     margin: 20px -5px 0;
     text-align: center;
 
     img {
         max-height: 30px;
+    }
+}
+
+#paramsModal {
+    .select2 {
+        min-width: 100%;
     }
 }
 

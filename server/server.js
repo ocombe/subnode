@@ -57,15 +57,11 @@ module.exports = {
         app.use(methodOverride());
         app.use(bodyParser.json());
 
-		app.get('/', function(req, response) {
-			return response.sendFile(path.resolve(__dirname + '/../index.html'));
-		});
-
-		app.get('/params', function(req, response) {
+		app.get('/api/params', function(req, response) {
 			return response.json(appParams);
 		});
 
-		app.post('/params', function(req, response) {
+		app.post('/api/params', function(req, response) {
 			appParams = req.body;
 			nconfParams.set("rootFolder", appParams.rootFolder);
 			nconfParams.set("autorename", appParams.autorename);
@@ -75,12 +71,12 @@ module.exports = {
 			nconfParams.set("password", appParams.password);
 			nconfParams.set("providers", appParams.providers);
 			nconfParams.save(function(err) {
-				response.send(err);
+                response.status(err ? 500 : 200).json({error: err, success: err ? false : true});
 				app.use(authenticate);
 			});
 		});
 
-		app.get('/checkUpdate', function(req, response) {
+		app.get('/api/checkUpdate', function(req, response) {
 			var now = new Date().getTime();
 			if(now - lastUpdateCheck <= 6 * 60 * 60 * 1000) { // 1 check / 6h
 				return response.json(upToDate);
@@ -93,7 +89,7 @@ module.exports = {
 			}
 		});
 
-		app.get('/update', function(req, response) {
+		app.get('/api/update', function(req, response) {
 			updater.update(function(res) {
 				response.json(res);
 				if(res.success) {
@@ -103,7 +99,7 @@ module.exports = {
 			});
 		});
 
-		app.get('/showList', function(req, response) {
+		app.get('/api/showList', function(req, response) {
 			if(appParams && appParams.rootFolder) {
 				fs.readdir(path.resolve(appParams.rootFolder), function(err, folders) {
                     if(err) {
@@ -116,7 +112,7 @@ module.exports = {
 			}
 		});
 
-		app.get('/show/:showId', function(req, response) {
+		app.get('/api/show/:showId', function(req, response) {
 			if(appParams.rootFolder != '') {
 				var filesList = [],
 					episodes = {},
@@ -166,7 +162,7 @@ module.exports = {
 			}
 		});
 
-		app.get('/betaSeries/:showId/:episode', function(req, response) {
+		app.get('/api/betaSeries/:showId/:episode', function(req, response) {
 			betaSeries.getSubtitles({
 				fileInfo: fileScraper.scrape(req.params.episode),
 				lang: appParams.subLang,
@@ -176,7 +172,7 @@ module.exports = {
 			});
 		});
 
-		app.get('/addic7ed/:showId/:episode', function(req, response) {
+		app.get('/api/addic7ed/:showId/:episode', function(req, response) {
 			addic7ed.getSubtitles({
 				fileInfo: fileScraper.scrape(req.params.episode),
 				lang: appParams.subLang,
@@ -186,7 +182,7 @@ module.exports = {
 			});
 		});
 
-		app.post('/download', function(req, response) {
+		app.post('/api/download', function(req, response) {
 			var folder = path.dirname(req.body.episode) + '/',
 				newName = appParams.autorename ? path.basename(req.body.episode).replace(path.extname(req.body.episode), (appParams.autorename_ext ? '.' + appParams.subLang : '') + path.extname(req.body.subtitle)) : false; // send false for no autorename
 
@@ -210,7 +206,7 @@ module.exports = {
 			}
 		});
 
-		app.get('/lastEpisodes/:refresh', function(req, response) {
+		app.get('/api/lastEpisodes/:refresh', function(req, response) {
 			var filesList = [],
 				now = new Date();
 			if(req.params.refresh === 'false' && lastEpisodes.length > 0 && now - lastFetch <= 15 * 60 * 1000) {
@@ -256,7 +252,7 @@ module.exports = {
 			}
 		});
 
-		app.get('/banner/:showName', function(req, response) {
+		app.get('/api/banner/:showName', function(req, response) {
 			tvdb.getBanner({
 				path: __dirname + '/../banners/',
 				showName: req.params.showName
@@ -265,23 +261,22 @@ module.exports = {
 			});
 		});
 
-		app.get('/info/:showName/:lang', function(req, response) {
+		app.get('/api/info/:showName/:lang', function(req, response) {
 			tvdb.getFullShowInfo({showName: req.params.showName, lang: req.params.lang}, function(err, data) {
 				return response.json(data);
 			});
 		});
 
-		app.get('/exit', function(req, response) {
+		app.get('/api/exit', function(req, response) {
 			response.send('The server has been shut down.');
 			process.exit(3330);
 		});
 
-		app.get('/restart', function(req, response) {
-			response.redirect('/');
-			process.exit(3331);
-		});
+        app.get('/', function(req, response) {
+            return response.sendFile(path.resolve(__dirname + '/../public/index.html'));
+        });
 
-		return nconfParams.load(function() {
+        return nconfParams.load(function() {
 			appParams = {
 				rootFolder: nconfParams.get('rootFolder'),
 				sickbeardUrl: nconfParams.get('sickbeardUrl'),

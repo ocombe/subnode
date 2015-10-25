@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/router'], function(exports_1) {
+System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/router', "../services/router"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -10,10 +10,7 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var __param = (this && this.__param) || function (paramIndex, decorator) {
-        return function (target, key) { decorator(target, key, paramIndex); }
-    };
-    var angular2_1, rest_1, router_1;
+    var angular2_1, rest_1, router_1, router_2;
     var ShowSelector;
     return {
         setters:[
@@ -26,6 +23,9 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
             },
             function (router_1_1) {
                 router_1 = router_1_1;
+            },
+            function (router_2_1) {
+                router_2 = router_2_1;
             }],
         execute: function() {
             /**
@@ -33,30 +33,49 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
              */
             ShowSelector = (function () {
                 //Todo: follow path changes to update the select
-                function ShowSelector(rest, element, router, location) {
+                function ShowSelector(rest, element, routerService, router, location) {
                     var _this = this;
-                    this.showList = [];
+                    this.routerService = routerService;
                     this.router = router;
+                    this.showList = [];
                     this.select = element.nativeElement.querySelector('select');
                     this.$select = $(this.select).select2()
                         .on('change', function (e) {
                         _this.showSelected();
                     });
-                    rest.get('showList').toPromise().then(function (showList) {
+                    rest.get('api/showList').toPromise().then(function (showList) {
                         _this.showList = showList;
-                        if (location.path().startsWith('/show/')) {
+                        if (_.startsWith(location.path(), '/show/')) {
                             // wait for the select to be populated
                             window.setTimeout(function () {
-                                var show = location.path().replace('/show/', '');
-                                _this.$select.select2('val', show);
+                                var showId = decodeURIComponent(location.path().replace('/show/', ''));
+                                _this.syncSelectedShow(showId);
                             });
+                        }
+                    });
+                    router.subscribe(function (path) {
+                        if (_.startsWith(path, 'show/')) {
+                            var showId = decodeURIComponent(path.replace('show/', ''));
+                            _this.syncSelectedShow(showId);
+                        }
+                        else {
+                            _this.lastValue = '';
                         }
                     });
                 }
                 ShowSelector.prototype.showSelected = function () {
-                    this.router.navigate(['./Show', { id: this.select.value }]);
+                    if (this.select.value !== this.lastValue) {
+                        this.lastValue = this.select.value;
+                        this.routerService.navigate(['/Show', { id: this.select.value }]);
+                    }
+                };
+                ShowSelector.prototype.syncSelectedShow = function (showId) {
+                    // route was activated by something else, we don't want to navigate
+                    this.lastValue = showId;
+                    this.$select.select2('val', showId);
                 };
                 ShowSelector = __decorate([
+                    angular2_1.Injectable(),
                     angular2_1.Component({
                         selector: 'show-selector',
                         providers: [rest_1.RestService]
@@ -64,12 +83,8 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                     angular2_1.View({
                         template: "\n        <select data-placeholder=\"Select a show\">\n            <option *ng-for=\"#show of showList\" [value]=\"show\">{{show}}</option>\n        </select>\n    ",
                         directives: [angular2_1.FORM_DIRECTIVES, angular2_1.NgFor, angular2_1.NgModel]
-                    }),
-                    __param(0, angular2_1.Inject(rest_1.RestService)),
-                    __param(1, angular2_1.Inject(angular2_1.ElementRef)),
-                    __param(2, angular2_1.Inject(router_1.Router)),
-                    __param(3, angular2_1.Inject(router_1.Location)), 
-                    __metadata('design:paramtypes', [rest_1.RestService, angular2_1.ElementRef, router_1.Router, router_1.Location])
+                    }), 
+                    __metadata('design:paramtypes', [rest_1.RestService, angular2_1.ElementRef, router_2.RouterService, router_1.Router, router_1.Location])
                 ], ShowSelector);
                 return ShowSelector;
             })();

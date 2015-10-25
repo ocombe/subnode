@@ -52,6 +52,8 @@ a.list-group-item.active > .badge, .nav-pills > .active > a > .badge {
 }
 
 .nav-tabs {
+    background-color: lighten($panel-footer-bg, 20%);
+
     .nav-link {
         cursor: pointer;
 

@@ -1,8 +1,12 @@
-import {Component, Inject, NgFor, ChangeDetectionStrategy} from 'angular2/angular2';
+import {Component, Injectable, NgFor, ChangeDetectionStrategy} from 'angular2/angular2';
+import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {RestService} from '../services/rest';
 import {LoaderComponent} from "./loader";
 import {TranslatePipe} from "ng2-translate/ng2-translate";
+import {ShowComponent} from "./show";
+import {RouterService} from "../services/router";
 
+@Injectable()
 @Component({
     selector: 'home',
     template: `
@@ -16,45 +20,40 @@ import {TranslatePipe} from "ng2-translate/ng2-translate";
             </div>
 
             <div class="lastEpisodes">
-                <div class="col-lg-12 card fade-in" *ng-for="#file of lastEpisodes | async">
-                    <a [href]="'#show/' + file.showId">
-                        <div class="col-lg-3">
-                            <div class="card-block">
-                                <h4 class="card-title">{{ file.showId }}</h4>
-                                <h5 class="card-text">{{ file.episode.season | number:'2.0-0' }}x{{ file.episode.episode | number:'2.0-0' }}</h5>
-
-                                <p class="card-text">{{ file.ctime | date }}</p>
-                            </div>
+                <a class="card fade-in row" *ng-for="#file of lastEpisodes | async" [router-link]="routerService.normalize(['/Show', {id: file.showId}])">
+                    <div class="col-lg-3 col-xs-12 card-block">
+                        <div class="card-title">{{ file.showId }}</div>
+                        <div class="card-text-wrapper">
+                            <span class="card-text col-lg-12">{{ file.episode.season | number:'2.0-0' }}x{{ file.episode.episode | number:'2.0-0' }}</span>
+                            <span class="card-subtitle col-lg-12">{{ file.ctime | date }}</span>
                         </div>
-                        <div class="col-lg-9 imgWrapper">
-                            <img [src]="'banner/'+file.showId">
-                        </div>
-                    </a>
-                </div>
+                    </div>
+                    <div class="col-lg-9 col-xs-12 imgWrapper">
+                        <img [src]="'api/banner/'+file.showId">
+                    </div>
+                </a>
             </div>
         </div>
 	`,
-    directives: [NgFor, LoaderComponent],
+    directives: [NgFor, LoaderComponent, ROUTER_DIRECTIVES],
     pipes: [TranslatePipe]
 })
 export class HomeComponent {
     /*onChanges(changes: {[hidden: string]: SimpleChange}) {
         console.log('on changes', changes);
     }*/
-    rest: RestService;
     lastEpisodes: Array<string> = [];
     showLoader: Boolean = false;
 
+    constructor(private rest: RestService, private routerService: RouterService) {
+        this.getLastEpisodes(false);
+    }
+
     getLastEpisodes(refresh: Boolean) {
         this.showLoader = true;
-        this.lastEpisodes = this.rest.get(`lastEpisodes/${refresh}`).toPromise().then((res: Array<string>) => {
+        this.lastEpisodes = this.rest.get(`api/lastEpisodes/${refresh}`).toPromise().then((res: Array<string>) => {
             this.showLoader = false;
             return res;
         });
-    }
-
-    constructor(@Inject(RestService) rest: RestService) {
-        this.rest = rest;
-        this.getLastEpisodes(false);
     }
 }
