@@ -1,7 +1,11 @@
 {
-  "author": "Olivier Combe <olivier.combe@gmail.com> (https://github.com/ocombe)",
+  "author": {
+    "name": "Olivier Combe",
+    "email": "olivier.combe@gmail.com",
+    "url": "https://github.com/ocombe"
+  },
   "name": "subnode",
-  "description": "An app to get subtitles for your tv show easily",
+  "description": "An app to easily get subtitles for your tv shows",
   "version": "2.0.0",
   "main": "main.js",
   "license": "MIT",
@@ -15,11 +19,12 @@
     "dev": "gulp dev"
   },
   "devDependencies": {
-    "bootstrap": "git://github.com/twbs/bootstrap.git#v4-dev",
+    "@reactivex/rxjs": "^5.0.0-alpha.4",
     "bourbon": "^4.2.6",
     "browser-sync": "^2.9.8",
     "connect": "^3.4.0",
-    "del": "^2.0.2",
+    "electron-installer-squirrel-windows": "^0.4.0",
+    "electron-packager": "^5.1.0",
     "gulp": "git@github.com:gulpjs/gulp.git#4.0",
     "gulp-autoprefixer": "^3.0.2",
     "gulp-batch": "^1.0.5",
@@ -34,12 +39,13 @@
     "tsd": "^0.6.5"
   },
   "dependencies": {
-    "@reactivex/rxjs": "^5.0.0-alpha.4",
     "adm-zip": "~0.4.3",
     "angular2": "2.0.0-alpha.44",
     "body-parser": "^1.14.1",
+    "bootstrap": "git://github.com/twbs/bootstrap.git#v4-dev",
     "cheerio": "~0.19.0",
     "compression": "^1.6.0",
+    "electron-squirrel-startup": "^0.1.4",
     "errorhandler": "^1.4.2",
     "express": "~4.13.3",
     "jquery": "^2.1.4",

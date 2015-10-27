@@ -1,10 +1,54 @@
 var app = require('app'),  // Module to control application life.
-    server = require('./server/server.js');
-
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
+    server = require('./server/server.js'),
+    BrowserWindow = require('browser-window'),  // Module to create native browser window.
+    Menu = require('menu');
 
 // Report crashes to our server.
 require('crash-reporter').start();
+
+// for squirrel install
+if(require('electron-squirrel-startup')) return;
+/*var handleStartupEvent = function() {
+    if (process.platform !== 'win32') {
+        return false;
+    }
+
+    var squirrelCommand = process.argv[1];
+    switch (squirrelCommand) {
+        case '--squirrel-install':
+        case '--squirrel-updated':
+
+            // Optionally do things such as:
+            //
+            // - Install desktop and start menu shortcuts
+            // - Add your .exe to the PATH
+            // - Write to the registry for things like file associations and
+            //   explorer context menus
+
+            // Always quit when done
+            app.quit();
+
+            return true;
+        case '--squirrel-uninstall':
+            // Undo anything you did in the --squirrel-install and
+            // --squirrel-updated handlers
+
+            // Always quit when done
+            app.quit();
+
+            return true;
+        case '--squirrel-obsolete':
+            // This is called on the outgoing version of your app before
+            // we update to the new version - it's the opposite of
+            // --squirrel-updated
+            app.quit();
+            return true;
+    }
+};
+
+if (handleStartupEvent()) {
+    return;
+}*/
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -18,6 +62,32 @@ app.on('window-all-closed', function() {
         app.quit();
     }
 });
+
+var setDevMenu = function () {
+    var devMenu = Menu.buildFromTemplate([{
+        label: 'Development',
+        submenu: [{
+            label: 'Reload',
+            accelerator: 'CmdOrCtrl+R',
+            click: function () {
+                BrowserWindow.getFocusedWindow().reloadIgnoringCache();
+            }
+        },{
+            label: 'Toggle DevTools',
+            accelerator: 'Alt+CmdOrCtrl+I',
+            click: function () {
+                BrowserWindow.getFocusedWindow().toggleDevTools();
+            }
+        },{
+            label: 'Quit',
+            accelerator: 'CmdOrCtrl+Q',
+            click: function () {
+                app.quit();
+            }
+        }]
+    }]);
+    Menu.setApplicationMenu(devMenu);
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -33,6 +103,8 @@ app.on('ready', function() {
 
     // Open the DevTools.
     //mainWindow.openDevTools();
+
+    setDevMenu();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {

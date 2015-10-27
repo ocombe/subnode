@@ -1,4 +1,5 @@
 import {Component, View, ElementRef, Injectable, FORM_DIRECTIVES, NgFor, NgModel} from 'angular2/angular2';
+import 'select2';
 import {RestService} from "../services/rest";
 import {Router, Location} from 'angular2/router';
 import {RouterService} from "../services/router";

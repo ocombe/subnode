@@ -8,7 +8,11 @@ var gulp = require('gulp'),
     typescript = require('gulp-typescript'),
     browserSync = require('browser-sync').create(),
     spawn = require('child_process').spawn,
-    batch = require('gulp-batch');
+    batch = require('gulp-batch'),
+    install = require("gulp-install"),
+    fs = require('fs'),
+    path = require('path'),
+    targets;
 
 var PATHS = {
     ts: './src/**/*.ts',
@@ -26,6 +30,9 @@ gulp.task('default', gulp.series(clean, gulp.parallel(vendor, ts2js, sass2css)))
 gulp.task(dev);
 gulp.task('run', gulp.series('default', dev));
 gulp.task(vendor);
+gulp.task('npm', gulp.series(npmInstall, npmInstall, npmInstall, npmInstall, npmInstall, npmInstall));
+gulp.task('build', gulp.series(build, 'npm'));
+gulp.task('binaries', windowsInstaller);
 
 
 /* Define our tasks using plain functions */
@@ -150,14 +157,91 @@ function vendor() {
             'node_modules/angular2/bundles/angular2.min.js',
             'node_modules/angular2/bundles/router.dev.min.js',
             'node_modules/angular2/bundles/http.min.js',
-            'node_modules/lodash/index.js',
-            'node_modules/jquery/dist/jquery.js',
-            'node_modules/select2/dist/js/select2.js',
-            'node_modules/bootstrap/dist/js/bootstrap.js'
+            'node_modules/lodash/index.js'
         ])
         .pipe(sourcemaps.init())
         .pipe(uglify())
         .pipe(concat('vendor.js'))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('public/js/'));
+}
+
+function getDirectories(srcpath) {
+    return fs.readdirSync(srcpath).filter(function(file) {
+        return fs.statSync(path.join(srcpath, file)).isDirectory();
+    });
+}
+
+function npmInstall(done) {
+    if(typeof targets === 'undefined') {
+        targets = getDirectories('./releases');
+    }
+    if(targets.length > 0) {
+        var target = targets.shift();
+        return gulp.src('./releases/' + target + '/resources/app/package.json')
+            .pipe(gulp.dest('./releases/' + target + '/resources/app/'))
+            .pipe(install({
+                production: true,
+                ignoreScripts: true
+            }));
+    } else if(done) {
+        done();
+    }
+}
+
+function build(done) {
+    var packager = require('electron-packager');
+    var package = require('./package.json');
+    packager({
+        dir: './',
+        name: 'subnode',
+        platform: 'all', // win32
+        arch: 'all', // ia32
+        out: './releases/',
+        overwrite: true,
+        icon: './public/img/favicon.ico',
+        prune: true, // remove npm dev dependencies
+        version: '0.34.1',
+        'app-version': package.version,
+        ignore: [
+            '.idea',
+            'appParams.json',
+            'src',
+            'banners',
+            'media',
+            '.editorconfig',
+            'typings',
+            'tsconfig.json',
+            'tsd.json',
+            'gulpfile.js',
+            'releases',
+            '.gitignore',
+            'node_module'
+        ]
+    }, function() {
+        targets = getDirectories('./releases');
+        done();
+    })
+}
+
+function windowsInstaller(done) {
+    /*var winInstaller = require('electron-windows-installer');
+
+    winInstaller({
+        appDirectory: './releases/subnode-win32-ia32',
+        outputDirectory: './release',
+        iconUrl: './public/img/favicon.ico',
+        setupIcon: './public/img/favicon.ico'
+    }).then(done).catch(done);*/
+
+    var createInstaller = require('electron-installer-squirrel-windows');
+    createInstaller({
+        name: "subnode",
+        product_name: "Subnode",
+        loading_gif: './public/img/subnode.gif',
+        description: "An app to easily get subtitles for your tv shows",
+        path: './releases/subnode-win32-ia32',
+        out: './releases',
+        setup_icon: './public/img/favicon.ico'
+    }, done);
 }

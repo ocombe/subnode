@@ -3,6 +3,7 @@ import {ShowSelector} from "../directives/showSelector";
 import {LoaderComponent} from "./loader";
 import {TranslateService, TranslatePipe} from "ng2-translate/ng2-translate";
 import {RestService, RestResponse} from '../services/rest';
+import 'bootstrap/dist/js/bootstrap.min.js'
 
 @Injectable()
 @Component({
@@ -81,18 +82,18 @@ import {RestService, RestResponse} from '../services/rest';
                                 </div>
                             </div>
 
-                            <div class="form-group row" class="{'has-error': !paramsForm.controls.providers.valid}">
+                            <div class="form-group row" [ng-class]="{'has-error': getProviders().length === 0}">
                                 <label class="col-sm-4 col-xs-12 control-label" for="username">{{'PROVIDERS' | translate}}</label>
 
                                 <div class="col-sm-8 col-xs-12">
-                                    <select chosen id="providers" (change)="test($event)" multiple="true" name="providers" ng-control="providers" class="form-control" placeholder="'PROVIDERS_PLACEHOLDER' | translate" required>
+                                    <select chosen id="providers" (change)="test($event)" multiple="true" name="providers" class="form-control" placeholder="'PROVIDERS_PLACEHOLDER' | translate" required>
                                         <option value="betaSeries">BetaSeries</option>
                                         <option value="addic7ed">Addic7ed</option>
                                     </select>
                                 </div>
 
                                 <div class="col-sm-8 col-sm-offset-4 col-xs-12">
-                                    <span [hidden]="paramsForm.controls.providers.valid" class="help-block fade-in fade-out">{{'REQUIRED' | translate}}</span>
+                                    <span [hidden]="getProviders().length > 0" class="help-block fade-in fade-out">{{'REQUIRED' | translate}}</span>
                                 </div>
                             </div>
 
@@ -129,8 +130,8 @@ import {RestService, RestResponse} from '../services/rest';
                     </div>
                     <div class="modal-footer">
                         <loader [hidden]="!loading"></loader>
-                        <button type="submit" class="btn btn-success" [disabled]="!paramsForm.valid || sending" (click)="saveParams()">{{ 'SAVE' | translate }}</button>
-                        <span class="btn btn-default" data-dismiss="modal">{{ 'CLOSE' | translate }}</span>
+                        <button type="submit" class="btn btn-success" [disabled]="!paramsForm.valid || sending || getProviders().length === 0" (click)="saveParams()">{{ 'SAVE' | translate }}</button>
+                        <span class="btn btn-secondary" data-dismiss="modal">{{ 'CLOSE' | translate }}</span>
                     </div>
                 </div>
             </div>
@@ -165,7 +166,6 @@ export class ParamsComponent {
     username: Control = new Control("");
     password: Control = new Control("", Validators.minLength(5));
     password2: Control = new Control("", Validators.minLength(5));
-    providers: Control = new Control("", Validators.required);
     subLang: Control = new Control("", Validators.required);
     autorename: Control = new Control("", Validators.required);
     autorename_ext: Control = new Control("");
@@ -176,7 +176,6 @@ export class ParamsComponent {
         username: this.username,
         password: this.password,
         password2: this.password2,
-        providers: this.providers,
         subLang: this.subLang,
         autorename: this.autorename,
         autorename_ext: this.autorename_ext
@@ -201,7 +200,6 @@ export class ParamsComponent {
             this.username.updateValue(params.username, {});
             this.password.updateValue(params.password, {});
             this.password2.updateValue(params.password, {});
-            this.providers.updateValue(params.providers, {});
             this.subLang.updateValue(params.subLang, {});
             this.autorename.updateValue(params.autorename, {});
             this.autorename_ext.updateValue(params.autorename_ext, {});
@@ -215,6 +213,11 @@ export class ParamsComponent {
         this.$providersSelect = $(this.providersSelect).select2();
     }
 
+    getProviders() {
+        var val = this.$providersSelect.select2('val');
+        return val ? val : [];
+    }
+
     selectLangChange() {
         this.translate.use(this.lang.value);
     }
@@ -222,7 +225,7 @@ export class ParamsComponent {
     saveParams() {
         this.sending = true;
         var formData = this.paramsForm.value;
-        formData.providers = _.pluck(_.filter(this.providersSelect.options, {selected: true}), 'value');
+        formData.providers = this.getProviders();
         this.rest.post('api/params', formData).toPromise().then((res: RestResponse) => {
             if(res.success) {
                 window.location.reload();
