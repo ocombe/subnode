@@ -1,5 +1,5 @@
 var app = require('app'),  // Module to control application life.
-    server = require('./server/server.js'),
+    server,
     BrowserWindow = require('browser-window'),  // Module to create native browser window.
     Menu = require('menu');
 
@@ -59,6 +59,7 @@ app.on('window-all-closed', function() {
     // On OS X it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform != 'darwin') {
+        server.stop();
         app.quit();
     }
 });
@@ -93,7 +94,7 @@ var setDevMenu = function () {
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
     // Start the server
-    server.startServer();
+    server = require('./app.js');
 
     // Create the browser window.
     mainWindow = new BrowserWindow({width: 1280, height: 1024});
@@ -114,3 +115,9 @@ app.on('ready', function() {
         mainWindow = null;
     });
 });
+
+// TODO cf https://github.com/atom/electron/pull/3250
+/*app.on('login', function(event, webContents, request, authInfo, callback) {
+    event.preventDefault();
+    callback('username', 'secret');
+})*/

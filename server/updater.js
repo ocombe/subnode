@@ -217,7 +217,7 @@ var updater = function() {
 				zip.extractEntryTo(updateFolder, __dirname + '/../', false, true);
 
 				// update node_modules if needed
-				var exec = require('child_process').exec;
+				/*var exec = require('child_process').exec;
 				var child = exec('npm install --production --unsafe-perm', function(err, stdout, stderr) {
 					if (err) {
 						console.log(err);
@@ -225,7 +225,28 @@ var updater = function() {
 					} else {
 						callback({success: true});
 					}
-				});
+				});*/
+                var npm = require("npm");
+                npm.load(function (err) {
+                    npm.config.set('only', 'production');
+                    npm.config.set('production', true);
+                    npm.config.set('unsafe-perm', true);
+                    npm.config.set('ignore-scripts', true);
+
+                    // catch errors
+                    npm.commands.install([], function (err, data) {
+                        if (err) {
+                            console.log(err);
+                            callback({success: false, err: err});
+                        } else {
+                            callback({success: true});
+                        }
+                    });
+                    /*npm.on("log", function (message) {
+                        // log the progress of the installation
+                        console.log(message);
+                    });*/
+                });
 			});
 		}
 	}

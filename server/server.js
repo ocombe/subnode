@@ -39,7 +39,7 @@ module.exports = {
 				next();
 			} else {
 				res.header('WWW-Authenticate', 'Basic realm="Access restricted"');
-				res.send(401);
+                res.sendStatus(401);
 			}
 		};
 
@@ -53,9 +53,9 @@ module.exports = {
         function shouldCompress(req, res) {
             return true;
         }
+        app.use(authenticate);
         app.use(express.static(path.resolve(__dirname + "/../public")));
         app.use(express.static(path.resolve(__dirname + "/../node_modules")));
-        //app.use(authenticate);
         app.use(bodyParser.json());
 
 		app.get('/api/params', function(req, response) {
@@ -73,7 +73,6 @@ module.exports = {
 			nconfParams.set("providers", appParams.providers);
 			nconfParams.save(function(err) {
                 response.status(err ? 500 : 200).json({error: err, success: err ? false : true});
-				app.use(authenticate);
 			});
 		});
 
