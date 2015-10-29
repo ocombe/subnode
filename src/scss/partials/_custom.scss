@@ -172,10 +172,16 @@ a {
 
 .lastEpisodes {
     .card {
+        display: block; // fix flexbox firefox
         margin-bottom: 20px;
         overflow: auto;
         padding: 4px;
         border-radius: 3px;
+
+        // fix flexbox firefox
+        @include media-breakpoint-min(lg) {
+            display: flex;
+        }
 
         &:hover {
             box-shadow: 0 0 8px rgba(0,0,0,0.5);
@@ -191,8 +197,21 @@ a {
         @include ellipsis();
         font-size: 1.5rem;
         display: block;
-        @include media-breakpoint-down(md) {
+
+        // fix flexbox firefox
+        @include media-breakpoint-up(lg) {
+            max-width: 240px;
+        }
+
+        // fix flexbox firefox
+        @include media-breakpoint-down(lg) {
             text-align: center;
+            max-width: 190px;
+        }
+
+        // fix flexbox firefox
+        @include media-breakpoint-down(md) {
+            max-width: 100%;
         }
     }
     .card-text {
@@ -220,6 +239,8 @@ a {
     .imgWrapper {
         vertical-align: middle;
         text-align: right;
+        overflow: hidden; // for firefox bug with flexbox
+
         @include media-breakpoint-up(lg) {
             line-height: 136px;
         }
