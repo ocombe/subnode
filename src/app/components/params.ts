@@ -65,8 +65,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
                                 </div>
 
                                 <div class="col-sm-8 col-sm-offset-4 col-xs-12">
-                                    <span [hidden]="!paramsForm.controls.password.errors" class="help-block fade-in fade-out">{{'MIN_NUMBER' | translate:'{ nb: 1 }'}}</span>
-                                    <span [hidden]="!paramsForm.controls.password.errors" class="help-block fade-in fade-out">{{'MIN_LENGTH' | translate:'{ nb: 8 }'}}</span>
+                                    <span [hidden]="!paramsForm.controls.password.errors" class="help-block fade-in fade-out">{{'MIN_LENGTH' | translate:'{ nb: 5 }'}}</span>
                                 </div>
                             </div>
 

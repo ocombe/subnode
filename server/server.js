@@ -207,6 +207,7 @@ module.exports = {
 		});
 
 		app.get('/api/lastEpisodes/:refresh', function(req, response) {
+            // todo memoize the stuff & put it async + use websockets
 			var filesList = [],
 				now = new Date();
 			if(req.params.refresh === 'false' && lastEpisodes.length > 0 && now - lastFetch <= 15 * 60 * 1000) {
