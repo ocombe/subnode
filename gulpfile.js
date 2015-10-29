@@ -1,7 +1,6 @@
 var gulp = require('gulp'),
     sourcemaps = require('gulp-sourcemaps'),
     sass = require('gulp-sass'),
-    minifyCss = require('gulp-minify-css'),
     autoprefixer = require('gulp-autoprefixer'),
     importOnce = require('node-sass-import-once'), // allow css imports in sass
     del = require('del'),
@@ -97,6 +96,11 @@ function sass2css() {
     return gulp.src("src/scss/*.scss")
         .pipe(sourcemaps.init())
         .pipe(sass({
+            includePaths: [
+                'node_modules/bootstrap/scss',
+                'node_modules/bourbon/app/assets/stylesheets/'
+            ],
+            outputStyle: 'compressed',
             importer: importOnce
         }))
         .pipe(autoprefixer({ // auto generate browser special prefixes
@@ -107,7 +111,6 @@ function sass2css() {
             ],
             cascade: false
         }))
-        .pipe(minifyCss())
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest("./public/css"))
         .pipe(browserSync.stream({match: '**/*.css'}));
@@ -225,15 +228,6 @@ function build(done) {
 }
 
 function windowsInstaller(done) {
-    /*var winInstaller = require('electron-windows-installer');
-
-    winInstaller({
-        appDirectory: './releases/subnode-win32-ia32',
-        outputDirectory: './release',
-        iconUrl: './public/img/favicon.ico',
-        setupIcon: './public/img/favicon.ico'
-    }).then(done).catch(done);*/
-
     var createInstaller = require('electron-installer-squirrel-windows');
     createInstaller({
         name: "subnode",
