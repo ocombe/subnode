@@ -1,6 +1,6 @@
 var nconf = require('nconf'),
 	_ = require('lodash'),
-	TVDB = require('./tvdb_lib.js'),
+	TVDB = require(__dirname + '/tvdb_lib.js'),
 	tvdb = new TVDB({apiKey: "66BBEB48D4C7D155"}),
 	wrench = require('wrench'),
 	request = require('request'),

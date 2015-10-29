@@ -14,8 +14,6 @@
     "url": "https://github.com/ocombe/subNode"
   },
   "scripts": {
-    "postinstall": "npm run tsd",
-    "tsd": "tsd link --config tsd.json",
     "dev": "gulp dev"
   },
   "devDependencies": {

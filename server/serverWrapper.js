@@ -1,2 +1,2 @@
 console.log('Starting server');
-require('./server.js').startServer();
+require(__dirname + '/server.js').startServer();

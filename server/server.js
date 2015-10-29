@@ -11,13 +11,13 @@ module.exports = {
 			fs = require('fs'),
 			request = require('request'),
 			path = require('path'),
-			fileScraper = require('./scraper'),
-			addic7ed = require('./addic7ed.js'),
-			betaSeries = require('./betaSeries.js'),
-			tvdb = require('./tvdb.js'),
+			fileScraper = require(__dirname + '/scraper'),
+			addic7ed = require(__dirname + '/addic7ed.js'),
+			betaSeries = require(__dirname + '/betaSeries.js'),
+			tvdb = require(__dirname + '/tvdb.js'),
 			wrench = require('wrench'),
 			_ = require('lodash'),
-			updater = require('./updater'),
+			updater = require(__dirname + '/updater'),
 			lastUpdateCheck = 0,
 			upToDate;
 

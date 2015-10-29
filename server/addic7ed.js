@@ -1,7 +1,7 @@
 var request = require('request'),
 	http = require('http'),
 	fs = require('fs'),
-	fileScraper = require('./scraper.js'),
+	fileScraper = require(__dirname + '/scraper.js'),
 	cheerio = require('cheerio'),
 	nconf = require('nconf'),
 	nconfParams = new nconf.Provider().file('config', __dirname + '/../appParams.json'),

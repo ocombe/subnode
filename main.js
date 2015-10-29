@@ -94,7 +94,7 @@ var setDevMenu = function () {
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
     // Start the server
-    server = require('./app.js');
+    server = require(__dirname + '/app.js');
 
     // Create the browser window.
     mainWindow = new BrowserWindow({width: 1280, height: 1024});

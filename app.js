@@ -1,7 +1,7 @@
 var forever = require('forever-monitor');
 var subNode;
 
-subNode = new (forever.Monitor)('./server/serverWrapper.js', {
+subNode = new (forever.Monitor)(__dirname + '/server/serverWrapper.js', {
 	command: 'node',
 	max: 100,
 	silent: false
