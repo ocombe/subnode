@@ -179,7 +179,7 @@ a {
         border-radius: 3px;
 
         // fix flexbox firefox
-        @include media-breakpoint-min(lg) {
+        @include media-breakpoint-up(lg) {
             display: flex;
         }
 
@@ -205,13 +205,13 @@ a {
 
         // fix flexbox firefox
         @include media-breakpoint-down(lg) {
-            text-align: center;
             max-width: 190px;
         }
 
         // fix flexbox firefox
         @include media-breakpoint-down(md) {
             max-width: 100%;
+            text-align: center;
         }
     }
     .card-text {
