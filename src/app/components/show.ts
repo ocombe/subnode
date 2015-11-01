@@ -37,7 +37,7 @@ import {ParamsComponent} from "./params";
                         <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip" [title]="ep.subtitle.name"></i>
                         <loader [hidden]="!loading" *ng-if="selectedEpisode === ep"></loader>
 
-                        <div class="subtitlesList col-xs-12 fade-in" *ng-if="selectedEpisode === ep">
+                        <div class="subtitlesList col-xs-12 fade-in" [ng-class]="{disabled: downloading}" *ng-if="selectedEpisode === ep">
                             <div class="card" [hidden]="subList.length !== 0 || !loadingDone">
                                 <div class="no-subtitle name">{{ 'NO_RESULT' | translate }}</div>
                             </div>
@@ -75,7 +75,8 @@ export class ShowComponent implements OnActivate {
     missingSubs: number = 0;
     seasonFilter: number;
     loading: Boolean = false;
-    loadingDone: Boolean = false;
+    downloading: Boolean = false;
+    searchingDone: Boolean = false;
 
     constructor(private params: RouteParams, private rest: RestService) {
         this.showId = params.get('id');
@@ -109,7 +110,7 @@ export class ShowComponent implements OnActivate {
             return;
         }
         this.loading = true;
-        this.loadingDone = false;
+        this.searchingDone = false;
         this.selectedEpisode = ep;
         this.subList = [];
 
@@ -130,19 +131,21 @@ export class ShowComponent implements OnActivate {
 
         Promise.all(providers).then(() => {
             this.loading = false;
-            this.loadingDone = true;
+            this.searchingDone = true;
         });
     }
 
     // todo add websockets support
     downloadSub(sub: Subtitle, subPack: SubtitlePack, $event: MouseEvent) {
         this.loading = true;
+        this.downloading = true;
         this.rest.post('api/download', {
             episode: this.selectedEpisode.file,
             url: subPack.url,
             subtitle: sub.file
         }).toPromise().then((res: RestResponse) => {
             this.loading = false;
+            this.downloading = false;
             var $name = $($event.target),
                 $icons = $name.find('i');
             if($icons.length > 0) {

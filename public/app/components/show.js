@@ -47,7 +47,8 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     this.subList = [];
                     this.missingSubs = 0;
                     this.loading = false;
-                    this.loadingDone = false;
+                    this.downloading = false;
+                    this.searchingDone = false;
                     this.showId = params.get('id');
                 }
                 ShowComponent.prototype.onActivate = function (nextInstruction, prevInstruction) {
@@ -81,7 +82,7 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                         return;
                     }
                     this.loading = true;
-                    this.loadingDone = false;
+                    this.searchingDone = false;
                     this.selectedEpisode = ep;
                     this.subList = [];
                     var showSubs = function (subtitles) {
@@ -98,19 +99,21 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     }
                     Promise.all(providers).then(function () {
                         _this.loading = false;
-                        _this.loadingDone = true;
+                        _this.searchingDone = true;
                     });
                 };
                 // todo add websockets support
                 ShowComponent.prototype.downloadSub = function (sub, subPack, $event) {
                     var _this = this;
                     this.loading = true;
+                    this.downloading = true;
                     this.rest.post('api/download', {
                         episode: this.selectedEpisode.file,
                         url: subPack.url,
                         subtitle: sub.file
                     }).toPromise().then(function (res) {
                         _this.loading = false;
+                        _this.downloading = false;
                         var $name = $($event.target), $icons = $name.find('i');
                         if ($icons.length > 0) {
                             $icons.remove();
@@ -125,7 +128,7 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     angular2_1.Injectable(),
                     angular2_1.Component({
                         selector: 'shows',
-                        template: "\n        <div class='show'>\n            <div class=\"page-header\">\n                <img [src]=\"'api/banner/' + showId\" image-fallback=\"showId\" overview=\"showInfo.tvShow.overview\">\n            </div>\n\n            <ul class=\"nav nav-tabs\">\n              <li class=\"nav-item\" *ng-for=\"#epList of tvShowData\" (click)=\"seasonFilter = epList.season\">\n                <span class=\"nav-link\" [ng-class]=\"{active: seasonFilter == epList.season}\">\n                    {{ 'SEASON' | translate }} {{epList.season }}\n                    <span *ng-if=\"epList.missingSubs > 0\" class=\"badge pull-right\">{{ epList.missingSubs }}</span>\n                </span>\n              </li>\n            </ul>\n\n            <div class=\"episodesList\">\n                <div class=\"card list-group epListWrapper\" *ng-for=\"#epList of tvShowData | season:seasonFilter\">\n                    <div *ng-for=\"#ep of epList.episodes\" class=\"episode alert\" [ng-class]=\"{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}\">\n                        <div class=\"name ellipsis\" (click)=\"searchSubs(ep)\">\n                            <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}\n                        </div>\n                        <i [hidden]=\"loading && selectedEpisode === ep\" *ng-if=\"ep.subtitle\" class=\"glyphicon glyphicon-paperclip\" [title]=\"ep.subtitle.name\"></i>\n                        <loader [hidden]=\"!loading\" *ng-if=\"selectedEpisode === ep\"></loader>\n\n                        <div class=\"subtitlesList col-xs-12 fade-in\" *ng-if=\"selectedEpisode === ep\">\n                            <div class=\"card\" [hidden]=\"subList.length !== 0 || !loadingDone\">\n                                <div class=\"no-subtitle name\">{{ 'NO_RESULT' | translate }}</div>\n                            </div>\n                            <div class=\"card list-group subPackWrapper fade-in\" *ng-for=\"#subPack of subList | qualitySort\">\n                                <div class=\"card-header qualite{{ subPack.quality }}\">\n                                    <span class=\"label pull-right qualite{{ subPack.quality }}\">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>\n                                    {{ subPack.file }}\n                                </div>\n                                <a *ng-for=\"#sub of subPack.content\" class=\"subtitle list-group-item\" (click)=\"downloadSub(sub, subPack, $event)\">\n                                    <div class=\"name\">\n                                        <span class=\"label\">{{ sub.score }}</span> {{ sub.name }}\n                                        <i *ng-if=\"sub === selectedEpisode.subtitle\" class=\"success glyphicon glyphicon-ok\"></i>\n                                    </div>\n                                </a>\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n  ",
+                        template: "\n        <div class='show'>\n            <div class=\"page-header\">\n                <img [src]=\"'api/banner/' + showId\" image-fallback=\"showId\" overview=\"showInfo.tvShow.overview\">\n            </div>\n\n            <ul class=\"nav nav-tabs\">\n              <li class=\"nav-item\" *ng-for=\"#epList of tvShowData\" (click)=\"seasonFilter = epList.season\">\n                <span class=\"nav-link\" [ng-class]=\"{active: seasonFilter == epList.season}\">\n                    {{ 'SEASON' | translate }} {{epList.season }}\n                    <span *ng-if=\"epList.missingSubs > 0\" class=\"badge pull-right\">{{ epList.missingSubs }}</span>\n                </span>\n              </li>\n            </ul>\n\n            <div class=\"episodesList\">\n                <div class=\"card list-group epListWrapper\" *ng-for=\"#epList of tvShowData | season:seasonFilter\">\n                    <div *ng-for=\"#ep of epList.episodes\" class=\"episode alert\" [ng-class]=\"{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}\">\n                        <div class=\"name ellipsis\" (click)=\"searchSubs(ep)\">\n                            <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}\n                        </div>\n                        <i [hidden]=\"loading && selectedEpisode === ep\" *ng-if=\"ep.subtitle\" class=\"glyphicon glyphicon-paperclip\" [title]=\"ep.subtitle.name\"></i>\n                        <loader [hidden]=\"!loading\" *ng-if=\"selectedEpisode === ep\"></loader>\n\n                        <div class=\"subtitlesList col-xs-12 fade-in\" [ng-class]=\"{disabled: downloading}\" *ng-if=\"selectedEpisode === ep\">\n                            <div class=\"card\" [hidden]=\"subList.length !== 0 || !loadingDone\">\n                                <div class=\"no-subtitle name\">{{ 'NO_RESULT' | translate }}</div>\n                            </div>\n                            <div class=\"card list-group subPackWrapper fade-in\" *ng-for=\"#subPack of subList | qualitySort\">\n                                <div class=\"card-header qualite{{ subPack.quality }}\">\n                                    <span class=\"label pull-right qualite{{ subPack.quality }}\">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>\n                                    {{ subPack.file }}\n                                </div>\n                                <a *ng-for=\"#sub of subPack.content\" class=\"subtitle list-group-item\" (click)=\"downloadSub(sub, subPack, $event)\">\n                                    <div class=\"name\">\n                                        <span class=\"label\">{{ sub.score }}</span> {{ sub.name }}\n                                        <i *ng-if=\"sub === selectedEpisode.subtitle\" class=\"success glyphicon glyphicon-ok\"></i>\n                                    </div>\n                                </a>\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n  ",
                         directives: [angular2_1.NgFor, angular2_1.NgClass, loader_1.LoaderComponent, angular2_1.NgIf],
                         pipes: [season_1.SeasonPipe, qualitySort_1.QualitySortPipe, ng2_translate_1.TranslatePipe]
                     }), 
