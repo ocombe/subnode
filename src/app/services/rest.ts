@@ -22,5 +22,7 @@ export class RestService {
 }
 
 export interface RestResponse {
-    success?: Boolean;
+    success: Boolean;
+    error?:any;
+    data?:any;
 }

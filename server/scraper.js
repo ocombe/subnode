@@ -120,9 +120,13 @@ var getData = function(params) {
 exports.score = function(file, sub, lang) {
 	var score = 0;
 	_.each(file, function(f, i) {
-		if(typeof f != 'undefined' && typeof sub[i] != 'undefined' && f.toString().toLowerCase() == sub[i].toString().toLowerCase()) {
-			score++;
-		}
+		if(f && sub[i]) {
+            if(f.toString().toLowerCase() == sub[i].toString().toLowerCase()) {
+                score++;
+            } else {
+                score--;
+            }
+        }
 	});
 	if(sub.lang == lang) {
 		score++;

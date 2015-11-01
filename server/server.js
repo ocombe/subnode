@@ -197,9 +197,11 @@ module.exports = {
 				fileInfo: fileScraper.scrape(req.params.episode),
 				lang: appParams.subLang,
 				showId: req.params.showId
-			}, function(subtitles) {
-				return response.json(subtitles);
-			});
+			}).then(function(subtitles) {
+				return response.json({success: true, data: subtitles});
+			}, function(err) {
+                return response.json({success: false, error: err});
+            });
 		});
 
 		app.get('/api/addic7ed/:showId/:episode', function(req, response) {
@@ -207,53 +209,93 @@ module.exports = {
 				fileInfo: fileScraper.scrape(req.params.episode),
 				lang: appParams.subLang,
 				showId: req.params.showId
-			}, function(subtitles) {
-				return response.json(subtitles);
-			});
+			}).then(function(subtitles) {
+				return response.json({success: true, data: subtitles});
+			}, function(err) {
+                return response.json({success: false, error: err});
+            });
 		});
 
 		app.post('/api/download', function(req, response) {
-			var folder = path.dirname(req.body.episode) + '/',
-				newName = appParams.autorename ? path.basename(req.body.episode).replace(path.extname(req.body.episode), (appParams.autorename_ext ? '.' + appParams.subLang : '') + path.extname(req.body.subtitle)) : false; // send false for no autorename
+            function download(folder, url, episode, subtitle) {
+                var newName = false; // send false for no autorename
+                if(appParams.autorename) {
+                    newName = path.basename(episode.name).replace(path.extname(episode.name), (appParams.autorename_ext ? '.' + appParams.subLang : '') + path.extname(subtitle))
+                }
 
-            function onDownload(err, path) {
-                if(!err) {
-                    var fileInfo = fileScraper.scrape(path);
-                    // if video or subtitle
-                    if(fileInfo) {
-                        var stats = fs.statSync(path);
-                        if(stats && stats.ctime) {
-                            fileInfo.ctime = new Date(stats.ctime).getTime();
+                function onDownload(err, path) {
+                    if(!err) {
+                        var fileInfo = fileScraper.scrape(path);
+                        // if video or subtitle
+                        if(fileInfo) {
+                            var stats = fs.statSync(path);
+                            if(stats && stats.ctime) {
+                                fileInfo.ctime = new Date(stats.ctime).getTime();
+                            }
+                            // replace the subtitle for this show / season / episode
+                            filesList.update({
+                                type: fileInfo.type,
+                                season: fileInfo.season,
+                                episode: fileInfo.episode,
+                                show: fileInfo.show
+                            }, fileInfo, {upsert: true});
                         }
-                        // replace the subtitle for this show / season / episode
-                        filesList.update({
-                            type: fileInfo.type,
-                            season: fileInfo.season,
-                            episode: fileInfo.episode,
-                            show: fileInfo.show
-                        }, fileInfo, {upsert: true});
+                        return response.json({success: true, data: fileInfo});
+                    } else {
+                        return response.json({success: false, error: err});
                     }
-                    return response.json({success: true, data: fileInfo});
-                } else {
-                    return response.json({success: false, error: err});
+                }
+
+                if(url.indexOf('betaseries') !== -1) {
+                    betaSeries.download({
+                        url: url,
+                        folder: folder,
+                        subtitle: subtitle,
+                        newName: newName
+                    }, onDownload);
+                } else if(url.indexOf('addic7ed') !== -1) {
+                    //todo update filesList
+                    addic7ed.download({
+                        url: url,
+                        folder: folder,
+                        newName: newName
+                    }, onDownload);
                 }
             }
 
-			if(req.body.url.indexOf('betaseries') != -1) {
-				betaSeries.download({
-					url: req.body.url,
-					folder: folder,
-					subtitle: req.body.subtitle,
-					newName: newName
-				}, onDownload);
-			} else if(req.body.url.indexOf('addic7ed') != -1) {
-                //todo update filesList
-				addic7ed.download({
-					url: req.body.url,
-					folder: folder,
-					newName: newName
-				}, onDownload);
-			}
+            var folder = path.dirname(req.body.episode.file) + '/';
+            if(req.body.subtitle && req.body.url) {
+                download(folder, req.body.url, req.body.episode, req.body.subtitle);
+            } else { // one click download
+                var promisesList = [];
+                if(appParams.providers.indexOf('addic7ed') !== -1) {
+                    promisesList.push(addic7ed.getSubtitles({
+                        fileInfo: fileScraper.scrape(req.body.episode.name),
+                        lang: appParams.subLang,
+                        showId: req.body.episode.show
+                    }));
+                }
+                if(appParams.providers.indexOf('betaSeries') !== -1) {
+                    promisesList.push(betaSeries.getSubtitles({
+                        fileInfo: fileScraper.scrape(req.body.episode.name),
+                        lang: appParams.subLang,
+                        showId: req.body.episode.show
+                    }));
+                }
+                Promise.all(promisesList).then(function(res) {
+                    var subtitlePacks = _.flatten(res);
+                    var subtitles = _.flatten(_.map(subtitlePacks, function(subPack) {
+                        return _.each(subPack.content, function(sub) {
+                            sub.score = subPack.quality * sub.score;
+                            sub.url = subPack.url;
+                        });
+                    }));
+                    var selectedSubtitle = _.max(subtitles, 'score');
+                    download(folder, selectedSubtitle.url, req.body.episode, selectedSubtitle.file);
+                }, function(err) {
+                    return response.json({success: false, error: err});
+                });
+            }
 		});
 
 		app.get('/api/lastEpisodes', function(req, response) {

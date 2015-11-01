@@ -69,47 +69,46 @@ exports.getShowUrl = function(showName, callback) {
     });
 };
 
-exports.getSubtitles = function(params, callback) {
-	if(typeof params.showId == 'function' && typeof callback == 'undefined') {
-		callback = params.showId;
-		params.showId = undefined;
-	}
-	exports.getShowUrl(params.showId ? params.showId : params.fileInfo.show, function(showUrl) {
-		if(showUrl) {
-			exports.getFromApi('/subtitles/show/' + showUrl, {
-	            language: params.lang === 'fr' ? 'VF' : 'VO',
-	            season: params.fileInfo.season,
-	            episode: params.fileInfo.episode
-	        }, function(data) {
-				var tempSubtitles = data.root.subtitles,
-					subtitles = [];
-				_.each(tempSubtitles, function(sub) {
-					var tempContent = [];
-					_.each(sub.content, function(content) {
-						if(content) {
-							var subInfo = fileScraper.scrape(content);
-							if(subInfo && subInfo.season == params.fileInfo.season && subInfo.episode == params.fileInfo.episode && (!subInfo.lang || subInfo.lang == params.lang)) {
-								subInfo.score = fileScraper.score(params.fileInfo, subInfo, params.lang);
-								tempContent.push(subInfo);
-							}
-						}
-					});
-					if(tempContent.length > 0) {
-						sub.content = tempContent.sort(function(a, b) { return b.score - a.score; });
-                        sub.season = Number(sub.season);
-                        sub.episode = Number(sub.episode);
-						subtitles.push(sub);
-					} else {
-						delete sub;
-					}
-				});
-	            if(typeof callback == 'function') {
-	                callback(subtitles);
-	            }
-	        });
-		} else if(typeof callback == 'function') {
-			callback([]);
-		}
+exports.getSubtitles = function(params) {
+    return new Promise(function(resolve, reject) {
+        exports.getShowUrl(params.showId ? params.showId : params.fileInfo.show, function(showUrl) {
+            if(showUrl) {
+                exports.getFromApi('/subtitles/show/' + showUrl, {
+                    language: params.lang === 'fr' ? 'VF' : 'VO',
+                    season: params.fileInfo.season,
+                    episode: params.fileInfo.episode
+                }, function(data) {
+                    var tempSubtitles = data.root.subtitles,
+                        subtitles = [];
+                    _.each(tempSubtitles, function(sub) {
+                        var tempContent = [];
+                        _.each(sub.content, function(content) {
+                            if(content) {
+                                var subInfo = fileScraper.scrape(content);
+                                if(subInfo && subInfo.season == params.fileInfo.season && subInfo.episode == params.fileInfo.episode && (!subInfo.lang || subInfo.lang == params.lang)) {
+                                    subInfo.score = fileScraper.score(params.fileInfo, subInfo, params.lang);
+                                    tempContent.push(subInfo);
+                                }
+                            }
+                        });
+                        if(tempContent.length > 0) {
+                            sub.content = tempContent.sort(function(a, b) {
+                                return b.score - a.score;
+                            });
+                            sub.season = Number(sub.season);
+                            sub.episode = Number(sub.episode);
+                            sub.provider = 'betaSeries';
+                            subtitles.push(sub);
+                        } else {
+                            delete sub;
+                        }
+                    });
+                    resolve(subtitles);
+                });
+            } else {
+                resolve([]);
+            }
+        });
     });
 };
 

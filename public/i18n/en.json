@@ -42,5 +42,6 @@
 	"SHUTDOWN": "Shutdown the server",
 	"RESTART": "Restart the server",
 	"CHANGELOG": "Changelog",
-  "INITIAL_SCAN": "Initial scan in progress..."
+  "INITIAL_SCAN": "Initial scan in progress...",
+  "ONE_CLICK_DL": "1-Click download"
 }

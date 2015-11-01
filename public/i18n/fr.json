@@ -42,5 +42,6 @@
 	"SHUTDOWN": "Éteindre le serveur",
 	"RESTART": "Redémarrer le serveur",
 	"CHANGELOG": "Liste des nouveautés",
-  "INITIAL_SCAN": "Scan initial en cours..."
+  "INITIAL_SCAN": "Scan initial en cours...",
+  "ONE_CLICK_DL": "Téléchargement en 1-Click"
 }

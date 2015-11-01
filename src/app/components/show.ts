@@ -31,14 +31,17 @@ import {ParamsComponent} from "./params";
             <div class="episodesList">
                 <div class="card list-group epListWrapper" *ng-for="#epList of tvShowData | season:seasonFilter">
                     <div *ng-for="#ep of epList.episodes" class="episode alert" [ng-class]="{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}">
-                        <div class="name ellipsis" (click)="searchSubs(ep)">
-                            <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}
+                        <div class="episode-header">
+                            <button class="one-click-dl btn btn-secondary" [disabled]="downloading" (click)="oneClickDownload(ep)"><i class="glyphicon glyphicon-download-alt"></i> <span class="title">{{ 'ONE_CLICK_DL' | translate }}</span></button>
+                            <div class="name ellipsis" (click)="searchSubs(ep)">
+                                <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}
+                            </div>
+                            <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip" [title]="ep.subtitle.name"></i>
+                            <loader [hidden]="!loading" *ng-if="selectedEpisode === ep"></loader>
                         </div>
-                        <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip" [title]="ep.subtitle.name"></i>
-                        <loader [hidden]="!loading" *ng-if="selectedEpisode === ep"></loader>
 
-                        <div class="subtitlesList col-xs-12 fade-in" [ng-class]="{disabled: downloading}" *ng-if="selectedEpisode === ep">
-                            <div class="card" [hidden]="subList.length !== 0 || !loadingDone">
+                        <div class="subtitlesList col-xs-12 fade-in" [ng-class]="{disabled: downloading}" *ng-if="selectedEpisode === ep && subList">
+                            <div class="card" [hidden]="subList.length > 0 || !loadingDone">
                                 <div class="no-subtitle name">{{ 'NO_RESULT' | translate }}</div>
                             </div>
                             <div class="card list-group subPackWrapper fade-in" *ng-for="#subPack of subList | qualitySort">
@@ -46,10 +49,10 @@ import {ParamsComponent} from "./params";
                                     <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
                                     {{ subPack.file }}
                                 </div>
-                                <a *ng-for="#sub of subPack.content" class="subtitle list-group-item" (click)="downloadSub(sub, subPack, $event)">
+                                <a *ng-for="#sub of subPack.content" class="subtitle list-group-item" (click)="downloadSub(sub, subPack, ep, $event)">
                                     <div class="name">
                                         <span class="label">{{ sub.score }}</span> {{ sub.name }}
-                                        <i *ng-if="sub === selectedEpisode.subtitle" class="success glyphicon glyphicon-ok"></i>
+                                        <i *ng-if="sub === ep.subtitle" class="success glyphicon glyphicon-ok"></i>
                                     </div>
                                 </a>
                             </div>
@@ -107,16 +110,22 @@ export class ShowComponent implements OnActivate {
     searchSubs(ep: Episode) {
         if(ep === this.selectedEpisode) {
             this.selectedEpisode = undefined;
+            this.subList = undefined;
             return;
         }
         this.loading = true;
         this.searchingDone = false;
         this.selectedEpisode = ep;
-        this.subList = [];
 
-        var showSubs = (subtitles: Array<Subtitle>) => {
-            if(subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
-                this.subList = this.subList.concat(subtitles);
+        var showSubs = (res: RestResponse) => {
+            if(this.selectedEpisode) {
+                var subtitles: Array<Subtitle> = res.data;
+                if(subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
+                    if(!this.subList) {
+                        this.subList = [];
+                    }
+                    this.subList = this.subList.concat(subtitles);
+                }
             }
         };
 
@@ -135,12 +144,30 @@ export class ShowComponent implements OnActivate {
         });
     }
 
+    oneClickDownload(ep) {
+        this.loading = true;
+        this.downloading = true;
+        this.selectedEpisode = ep;
+        this.subList = undefined;
+        this.rest.post('api/download', {
+                episode: ep
+            }).toPromise().then((res: RestResponse) => {
+            if(res.success) {
+                this.loading = false;
+                this.downloading = false;
+                this.selectedEpisode = undefined;
+                ep.subtitle = res.data;
+                this.updateMissingSubs();
+            }
+        })
+    }
+
     // todo add websockets support
-    downloadSub(sub: Subtitle, subPack: SubtitlePack, $event: MouseEvent) {
+    downloadSub(sub: Subtitle, subPack: SubtitlePack, ep: Episode, $event: MouseEvent) {
         this.loading = true;
         this.downloading = true;
         this.rest.post('api/download', {
-            episode: this.selectedEpisode.file,
+            episode: ep,
             url: subPack.url,
             subtitle: sub.file
         }).toPromise().then((res: RestResponse) => {
@@ -152,7 +179,7 @@ export class ShowComponent implements OnActivate {
                 $icons.remove();
             }
             if(res.success) {
-                this.selectedEpisode.subtitle = sub;
+                ep.subtitle = sub;
                 this.updateMissingSubs();
             }
         });

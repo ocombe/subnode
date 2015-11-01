@@ -129,6 +129,7 @@ var getSubtitlesList = function(params, callback) {
 					episode: Number(params.fileInfo.episode),
 					language: params.lang,
 					source: 'addic7ed',
+                    provider: 'addic7ed',
 					file: fileName,
 					url: 'http://www.addic7ed.com' + $(columns[9]).find('a').first().attr('href'),
 					quality: 3,
@@ -144,38 +145,33 @@ var getSubtitlesList = function(params, callback) {
 	});
 };
 
-exports.getSubtitles = function(params, callback) {
-	var langFull = 'English';
-	if(typeof params.showId == 'function' && typeof callback == 'undefined') {
-		callback = params.showId;
-		params.showId = undefined;
-	}
-	if(params.lang == 'fr') {
-		langFull = 'French';
-	}
-	if(params.lang == 'nl') {
-		langFull = 'Dutch';
-	}
+exports.getSubtitles = function(params) {
+    return new Promise(function(resolve, reject) {
+        var langFull = 'English';
+        // todo lang service
+        if(params.lang == 'fr') {
+            langFull = 'French';
+        }
+        if(params.lang == 'nl') {
+            langFull = 'Dutch';
+        }
 
-	exports.getShowId(params.showId ? params.showId : params.fileInfo.show, function(id) {
-		if(id) {
-			getSubtitlesList({
-				id: id,
-				showId: params.showId ? params.showId : params.fileInfo.show,
-				lang: params.lang,
-				langFull: langFull,
-				fileInfo: params.fileInfo
-			}, function(data) {
-				if(typeof callback == 'function') {
-					callback(data);
-				}
-			});
-		} else {
-			if(typeof callback == 'function') {
-				callback('Error: no id for tv show.');
-			}
-		}
-	});
+        exports.getShowId(params.showId ? params.showId : params.fileInfo.show, function(id) {
+            if(id) {
+                getSubtitlesList({
+                    id: id,
+                    showId: params.showId ? params.showId : params.fileInfo.show,
+                    lang: params.lang,
+                    langFull: langFull,
+                    fileInfo: params.fileInfo
+                }, function(data) {
+                    resolve(data);
+                });
+            } else {
+                reject('Error: no id for tv show.');
+            }
+        });
+    });
 };
 
 exports.download = function(params, callback) {
