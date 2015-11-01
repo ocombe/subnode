@@ -34,7 +34,7 @@ import {ParamsComponent} from "./params";
                         <div class="name ellipsis" (click)="searchSubs(ep)">
                             <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}
                         </div>
-                        <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip"></i>
+                        <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip" [title]="ep.subtitle.name"></i>
                         <loader [hidden]="!loading" *ng-if="selectedEpisode === ep"></loader>
 
                         <div class="subtitlesList col-xs-12 fade-in" *ng-if="selectedEpisode === ep">
