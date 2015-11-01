@@ -25,9 +25,10 @@ module.exports = {
             filesList = new Datastore({ filename: __dirname + '/data/filesList.db', autoload: true }),
 			lastUpdateCheck = 0,
             initialScanDone = false,
-			upToDate;
+			upToDate,
+            watcher;
 
-        var watchEnabled = true;
+        var watchEnabled = true; // for dev
 
         filesList.ensureIndex({ fieldName: 'file', unique: true });
 
@@ -73,6 +74,7 @@ module.exports = {
 		});
 
 		app.post('/api/params', function(req, response) {
+            var initialRoot = appParams.rootFolder;
 			appParams = req.body;
 			nconfParams.set("rootFolder", appParams.rootFolder);
 			nconfParams.set("autorename", appParams.autorename);
@@ -82,6 +84,14 @@ module.exports = {
 			nconfParams.set("password", appParams.password);
 			nconfParams.set("providers", appParams.providers);
 			nconfParams.save(function(err) {
+                if(initialRoot !== appParams.rootFolder) {
+                    filesList.remove({}, { multi: true }, function(err, numRemoved) {
+                        if(err) {
+                            console.log(err);
+                        }
+                        startWatch();
+                    });
+                }
                 response.status(err ? 500 : 200).json({error: err, success: err ? false : true});
 			});
 		});
@@ -360,6 +370,63 @@ module.exports = {
             })
         });
 
+        function startWatch() {
+            if(watcher) {
+                watcher.close();
+            }
+
+            if(watchEnabled && appParams && appParams.rootFolder) {
+                initialScanDone = false;
+                // Initialize watcher
+                watcher = chokidar.watch(appParams.rootFolder, {
+                    ignored: /[\/\\]\./,
+                    persistent: true,
+                    awaitWriteFinish: true
+                    //ignoreInitial: true
+                });
+
+                var emitNewScan = _.debounce(function() {
+                    io.emit('scan:new');
+                }, 1000);
+
+                function onFileChange(path, stats) {
+                    var fileInfo = fileScraper.scrape(path);
+                    // if video or subtitle
+                    if(fileInfo && (fileInfo.type === 'video' || fileInfo.type === 'subtitle')) {
+                        if(stats && stats.ctime) {
+                            fileInfo.ctime = new Date(stats.ctime).getTime();
+                        }
+                        filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
+                            if(err) {
+                                console.log(err);
+                            }
+                        });
+                        if(initialScanDone) {
+                            emitNewScan();
+                        }
+                    }
+                }
+
+                // Add event listeners
+                watcher
+                    .on('add', onFileChange)
+                    .on('change', onFileChange)
+                    .on('unlink', function(path) {
+                        //console.log('File', path, 'has been removed');
+                        filesList.remove({path: path})
+                    })
+                    .on('error', function(error) {
+                        console.log('Error happened', error);
+                    })
+                    .on('ready', function() {
+                        initialScanDone = true;
+                        console.log('Initial scan complete. Ready for changes.');
+                        filesList.persistence.compactDatafile(); // compress the db
+                        emitNewScan();
+                    });
+            }
+        }
+
         return nconfParams.load(function() {
 			appParams = {
 				rootFolder: nconfParams.get('rootFolder'),
@@ -382,66 +449,7 @@ module.exports = {
 					});
 				}
 
-                if(watchEnabled) {
-                    // Initialize watcher
-                    var watcher = chokidar.watch(appParams.rootFolder, {
-                        ignored: /[\/\\]\./,
-                        persistent: true,
-                        awaitWriteFinish: true
-                        //ignoreInitial: true
-                    });
-
-                    var emitNewScan = _.debounce(function() {
-                        io.emit('scan:new');
-                    }, 1000);
-
-                    function onFileChange(path, stats) {
-                        var fileInfo = fileScraper.scrape(path);
-                        // if video or subtitle
-                        if(fileInfo && (fileInfo.type === 'video' || fileInfo.type === 'subtitle')) {
-                            if(stats && stats.ctime) {
-                                fileInfo.ctime = new Date(stats.ctime).getTime();
-                            }
-                            filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
-                                if(err) {
-                                    console.log(err);
-                                }
-                            });
-                            if(initialScanDone) {
-                                emitNewScan();
-                            }
-                        }
-                    }
-
-                    // Add event listeners
-                    watcher
-                    //.on('all', function(event, path) {console.log(event, path);})
-                        .on('add', onFileChange)
-                        .on('change', onFileChange)
-                        .on('unlink', function(path) {
-                            //console.log('File', path, 'has been removed');
-                            filesList.remove({path: path})
-                        })
-                        // More events.
-                        /*.on('addDir', function(path, stats) {
-                         //console.log('Directory', path, 'has been added');
-                         var dir = {type: 'dir', path: path};
-                         filesList.update(dir, dir, {upsert: true})
-                         })
-                         .on('unlinkDir', function(path) {
-                         //console.log('Directory', path, 'has been removed');
-                         filesList.remove({type: 'dir', path: path})
-                         })*/
-                        .on('error', function(error) {
-                            console.log('Error happened', error);
-                        })
-                        .on('ready', function() {
-                            initialScanDone = true;
-                            console.log('Initial scan complete. Ready for changes.');
-                            filesList.persistence.compactDatafile(); // compress the db
-                            emitNewScan();
-                        })
-                }
+                startWatch();
 
 				return console.log("Listening on port " + (appParams.port || process.env.PORT || 3000) + ". Go to http://localhost:" + (appParams.port || process.env.PORT || 3000) + "/ and enjoy !");
 			});

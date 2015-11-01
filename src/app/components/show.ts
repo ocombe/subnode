@@ -41,7 +41,7 @@ import {ParamsComponent} from "./params";
                         </div>
 
                         <div class="subtitlesList col-xs-12 fade-in" [ng-class]="{disabled: downloading}" *ng-if="selectedEpisode === ep && subList">
-                            <div class="card" [hidden]="subList.length > 0 || !loadingDone">
+                            <div class="card" [hidden]="subList.length > 0 || !searchingDone">
                                 <div class="no-subtitle name">{{ 'NO_RESULT' | translate }}</div>
                             </div>
                             <div class="card list-group subPackWrapper fade-in" *ng-for="#subPack of subList | qualitySort">
@@ -120,10 +120,10 @@ export class ShowComponent implements OnActivate {
         var showSubs = (res: RestResponse) => {
             if(this.selectedEpisode) {
                 var subtitles: Array<Subtitle> = res.data;
+                if(!this.subList) {
+                    this.subList = [];
+                }
                 if(subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
-                    if(!this.subList) {
-                        this.subList = [];
-                    }
                     this.subList = this.subList.concat(subtitles);
                 }
             }
