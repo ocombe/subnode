@@ -42,7 +42,6 @@
     "cheerio": "~0.19.0",
     "chokidar": "^1.2.0",
     "compression": "~1.6.0",
-    "electron-squirrel-startup": "~0.1.4",
     "errorhandler": "~1.4.2",
     "express": "~4.13.3",
     "forever-monitor": "~1.7.0",
