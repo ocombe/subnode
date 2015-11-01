@@ -1,7 +1,11 @@
 var forever = require('forever-monitor');
 var subNode;
 
-subNode = new (forever.Monitor)(__dirname + '/server/serverWrapper.js', {max: 100});
+subNode = new (forever.Monitor)(__dirname + '/server/serverWrapper.js', {
+	command: 'node',
+	max: 100,
+	silent: false
+});
 
 subNode.on('exit', function() {
     console.log('subNode has exited.');
