@@ -114,40 +114,50 @@ exports.getSubtitles = function(params, callback) {
 };
 
 exports.download = function(params, callback) {
-	var request = http.get(params.url.replace('https', 'http'), function(response) {
-		if(!response || response.statusCode !== 200) {
-			return callback('Request error.');
-		}
-		var data = [],
-			dataLen = 0,
-			fileName = response.headers['content-disposition'],
-			downloadedFile = path.basename(fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')));
-		response.on('data',function(chunk) {
-			data.push(chunk);
-			dataLen += chunk.length;
-		}).on('end', function() {
-				if(path.extname(downloadedFile) == '.zip') {
-					var buf = new Buffer(dataLen);
-					for(var i = 0, len = data.length, pos = 0; i < len; i++) {
-						data[i].copy(buf, pos);
-						pos += data[i].length;
-					}
-					var zip = new AdmZip(buf);
-					zip.extractEntryTo(params.subtitle, params.folder, false, true);
-					if(params.newName) {
-						fs.rename(params.folder + path.basename(params.subtitle), params.folder + params.newName, function(err) {
-						});
-					}
-				} else {
-					if(params.newName) {
-						response.pipe(fs.createWriteStream(params.folder + params.newName));
-					} else {
-						response.pipe(fs.createWriteStream(params.folder + downloadedFile.replace(/\:\\\/\*\"\<\>\|/g, '')));
-					}
-				}
-				if(typeof callback == 'function') {
-					callback(null, true);
-				}
-			});
-	});
+    var request = http.get(params.url.replace('https', 'http'), function(response) {
+        if(!response || response.statusCode !== 200) {
+            return callback('Request error.');
+        }
+        var data = [],
+            dataLen = 0,
+            fileName = response.headers['content-disposition'],
+            downloadedFile = path.basename(fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')));
+        response.on('data', function(chunk) {
+            data.push(chunk);
+            dataLen += chunk.length;
+        }).on('end', function() {
+            var newFile = '';
+            if(path.extname(downloadedFile) == '.zip') {
+                var buf = new Buffer(dataLen);
+                for(var i = 0, len = data.length, pos = 0; i < len; i++) {
+                    data[i].copy(buf, pos);
+                    pos += data[i].length;
+                }
+                var zip = new AdmZip(buf);
+                zip.extractEntryTo(params.subtitle, params.folder, false, true);
+                if(params.newName) {
+                    newFile = params.folder + params.newName;
+                    fs.renameSync(params.folder + path.basename(params.subtitle), newFile);
+                } else {
+                    newFile = params.folder + params.subtitle;
+                }
+                if(typeof callback == 'function') {
+                    callback(null, newFile);
+                }
+            } else {
+                if(params.newName) {
+                    newFile = params.folder + params.newName;
+                    response.pipe(fs.createWriteStream(newFile));
+                } else {
+                    newFile = params.folder + downloadedFile.replace(/\:\\\/\*\"\<\>\|/g, '');
+                    response.pipe(fs.createWriteStream(newFile));
+                }
+                response.on('close', function() {
+                    if(typeof callback == 'function') {
+                        callback(null, newFile);
+                    }
+                });
+            }
+        });
+    });
 };

@@ -69,7 +69,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
                                 </div>
                             </div>
 
-                            <div class="form-group row fade-in" [hidden]="!paramsForm.value.password || paramsForm.value.password === ''" [ng-class]="{'has-error': !paramsForm.controls.password2.valid || paramsForm.value.password != paramsForm.value.password2}">
+                            <div class="form-group row fade-in" [hidden]="!paramsForm.value.password && !paramsForm.value.password2" [ng-class]="{'has-error': !paramsForm.controls.password2.valid || paramsForm.value.password != paramsForm.value.password2}">
                                 <label class="col-sm-4 col-xs-12 control-label" for="password_password2">{{ 'PASSWORD_CONFIRM' | translate }}</label>
 
                                 <div class="col-sm-8 col-xs-12">

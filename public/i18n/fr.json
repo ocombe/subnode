@@ -42,5 +42,5 @@
 	"SHUTDOWN": "Éteindre le serveur",
 	"RESTART": "Redémarrer le serveur",
 	"CHANGELOG": "Liste des nouveautés",
-  "TEST": "This is a {{test.value}} !"
+  "INITIAL_SCAN": "Scan initial en cours..."
 }

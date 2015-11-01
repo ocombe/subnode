@@ -123,7 +123,8 @@ function dev(done) {
     browserSync.init({
         proxy: 'localhost:3000',
         port: 9000,
-        open: false
+        open: false,
+        ws: true
     });
 
     process.stdin.resume();//so the program will not close instantly
@@ -198,13 +199,15 @@ function build(done) {
     packager({
         dir: './',
         name: 'subnode',
-        platform: 'all', // win32
-        arch: 'all', // ia32
+        //platform: 'all',
+        platform: 'win32',
+        //arch: 'all',
+        arch: 'ia32',
         out: './releases/',
         overwrite: true,
         icon: './public/img/favicon.ico',
         prune: true, // remove npm dev dependencies
-        version: '0.34.1',
+        version: '0.34.2',
         'app-version': package.version,
         ignore: [
             '.idea',

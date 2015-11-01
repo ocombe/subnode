@@ -68,7 +68,6 @@ export class ShowComponent implements OnActivate {
         return this.refresh(); // init
     }
 
-    rest: RestService;
     showId: string;
     selectedEpisode: Episode;
     tvShowData: Array<Season> = [];
@@ -79,7 +78,6 @@ export class ShowComponent implements OnActivate {
     loadingDone: Boolean = false;
 
     constructor(private params: RouteParams, private rest: RestService) {
-        this.rest = rest;
         this.showId = params.get('id');
     }
 
@@ -136,6 +134,7 @@ export class ShowComponent implements OnActivate {
         });
     }
 
+    // todo add websockets support
     downloadSub(sub: Subtitle, subPack: SubtitlePack, $event: MouseEvent) {
         this.loading = true;
         this.rest.post('api/download', {

@@ -116,8 +116,10 @@ app.on('ready', function() {
     });
 });
 
-// TODO cf https://github.com/atom/electron/pull/3250
-/*app.on('login', function(event, webContents, request, authInfo, callback) {
+app.on('login', function(event, webContents, request, authInfo, callback) {
     event.preventDefault();
-    callback('username', 'secret');
-})*/
+
+    // auto login
+    var appParams = require(__dirname + '/appParams.json');
+    callback(appParams.username, appParams.password);
+})

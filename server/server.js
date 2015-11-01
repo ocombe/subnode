@@ -1,25 +1,35 @@
 module.exports = {
 	startServer: function() {
 		var express = require('express'),
+			app = express(),
+            http = require('http').Server(app),
+            io = require('socket.io')(http),
             errorHandler = require('errorhandler'),
             compression = require('compression'),
             bodyParser = require('body-parser'),
             logger = require('morgan'),
-			app = express(),
 			nconf = require('nconf'),
 			nconfParams = new nconf.Provider().file('config', __dirname + '/../appParams.json'),
 			fs = require('fs'),
 			request = require('request'),
 			path = require('path'),
 			fileScraper = require(__dirname + '/scraper'),
-			addic7ed = require(__dirname + '/addic7ed.js'),
-			betaSeries = require(__dirname + '/betaSeries.js'),
-			tvdb = require(__dirname + '/tvdb.js'),
+			addic7ed = require(__dirname + '/addic7ed'),
+			betaSeries = require(__dirname + '/betaSeries'),
+			tvdb = require(__dirname + '/tvdb'),
 			wrench = require('wrench'),
+            chokidar = require(__dirname + '/chokidarWatcher'),
 			_ = require('lodash'),
 			updater = require(__dirname + '/updater'),
+            Datastore = require('nedb'),
+            filesList = new Datastore({ filename: __dirname + '/data/filesList.db', autoload: true }),
 			lastUpdateCheck = 0,
+            initialScanDone = false,
 			upToDate;
+
+        var watchEnabled = true;
+
+        filesList.ensureIndex({ fieldName: 'file', unique: true });
 
 		var appParams = {},
 			lastEpisodes = [],
@@ -101,6 +111,7 @@ module.exports = {
 
 		app.get('/api/showList', function(req, response) {
 			if(appParams && appParams.rootFolder) {
+                // todo use chokidar for following calls
 				fs.readdir(path.resolve(appParams.rootFolder), function(err, folders) {
                     if(err) {
                         console.error(err);
@@ -114,51 +125,70 @@ module.exports = {
 
 		app.get('/api/show/:showId', function(req, response) {
 			if(appParams.rootFolder != '') {
-				var filesList = [],
-					episodes = {},
+				var episodes = {},
 					subtitles = {},
 					episodesList = [];
-				wrench.readdirRecursive(appParams.rootFolder + '/' + req.params.showId, function(error, curFiles) {
-					if(typeof curFiles === 'undefined') {
-						return response.json([]);
-					} else if(curFiles !== null) {
-						_.each(curFiles, function(file) {
-							var fileInfo = fileScraper.scrape(appParams.rootFolder + '/' + req.params.showId + '/' + file);
-							if(fileInfo) { // if video or subtitle
-								if(fileInfo.type == 'video') {
-									if(typeof episodes[fileInfo.season] == 'undefined') {
-										episodes[fileInfo.season] = [];
-									}
-									episodes[fileInfo.season].push(fileInfo);
-								} else if(fileInfo.type == 'subtitle') {
-									if(typeof subtitles[fileInfo.season] == 'undefined') {
-										subtitles[fileInfo.season] = [];
-									}
-									subtitles[fileInfo.season].push(fileInfo);
-								}
-							}
-						});
-					} else { // we have all files
-						// tri des épisodes par numéro
-						for(var i in episodes) {
-							episodes[i] = episodes[i].sort(function(a, b) {
-								return a.episode - b.episode;
-							});
-							for(var e in episodes[i]) {
-								for(var s in subtitles[i]) {
-									if(episodes[i][e].episode == subtitles[i][s].episode) {
-										episodes[i][e].subtitle = subtitles[i][s];
-									}
-								}
-							}
-							episodesList.push({
-								season: parseInt(i, 10),
-								episodes: episodes[i]
-							});
-						}
-						return response.json(episodesList);
-					}
-				});
+
+                function addFile(fileInfo) {
+                    if(fileInfo.type == 'video') {
+                        if(typeof episodes[fileInfo.season] == 'undefined') {
+                            episodes[fileInfo.season] = [];
+                        }
+                        episodes[fileInfo.season].push(fileInfo);
+                    } else if(fileInfo.type == 'subtitle') {
+                        if(typeof subtitles[fileInfo.season] == 'undefined') {
+                            subtitles[fileInfo.season] = [];
+                        }
+                        subtitles[fileInfo.season].push(fileInfo);
+                    }
+                }
+
+                function sortFiles() {
+                    // sort episodes by number & season
+                    for(var i in episodes) {
+                        episodes[i] = episodes[i].sort(function(a, b) {
+                            return a.episode - b.episode;
+                        });
+                        for(var e in episodes[i]) {
+                            for(var s in subtitles[i]) {
+                                if(episodes[i][e].episode == subtitles[i][s].episode) {
+                                    episodes[i][e].subtitle = subtitles[i][s];
+                                }
+                            }
+                        }
+                        episodesList.push({
+                            season: parseInt(i, 10),
+                            episodes: episodes[i]
+                        });
+                    }
+                }
+
+                if(watchEnabled && initialScanDone) {
+                    filesList.find({show: req.params.showId}, function(err, curFiles) {
+                        _.each(curFiles, function(fileInfo) {
+                            addFile(fileInfo);
+                        });
+
+                        sortFiles();
+                        return response.json(episodesList);
+                    });
+                } else {
+                    wrench.readdirRecursive(appParams.rootFolder + '/' + req.params.showId, function(error, curFiles) {
+                        if(typeof curFiles === 'undefined') {
+                            return response.json([]);
+                        } else if(curFiles !== null) {
+                            _.each(curFiles, function(file) {
+                                var fileInfo = fileScraper.scrape(appParams.rootFolder + '/' + req.params.showId + '/' + file);
+                                if(fileInfo) { // if video or subtitle
+                                    addFile(fileInfo);
+                                }
+                            });
+                        } else { // we have all files
+                            sortFiles();
+                            return response.json(episodesList);
+                        }
+                    });
+                }
 			}
 		});
 
@@ -186,71 +216,69 @@ module.exports = {
 			var folder = path.dirname(req.body.episode) + '/',
 				newName = appParams.autorename ? path.basename(req.body.episode).replace(path.extname(req.body.episode), (appParams.autorename_ext ? '.' + appParams.subLang : '') + path.extname(req.body.subtitle)) : false; // send false for no autorename
 
+            function onDownload(err, path) {
+                if(!err) {
+                    var fileInfo = fileScraper.scrape(path);
+                    // if video or subtitle
+                    if(fileInfo) {
+                        var stats = fs.statSync(path);
+                        if(stats && stats.ctime) {
+                            fileInfo.ctime = new Date(stats.ctime).getTime();
+                        }
+                        // replace the subtitle for this show / season / episode
+                        filesList.update({
+                            type: fileInfo.type,
+                            season: fileInfo.season,
+                            episode: fileInfo.episode,
+                            show: fileInfo.show
+                        }, fileInfo, {upsert: true});
+                    }
+                    return response.json({success: true, data: fileInfo});
+                } else {
+                    return response.json({success: false, error: err});
+                }
+            }
+
 			if(req.body.url.indexOf('betaseries') != -1) {
 				betaSeries.download({
 					url: req.body.url,
 					folder: folder,
 					subtitle: req.body.subtitle,
 					newName: newName
-				}, function(err, res) {
-					return response.json({success: res});
-				});
+				}, onDownload);
 			} else if(req.body.url.indexOf('addic7ed') != -1) {
+                //todo update filesList
 				addic7ed.download({
 					url: req.body.url,
 					folder: folder,
 					newName: newName
-				}, function(err, res) {
-					return response.json({success: res});
-				});
+				}, onDownload);
 			}
 		});
 
-		app.get('/api/lastEpisodes/:refresh', function(req, response) {
-            // todo memoize the stuff & put it async + use websockets
-			var filesList = [],
-				now = new Date();
-			if(req.params.refresh === 'false' && lastEpisodes.length > 0 && now - lastFetch <= 15 * 60 * 1000) {
-				return response.json(lastEpisodes);
-			} else {
-				lastEpisodes = [];
-				if(appParams.rootFolder) {
-					wrench.readdirRecursive(appParams.rootFolder, function(error, curFiles) {
-						if(curFiles == null) {
-							filesList = filesList.sort(function(a, b) {
-								return b.ctime - a.ctime;
-							});
+		app.get('/api/lastEpisodes', function(req, response) {
+            lastEpisodes = [];
+            if(appParams.rootFolder) {
+                filesList.find({type: 'video'}, function(err, files) {
+                    files = files.sort(function(a, b) {
+                        return b.ctime - a.ctime;
+                    });
 
-							_.each(filesList, function(file) {
-								if(lastEpisodes.length < 10) {
-									file.episode = fileScraper.scrape(appParams.rootFolder + '/' + file.episode);
-									if(file.episode && file.episode.file) {
-										file.showId = file.episode.file.replace(appParams.rootFolder + '/', '');
-										file.showId = file.showId.substr(0, file.showId.indexOf('/'));
-										lastEpisodes.push(file);
-									}
-								} else {
-									return false;
-								}
-							});
-							lastFetch = now;
-							return response.json(lastEpisodes);
-						} else {
-							_.each(curFiles, function(file) {
-								if(/\.(3g2|3gp|3gp2|asf|avi|divx|flv|m4v|mk2|mka|mkv|mov|mp4|mp4a|mpeg|mpg|ogg|ogm|ogv|qt|ra|ram|rm|ts|wav|webm|wma|wmv)$/i.test(file)) {
-									fs.stat(appParams.rootFolder + '/' + file, function(err, s) {
-										if(s.ctime && s.ctime <= now) {
-											filesList.push({episode: file, ctime: s.ctime.getTime()});
-										}
-									});
-								}
-							});
-						}
-					});
-				} else {
-					return response.json([]);
-				}
-			}
+                    _.each(files, function(file) {
+                        if(lastEpisodes.length < 10) {
+                            file.showId = file.file.replace(appParams.rootFolder + '/', '');
+                            file.showId = file.showId.substr(0, file.showId.indexOf('/'));
+                            lastEpisodes.push(file);
+                        } else {
+                            return false;
+                        }
+                    });
+
+                    return response.json(lastEpisodes);
+                });
+            } else {
+                return response.json([]);
+            }
 		});
 
 		app.get('/api/banner/:showName', function(req, response) {
@@ -277,6 +305,19 @@ module.exports = {
             return response.sendFile(path.resolve(__dirname + '/../public/index.html'));
         });
 
+        // socket.io
+        io.on('connection', function(socket){
+            //console.log('a user connected');
+
+            /*socket.on('disconnect', function(){
+                console.log('user disconnected');
+            });*/
+
+            socket.on('scan:status', function() {
+                socket.emit('scan:status', initialScanDone ? 'done' : 'pending');
+            })
+        });
+
         return nconfParams.load(function() {
 			appParams = {
 				rootFolder: nconfParams.get('rootFolder'),
@@ -291,13 +332,75 @@ module.exports = {
 				port: nconfParams.get('port')
 			};
 
-			return app.listen(appParams.port || process.env.PORT || 3000, function() {
+			return http.listen(appParams.port || process.env.PORT || 3000, function() {
 				if(!appParams.port) {
 					nconfParams.set("port", process.env.PORT || 3000);
 					nconfParams.save(function(err) {
 						if(err) throw err;
 					});
 				}
+
+                if(watchEnabled) {
+                    // Initialize watcher
+                    var watcher = chokidar.watch(appParams.rootFolder, {
+                        ignored: /[\/\\]\./,
+                        persistent: true,
+                        awaitWriteFinish: true
+                        //ignoreInitial: true
+                    });
+
+                    var emitNewScan = _.debounce(function() {
+                        io.emit('scan:new');
+                    }, 1000);
+
+                    function onFileChange(path, stats) {
+                        var fileInfo = fileScraper.scrape(path);
+                        // if video or subtitle
+                        if(fileInfo && (fileInfo.type === 'video' || fileInfo.type === 'subtitle')) {
+                            if(stats && stats.ctime) {
+                                fileInfo.ctime = new Date(stats.ctime).getTime();
+                            }
+                            filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
+                                if(err) {
+                                    console.log(err);
+                                }
+                            });
+                            if(initialScanDone) {
+                                emitNewScan();
+                            }
+                        }
+                    }
+
+                    // Add event listeners
+                    watcher
+                    //.on('all', function(event, path) {console.log(event, path);})
+                        .on('add', onFileChange)
+                        .on('change', onFileChange)
+                        .on('unlink', function(path) {
+                            //console.log('File', path, 'has been removed');
+                            filesList.remove({path: path})
+                        })
+                        // More events.
+                        /*.on('addDir', function(path, stats) {
+                         //console.log('Directory', path, 'has been added');
+                         var dir = {type: 'dir', path: path};
+                         filesList.update(dir, dir, {upsert: true})
+                         })
+                         .on('unlinkDir', function(path) {
+                         //console.log('Directory', path, 'has been removed');
+                         filesList.remove({type: 'dir', path: path})
+                         })*/
+                        .on('error', function(error) {
+                            console.log('Error happened', error);
+                        })
+                        .on('ready', function() {
+                            initialScanDone = true;
+                            console.log('Initial scan complete. Ready for changes.');
+                            filesList.persistence.compactDatafile(); // compress the db
+                            emitNewScan();
+                        })
+                }
+
 				return console.log("Listening on port " + (appParams.port || process.env.PORT || 3000) + ". Go to http://localhost:" + (appParams.port || process.env.PORT || 3000) + "/ and enjoy !");
 			});
 		});

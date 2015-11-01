@@ -48,7 +48,6 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     this.missingSubs = 0;
                     this.loading = false;
                     this.loadingDone = false;
-                    this.rest = rest;
                     this.showId = params.get('id');
                 }
                 ShowComponent.prototype.onActivate = function (nextInstruction, prevInstruction) {
@@ -102,6 +101,7 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                         _this.loadingDone = true;
                     });
                 };
+                // todo add websockets support
                 ShowComponent.prototype.downloadSub = function (sub, subPack, $event) {
                     var _this = this;
                     this.loading = true;

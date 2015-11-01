@@ -41,5 +41,6 @@
 	"UPDATE_ERROR": "The update has failed. Error message : {{ err }}",
 	"SHUTDOWN": "Shutdown the server",
 	"RESTART": "Restart the server",
-	"CHANGELOG": "Changelog"
+	"CHANGELOG": "Changelog",
+  "INITIAL_SCAN": "Initial scan in progress..."
 }

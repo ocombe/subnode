@@ -1,6 +1,7 @@
-import {Component, Inject, ElementRef, OnChanges, SimpleChange} from 'angular2/angular2';
+import {Component, Injectable, ElementRef, OnChanges, SimpleChange, NgZone} from 'angular2/angular2';
 import {RouteParams} from 'angular2/router';
 
+@Injectable()
 @Component({
     selector: 'loader',
     properties: ['hidden'],
@@ -15,7 +16,7 @@ export class LoaderComponent implements OnChanges {
     time: number = 0;
     element: HTMLElement;
 
-    constructor(@Inject(ElementRef) element: ElementRef) {
+    constructor(element: ElementRef, private ngZone: NgZone) {
         this.element = element.nativeElement;
         this.canvas = element.nativeElement.querySelector('canvas');
         this.context = this.canvas.getContext("2d");
@@ -33,23 +34,26 @@ export class LoaderComponent implements OnChanges {
     }
 
     makeNoise() {
-        if (this.element && !this.element.hidden) {
-            var imgd = this.context.createImageData(this.canvas.width, this.canvas.height),
-                pix = imgd.data,
-                waveHeight = 800,
-                opacity = 200; // 255 = 100% opaque
+        // don't trigger change detection
+        this.ngZone.runOutsideAngular(() => {
+            if(this.element && !this.element.hidden) {
+                var imgd = this.context.createImageData(this.canvas.width, this.canvas.height),
+                    pix = imgd.data,
+                    waveHeight = 800,
+                    opacity = 200; // 255 = 100% opaque
 
-            for (var i = 0, n = pix.length; i < n; i += 4) {
-                var c = 6 + Math.sin(i / waveHeight + this.time / 7); // A sine wave of the form sin(ax + bt)
-                pix[i] = pix[i + 1] = pix[i + 2] = 40 * Math.random() * c; // Set a random gray
-                pix[i + 3] = opacity;
+                for (var i = 0, n = pix.length; i < n; i += 4) {
+                    var c = 6 + Math.sin(i / waveHeight + this.time / 7); // A sine wave of the form sin(ax + bt)
+                    pix[i] = pix[i + 1] = pix[i + 2] = 40 * Math.random() * c; // Set a random gray
+                    pix[i + 3] = opacity;
+                }
+
+                this.context.putImageData(imgd, 0, 0);
+                this.time = (this.time + 1) % this.canvas.height;
+
+
+                setTimeout(() => this.makeNoise(), 50);
             }
-
-            this.context.putImageData(imgd, 0, 0);
-            this.time = (this.time + 1) % this.canvas.height;
-
-
-            setTimeout(() => this.makeNoise(), 50);
-        }
+        });
     };
 }

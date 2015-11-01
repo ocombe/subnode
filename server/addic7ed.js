@@ -190,19 +190,25 @@ exports.download = function(params, callback) {
 		if(!response ||(err && response.statusCode !== 200)) {
 			return callback('Request error.');
 		}
-		var success = false;
 		var fileName = response.headers['content-disposition'];
+        var newFile = false;
 		if(fileName) {
 			if(params.newName) {
-				response.pipe(fs.createWriteStream(params.folder + params.newName));
+                newFile = params.folder + params.newName;
+				response.pipe(fs.createWriteStream(newFile));
 			} else {
-				fileName = fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')).replace(/[\:\\\/\*\"\<\>\|]/g, '');
-				response.pipe(fs.createWriteStream(params.folder + fileName));
+                newFile = params.folder + fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')).replace(/[\:\\\/\*\"\<\>\|]/g, '');
+				response.pipe(fs.createWriteStream(newFile));
 			}
-			success = true;
-		}
-		if(typeof callback == 'function') {
-			callback(null, success);
-		}
+            response.on('close', function() {
+                if(typeof callback == 'function') {
+                    callback(null, newFile);
+                }
+            });
+		} else {
+            if(typeof callback == 'function') {
+                callback(null, newFile);
+            }
+        }
 	});
 };

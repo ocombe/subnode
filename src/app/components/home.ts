@@ -1,10 +1,11 @@
-import {Component, Injectable, NgFor, ChangeDetectionStrategy} from 'angular2/angular2';
+import {Component, Injectable, NgFor, ChangeDetectionStrategy, OnDestroy, NgZone} from 'angular2/angular2';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {RestService} from '../services/rest';
 import {LoaderComponent} from "./loader";
 import {TranslatePipe} from "ng2-translate/ng2-translate";
 import {ShowComponent} from "./show";
 import {RouterService} from "../services/router";
+import {SocketService} from "../services/socket";
 
 @Injectable()
 @Component({
@@ -14,9 +15,8 @@ import {RouterService} from "../services/router";
             <div class="page-header">
                 <h2>
                     {{ 'LAST_EPISODES' | translate }}
-                    <a class="refreshBtn glyphicon glyphicon-refresh" (click)="getLastEpisodes(true)"></a>
-                    <loader class="pull-right" loader-id="home" loader-active="true" [hidden]="!showLoader"></loader>
                 </h2>
+                <small class="text-muted" [hidden]="scanDone">{{ 'INITIAL_SCAN' | translate }}</small>
             </div>
 
             <div class="lastEpisodes">
@@ -24,7 +24,7 @@ import {RouterService} from "../services/router";
                     <div class="col-lg-3 col-xs-12 card-block">
                         <div class="card-title">{{ file.showId }}</div>
                         <div class="card-text-wrapper">
-                            <span class="card-text col-lg-12">{{ file.episode.season | number:'2.0-0' }}x{{ file.episode.episode | number:'2.0-0' }}</span>
+                            <span class="card-text col-lg-12">{{ file.season | number:'2.0-0' }}x{{ file.episode | number:'2.0-0' }}</span>
                             <span class="card-subtitle col-lg-12">{{ file.ctime | date }}</span>
                         </div>
                     </div>
@@ -38,21 +38,34 @@ import {RouterService} from "../services/router";
     directives: [NgFor, LoaderComponent, ROUTER_DIRECTIVES],
     pipes: [TranslatePipe]
 })
-export class HomeComponent {
-    /*onChanges(changes: {[hidden: string]: SimpleChange}) {
-        console.log('on changes', changes);
-    }*/
+export class HomeComponent implements OnDestroy {
+    onDestroy() {
+        // clean up socket listeners
+        SocketService.off('scan:new');
+        SocketService.off('scan:status');
+    }
     lastEpisodes: Array<string> = [];
-    showLoader: Boolean = false;
+    scanDone: Boolean = false;
 
-    constructor(private rest: RestService, private routerService: RouterService) {
-        this.getLastEpisodes(false);
+    constructor(private rest: RestService, private routerService: RouterService, private ngZone: NgZone) {
+        this.getLastEpisodes().then(() => {
+            SocketService.on('scan:new', () => {
+                this.scanDone = true;
+                this.getLastEpisodes();
+            });
+
+            SocketService.on('scan:status', (status: string) => {
+                this.scanDone = status === 'done';
+            });
+
+            // ask for status
+            SocketService.socket.emit('scan:status');
+        });
     }
 
-    getLastEpisodes(refresh: Boolean) {
-        this.showLoader = true;
-        this.lastEpisodes = this.rest.get(`api/lastEpisodes/${refresh}`).toPromise().then((res: Array<string>) => {
-            this.showLoader = false;
+    // todo add websockets support & memoize the results
+    getLastEpisodes() {
+        return this.lastEpisodes = this.rest.get(`api/lastEpisodes`).toPromise().then((res: Array<string>) => {
             return res;
         });
     }

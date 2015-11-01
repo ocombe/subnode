@@ -1,5 +1,5 @@
-System.register(['angular2/angular2', 'angular2/router', 'angular2/http', './components/app', 'ng2-translate/ng2-translate', './services/rest', "./services/router"], function(exports_1) {
-    var angular2_1, router_1, http_1, app_1, ng2_translate_1, rest_1, router_2;
+System.register(['angular2/angular2', 'angular2/router', 'angular2/http', './components/app', 'ng2-translate/ng2-translate', './services/rest', "./services/router", "./services/socket"], function(exports_1) {
+    var angular2_1, router_1, http_1, app_1, ng2_translate_1, rest_1, router_2, socket_1;
     return {
         setters:[
             function (angular2_1_1) {
@@ -22,6 +22,9 @@ System.register(['angular2/angular2', 'angular2/router', 'angular2/http', './com
             },
             function (router_2_1) {
                 router_2 = router_2_1;
+            },
+            function (socket_1_1) {
+                socket_1 = socket_1_1;
             }],
         execute: function() {
             angular2_1.bootstrap(app_1.AppComponent, [
@@ -31,7 +34,8 @@ System.register(['angular2/angular2', 'angular2/router', 'angular2/http', './com
                 angular2_1.provide(router_1.LocationStrategy, { useClass: router_1.HashLocationStrategy }),
                 rest_1.RestService,
                 ng2_translate_1.TranslateService,
-                router_2.RouterService
+                router_2.RouterService,
+                socket_1.SocketService
             ]);
         }
     }

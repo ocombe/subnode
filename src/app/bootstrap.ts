@@ -5,6 +5,7 @@ import {AppComponent} from './components/app';
 import {TranslateService} from 'ng2-translate/ng2-translate';
 import {RestService} from './services/rest';
 import {RouterService} from "./services/router";
+import {SocketService} from "./services/socket";
 
 bootstrap(AppComponent, [
     ROUTER_PROVIDERS,
@@ -13,5 +14,6 @@ bootstrap(AppComponent, [
     provide(LocationStrategy, {useClass: HashLocationStrategy}), // use #/ routes instead of HTML5 mode
     RestService,
     TranslateService,
-    RouterService
+    RouterService,
+    SocketService
 ]);
