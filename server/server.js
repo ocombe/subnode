@@ -133,7 +133,7 @@ module.exports = {
 			}
 		});
 
-		app.get('/api/show/:showId', function(req, response) {
+		app.get('/api/show/:showId/:force', function(req, response) {
 			if(appParams.rootFolder != '') {
 				var episodes = {},
 					subtitles = {},
@@ -173,7 +173,7 @@ module.exports = {
                     }
                 }
 
-                if(watchEnabled && initialScanDone) {
+                if(watchEnabled && initialScanDone && !req.params.force) {
                     filesList.find({show: req.params.showId}, function(err, curFiles) {
                         _.each(curFiles, function(fileInfo) {
                             addFile(fileInfo);
@@ -183,6 +183,7 @@ module.exports = {
                         return response.json(episodesList);
                     });
                 } else {
+                    filesList.remove({show: req.params.showId}, {multiple: true}, function() {
                     wrench.readdirRecursive(appParams.rootFolder + '/' + req.params.showId, function(error, curFiles) {
                         if(typeof curFiles === 'undefined') {
                             return response.json([]);
@@ -197,6 +198,7 @@ module.exports = {
                             sortFiles();
                             return response.json(episodesList);
                         }
+                    });
                     });
                 }
 			}
@@ -264,7 +266,6 @@ module.exports = {
                         newName: newName
                     }, onDownload);
                 } else if(url.indexOf('addic7ed') !== -1) {
-                    //todo update filesList
                     addic7ed.download({
                         url: url,
                         folder: folder,
@@ -300,8 +301,12 @@ module.exports = {
                             sub.url = subPack.url;
                         });
                     }));
+                    if(subtitles.length > 0) {
                     var selectedSubtitle = _.max(subtitles, 'score');
                     download(folder, selectedSubtitle.url, req.body.episode, selectedSubtitle.file);
+                    } else {
+                        return response.json({success: false, error: 'No subtitle found'});
+                    }
                 }, function(err) {
                     return response.json({success: false, error: err});
                 });

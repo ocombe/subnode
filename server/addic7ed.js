@@ -189,6 +189,11 @@ exports.download = function(params, callback) {
 		var fileName = response.headers['content-disposition'];
         var newFile = false;
 		if(fileName) {
+            response.on('end', function() {
+                if(typeof callback == 'function') {
+                    callback(null, newFile);
+                }
+            });
 			if(params.newName) {
                 newFile = params.folder + params.newName;
 				response.pipe(fs.createWriteStream(newFile));
@@ -196,11 +201,6 @@ exports.download = function(params, callback) {
                 newFile = params.folder + fileName.substring(fileName.indexOf('"') + 1, fileName.lastIndexOf('"')).replace(/[\:\\\/\*\"\<\>\|]/g, '');
 				response.pipe(fs.createWriteStream(newFile));
 			}
-            response.on('close', function() {
-                if(typeof callback == 'function') {
-                    callback(null, newFile);
-                }
-            });
 		} else {
             if(typeof callback == 'function') {
                 callback(null, newFile);

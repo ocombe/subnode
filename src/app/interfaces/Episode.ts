@@ -11,4 +11,6 @@ export interface Episode extends Object {
     type: string;
     videoCodec: string;
     subtitle: Subtitle;
+    loading?: Boolean;
+    downloading?: Boolean;
 }

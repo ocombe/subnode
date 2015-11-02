@@ -60,10 +60,11 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                         epList.missingSubs = _this.unsubs(epList.episodes);
                     });
                 };
-                ShowComponent.prototype.refresh = function () {
+                ShowComponent.prototype.refresh = function (force) {
                     var _this = this;
+                    if (force === void 0) { force = false; }
                     this.tvShowData = [];
-                    return this.rest.get('api/show/' + this.showId).toPromise().then(function (show) {
+                    return this.rest.get("api/show/" + this.showId + "/" + force).toPromise().then(function (show) {
                         _this.tvShowData = show.reverse();
                         _this.updateMissingSubs();
                         if (show.length > 0) {
@@ -79,18 +80,16 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     var _this = this;
                     if (ep === this.selectedEpisode) {
                         this.selectedEpisode = undefined;
-                        this.subList = undefined;
+                        ep.loading = false;
                         return;
                     }
-                    this.loading = true;
+                    this.subList = [];
+                    ep.loading = true;
                     this.searchingDone = false;
                     this.selectedEpisode = ep;
                     var showSubs = function (res) {
-                        if (_this.selectedEpisode) {
+                        if (ep === _this.selectedEpisode) {
                             var subtitles = res.data;
-                            if (!_this.subList) {
-                                _this.subList = [];
-                            }
                             if (subtitles[0] && subtitles[0].content[0].episode === _this.selectedEpisode.episode && subtitles[0].content[0].season === _this.selectedEpisode.season) {
                                 _this.subList = _this.subList.concat(subtitles);
                             }
@@ -104,23 +103,23 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                         providers.push(this.rest.get('api/betaSeries/' + this.showId + '/' + ep.name).toPromise().then(showSubs));
                     }
                     Promise.all(providers).then(function () {
-                        _this.loading = false;
+                        ep.loading = false;
                         _this.searchingDone = true;
                     });
                 };
                 ShowComponent.prototype.oneClickDownload = function (ep) {
                     var _this = this;
-                    this.loading = true;
-                    this.downloading = true;
+                    ep.loading = true;
+                    ep.downloading = true;
                     this.selectedEpisode = ep;
                     this.subList = undefined;
                     this.rest.post('api/download', {
                         episode: ep
                     }).toPromise().then(function (res) {
+                        ep.loading = false;
+                        ep.downloading = false;
+                        _this.selectedEpisode = undefined;
                         if (res.success) {
-                            _this.loading = false;
-                            _this.downloading = false;
-                            _this.selectedEpisode = undefined;
                             ep.subtitle = res.data;
                             _this.updateMissingSubs();
                         }
@@ -129,15 +128,15 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                 // todo add websockets support
                 ShowComponent.prototype.downloadSub = function (sub, subPack, ep, $event) {
                     var _this = this;
-                    this.loading = true;
-                    this.downloading = true;
+                    ep.loading = true;
+                    ep.downloading = true;
                     this.rest.post('api/download', {
                         episode: ep,
                         url: subPack.url,
                         subtitle: sub.file
                     }).toPromise().then(function (res) {
-                        _this.loading = false;
-                        _this.downloading = false;
+                        ep.loading = false;
+                        ep.downloading = false;
                         var $name = $($event.target), $icons = $name.find('i');
                         if ($icons.length > 0) {
                             $icons.remove();
@@ -152,7 +151,7 @@ System.register(['angular2/angular2', 'angular2/router', "../services/rest", "..
                     angular2_1.Injectable(),
                     angular2_1.Component({
                         selector: 'shows',
-                        template: "\n        <div class='show'>\n            <div class=\"page-header\">\n                <img [src]=\"'api/banner/' + showId\" image-fallback=\"showId\" overview=\"showInfo.tvShow.overview\">\n            </div>\n\n            <ul class=\"nav nav-tabs\">\n              <li class=\"nav-item\" *ng-for=\"#epList of tvShowData\" (click)=\"seasonFilter = epList.season\">\n                <span class=\"nav-link\" [ng-class]=\"{active: seasonFilter == epList.season}\">\n                    {{ 'SEASON' | translate }} {{epList.season }}\n                    <span *ng-if=\"epList.missingSubs > 0\" class=\"badge pull-right\">{{ epList.missingSubs }}</span>\n                </span>\n              </li>\n            </ul>\n\n            <div class=\"episodesList\">\n                <div class=\"card list-group epListWrapper\" *ng-for=\"#epList of tvShowData | season:seasonFilter\">\n                    <div *ng-for=\"#ep of epList.episodes\" class=\"episode alert\" [ng-class]=\"{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}\">\n                        <div class=\"episode-header\">\n                            <button class=\"one-click-dl btn btn-secondary\" [disabled]=\"downloading\" (click)=\"oneClickDownload(ep)\"><i class=\"glyphicon glyphicon-download-alt\"></i> <span class=\"title\">{{ 'ONE_CLICK_DL' | translate }}</span></button>\n                            <div class=\"name ellipsis\" (click)=\"searchSubs(ep)\">\n                                <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}\n                            </div>\n                            <i [hidden]=\"loading && selectedEpisode === ep\" *ng-if=\"ep.subtitle\" class=\"glyphicon glyphicon-paperclip\" [title]=\"ep.subtitle.name\"></i>\n                            <loader [hidden]=\"!loading\" *ng-if=\"selectedEpisode === ep\"></loader>\n                        </div>\n\n                        <div class=\"subtitlesList col-xs-12 fade-in\" [ng-class]=\"{disabled: downloading}\" *ng-if=\"selectedEpisode === ep && subList\">\n                            <div class=\"card\" [hidden]=\"subList.length > 0 || !searchingDone\">\n                                <div class=\"no-subtitle name\">{{ 'NO_RESULT' | translate }}</div>\n                            </div>\n                            <div class=\"card list-group subPackWrapper fade-in\" *ng-for=\"#subPack of subList | qualitySort\">\n                                <div class=\"card-header qualite{{ subPack.quality }}\">\n                                    <span class=\"label pull-right qualite{{ subPack.quality }}\">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>\n                                    {{ subPack.file }}\n                                </div>\n                                <a *ng-for=\"#sub of subPack.content\" class=\"subtitle list-group-item\" (click)=\"downloadSub(sub, subPack, ep, $event)\">\n                                    <div class=\"name\">\n                                        <span class=\"label\">{{ sub.score }}</span> {{ sub.name }}\n                                        <i *ng-if=\"sub === ep.subtitle\" class=\"success glyphicon glyphicon-ok\"></i>\n                                    </div>\n                                </a>\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n  ",
+                        template: "\n        <div class='show'>\n            <div class=\"page-header\">\n                <img [src]=\"'api/banner/' + showId\" image-fallback=\"showId\" overview=\"showInfo.tvShow.overview\">\n            </div>\n\n            <ul class=\"nav nav-tabs\">\n              <li class=\"nav-item\" *ng-for=\"#epList of tvShowData\" (click)=\"seasonFilter = epList.season\">\n                <span class=\"nav-link\" [ng-class]=\"{active: seasonFilter == epList.season}\">\n                    {{ 'SEASON' | translate }} {{epList.season }}\n                    <span *ng-if=\"epList.missingSubs > 0\" class=\"badge pull-right\">{{ epList.missingSubs }}</span>\n                </span>\n              </li>\n              <li class=\"nav-item pull-right\" (click)=\"refresh(true)\" title=\"{{ 'REFRESH' | translate }}\">\n                <span class=\"nav-link\">\n                    <i class=\"glyphicon glyphicon-refresh\"></i>\n                </span>\n              </li>\n            </ul>\n\n            <div class=\"episodesList\">\n                <div class=\"card list-group epListWrapper\" *ng-for=\"#epList of tvShowData | season:seasonFilter\">\n                    <div *ng-for=\"#ep of epList.episodes\" class=\"episode alert\" [ng-class]=\"{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}\">\n                        <div class=\"episode-header\">\n                            <button class=\"one-click-dl btn btn-secondary\" [disabled]=\"ep.downloading\" (click)=\"oneClickDownload(ep)\"><i class=\"glyphicon glyphicon-download-alt\"></i> <span class=\"title\">{{ 'ONE_CLICK_DL' | translate }}</span></button>\n                            <div class=\"name ellipsis\" (click)=\"searchSubs(ep)\">\n                                <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}\n                            </div>\n                            <i [hidden]=\"ep.loading\" *ng-if=\"ep.subtitle\" class=\"glyphicon glyphicon-paperclip\" [title]=\"ep.subtitle.name\"></i>\n                            <loader [hidden]=\"!ep.loading\"></loader>\n                        </div>\n\n                        <div class=\"subtitlesList col-xs-12 fade-in\" [ng-class]=\"{disabled: ep.downloading}\" *ng-if=\"selectedEpisode === ep && subList && (subList.length > 0 || !ep.loading)\">\n                            <div class=\"card\" [hidden]=\"subList.length > 0 || !searchingDone\">\n                                <div class=\"no-subtitle name\">{{ 'NO_RESULT' | translate }}</div>\n                            </div>\n                            <div class=\"card list-group subPackWrapper fade-in\" *ng-for=\"#subPack of subList | qualitySort\">\n                                <div class=\"card-header qualite{{ subPack.quality }}\">\n                                    <span class=\"label pull-right qualite{{ subPack.quality }}\">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>\n                                    {{ subPack.file }}\n                                </div>\n                                <a *ng-for=\"#sub of subPack.content\" class=\"subtitle list-group-item\" (click)=\"downloadSub(sub, subPack, ep, $event)\">\n                                    <div class=\"name\">\n                                        <span class=\"label\">{{ sub.score }}</span> {{ sub.name }}\n                                        <i *ng-if=\"sub === ep.subtitle\" class=\"success glyphicon glyphicon-ok\"></i>\n                                    </div>\n                                </a>\n                            </div>\n                        </div>\n\n                    </div>\n                </div>\n            </div>\n        </div>\n  ",
                         directives: [angular2_1.NgFor, angular2_1.NgClass, loader_1.LoaderComponent, angular2_1.NgIf],
                         pipes: [season_1.SeasonPipe, qualitySort_1.QualitySortPipe, ng2_translate_1.TranslatePipe]
                     }), 

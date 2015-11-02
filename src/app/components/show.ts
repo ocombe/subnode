@@ -26,21 +26,26 @@ import {ParamsComponent} from "./params";
                     <span *ng-if="epList.missingSubs > 0" class="badge pull-right">{{ epList.missingSubs }}</span>
                 </span>
               </li>
+              <li class="nav-item pull-right" (click)="refresh(true)" title="{{ 'REFRESH' | translate }}">
+                <span class="nav-link">
+                    <i class="glyphicon glyphicon-refresh"></i>
+                </span>
+              </li>
             </ul>
 
             <div class="episodesList">
                 <div class="card list-group epListWrapper" *ng-for="#epList of tvShowData | season:seasonFilter">
                     <div *ng-for="#ep of epList.episodes" class="episode alert" [ng-class]="{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}">
                         <div class="episode-header">
-                            <button class="one-click-dl btn btn-secondary" [disabled]="downloading" (click)="oneClickDownload(ep)"><i class="glyphicon glyphicon-download-alt"></i> <span class="title">{{ 'ONE_CLICK_DL' | translate }}</span></button>
+                            <button class="one-click-dl btn btn-secondary" [disabled]="ep.downloading" (click)="oneClickDownload(ep)"><i class="glyphicon glyphicon-download-alt"></i> <span class="title">{{ 'ONE_CLICK_DL' | translate }}</span></button>
                             <div class="name ellipsis" (click)="searchSubs(ep)">
                                 <b>{{ ep.season | number:'2.0-0' }}x{{ ep.episode | number:'2.0-0' }}</b> - {{ ep.name }}
                             </div>
-                            <i [hidden]="loading && selectedEpisode === ep" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip" [title]="ep.subtitle.name"></i>
-                            <loader [hidden]="!loading" *ng-if="selectedEpisode === ep"></loader>
+                            <i [hidden]="ep.loading" *ng-if="ep.subtitle" class="glyphicon glyphicon-paperclip" [title]="ep.subtitle.name"></i>
+                            <loader [hidden]="!ep.loading"></loader>
                         </div>
 
-                        <div class="subtitlesList col-xs-12 fade-in" [ng-class]="{disabled: downloading}" *ng-if="selectedEpisode === ep && subList">
+                        <div class="subtitlesList col-xs-12 fade-in" [ng-class]="{disabled: ep.downloading}" *ng-if="selectedEpisode === ep && subList && (subList.length > 0 || !ep.loading)">
                             <div class="card" [hidden]="subList.length > 0 || !searchingDone">
                                 <div class="no-subtitle name">{{ 'NO_RESULT' | translate }}</div>
                             </div>
@@ -91,9 +96,9 @@ export class ShowComponent implements OnActivate {
         });
     }
 
-    refresh() {
+    refresh(force: Boolean = false) {
         this.tvShowData = [];
-        return this.rest.get('api/show/' + this.showId).toPromise().then((show: Array<Season>) => {
+        return this.rest.get(`api/show/${this.showId}/${force}`).toPromise().then((show: Array<Season>) => {
             this.tvShowData = show.reverse();
             this.updateMissingSubs();
             if(show.length > 0) {
@@ -110,26 +115,24 @@ export class ShowComponent implements OnActivate {
     searchSubs(ep: Episode) {
         if(ep === this.selectedEpisode) {
             this.selectedEpisode = undefined;
-            this.subList = undefined;
+            ep.loading = false;
             return;
         }
-        this.loading = true;
+        this.subList = [];
+        ep.loading = true;
         this.searchingDone = false;
         this.selectedEpisode = ep;
 
         var showSubs = (res: RestResponse) => {
-            if(this.selectedEpisode) {
+            if(ep === this.selectedEpisode) {
                 var subtitles: Array<Subtitle> = res.data;
-                if(!this.subList) {
-                    this.subList = [];
-                }
                 if(subtitles[0] && subtitles[0].content[0].episode === this.selectedEpisode.episode && subtitles[0].content[0].season === this.selectedEpisode.season) {
                     this.subList = this.subList.concat(subtitles);
                 }
             }
         };
 
-        var providers: Array<any> = [];
+        var providers: Array<Promise> = [];
         if(ParamsComponent.appParams.providers.indexOf('addic7ed') !== -1) {
             providers.push(this.rest.get('api/addic7ed/' + this.showId + '/' + ep.name).toPromise().then(showSubs));
         }
@@ -139,23 +142,23 @@ export class ShowComponent implements OnActivate {
         }
 
         Promise.all(providers).then(() => {
-            this.loading = false;
+            ep.loading = false;
             this.searchingDone = true;
         });
     }
 
-    oneClickDownload(ep) {
-        this.loading = true;
-        this.downloading = true;
+    oneClickDownload(ep: Episode) {
+        ep.loading = true;
+        ep.downloading = true;
         this.selectedEpisode = ep;
         this.subList = undefined;
         this.rest.post('api/download', {
-                episode: ep
-            }).toPromise().then((res: RestResponse) => {
+            episode: ep
+        }).toPromise().then((res: RestResponse) => {
+            ep.loading = false;
+            ep.downloading = false;
+            this.selectedEpisode = undefined;
             if(res.success) {
-                this.loading = false;
-                this.downloading = false;
-                this.selectedEpisode = undefined;
                 ep.subtitle = res.data;
                 this.updateMissingSubs();
             }
@@ -164,15 +167,15 @@ export class ShowComponent implements OnActivate {
 
     // todo add websockets support
     downloadSub(sub: Subtitle, subPack: SubtitlePack, ep: Episode, $event: MouseEvent) {
-        this.loading = true;
-        this.downloading = true;
+        ep.loading = true;
+        ep.downloading = true;
         this.rest.post('api/download', {
             episode: ep,
             url: subPack.url,
             subtitle: sub.file
         }).toPromise().then((res: RestResponse) => {
-            this.loading = false;
-            this.downloading = false;
+            ep.loading = false;
+            ep.downloading = false;
             var $name = $($event.target),
                 $icons = $name.find('i');
             if($icons.length > 0) {

@@ -73,12 +73,12 @@
         align-items: center;
     }
     .one-click-dl {
-        display: flex;
         align-items: center;
         background-color: #fff;
         border-radius: 0;
         padding: 10px;
-        margin: -1px;
+        margin: 0;
+        border: 0;
 
         i {
             top: -2px;
@@ -86,13 +86,14 @@
         }
 
         .title {
+            display: inline-block;
             transition: max-width 0.35s;
             max-width: 0;
             overflow: hidden;
-
+            vertical-align: bottom;
         }
 
-        &:hover, &:focus {
+        &:hover, &:active {
             .title {
                 max-width: 500px;
             }
