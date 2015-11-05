@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', "../directives/showSelector", "./loader", 'angular2/router'], function(exports_1) {
+System.register(['angular2/angular2', "../directives/showSelector", "./loader", 'angular2/router', "ng2-translate/ng2-translate"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -10,7 +10,7 @@ System.register(['angular2/angular2', "../directives/showSelector", "./loader", 
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var angular2_1, showSelector_1, loader_1, router_1;
+    var angular2_1, showSelector_1, loader_1, router_1, ng2_translate_1;
     var NavbarComponent;
     return {
         setters:[
@@ -25,6 +25,9 @@ System.register(['angular2/angular2', "../directives/showSelector", "./loader", 
             },
             function (router_1_1) {
                 router_1 = router_1_1;
+            },
+            function (ng2_translate_1_1) {
+                ng2_translate_1 = ng2_translate_1_1;
             }],
         execute: function() {
             NavbarComponent = (function () {
@@ -33,8 +36,9 @@ System.register(['angular2/angular2', "../directives/showSelector", "./loader", 
                 NavbarComponent = __decorate([
                     angular2_1.Component({
                         selector: 'navbar',
-                        template: "\n        <nav class=\"navbar navbar-fixed-top\">\n            <a class=\"navbar-brand hidden-sm-down\" [router-link]=\"['/Home']\"><img src=\"img/subnode.png\"></a>\n            <a class=\"navbar-brand hidden-md-up\" [router-link]=\"['/Home']\"><i class=\"glyphicon glyphicon-home\"></i></a>\n            <show-selector></show-selector>\n            <a class=\"pull-right paramsBtn glyphicon glyphicon-cog\" data-toggle=\"modal\" data-target=\"#paramsModal\"></a>\n        </nav>\n\t",
-                        directives: [showSelector_1.ShowSelector, loader_1.LoaderComponent, router_1.RouterLink]
+                        template: "\n        <nav class=\"navbar navbar-fixed-top\">\n            <a class=\"navbar-brand hidden-sm-down\" [router-link]=\"['/Home']\"><img src=\"img/subnode-white.png\"></a>\n            <a class=\"navbar-brand hidden-md-up\" [router-link]=\"['/Home']\"><i class=\"glyphicon glyphicon-home\"></i></a>\n            <show-selector></show-selector>\n            <span class=\"nav-divider\"></span>\n            <ul class=\"nav navbar-nav\">\n                <li class=\"nav-item active\">\n                  <a class=\"nav-link\" [router-link]=\"['/Shows']\">{{ 'SHOWS' | translate }}</a>\n                </li>\n            </ul>\n            <a class=\"pull-right paramsBtn glyphicon glyphicon-cog\" data-toggle=\"modal\" data-target=\"#paramsModal\"></a>\n        </nav>\n\t",
+                        directives: [showSelector_1.ShowSelector, loader_1.LoaderComponent, router_1.RouterLink],
+                        pipes: [ng2_translate_1.TranslatePipe]
                     }), 
                     __metadata('design:paramtypes', [])
                 ], NavbarComponent);

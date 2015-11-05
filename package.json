@@ -58,8 +58,7 @@
     "sickbeard": "0.0.2",
     "socket.io": "^1.3.7",
     "systemjs": "0.19.5",
-    "tvdb": "0.0.13",
-    "wrench": "~1.5.8",
-    "xml2js": "~0.4.13"
+    "trakt-api": "^0.4.0",
+    "wrench": "~1.5.8"
   }
 }

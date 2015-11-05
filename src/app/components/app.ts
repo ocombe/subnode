@@ -6,6 +6,7 @@ import {HomeComponent} from './home';
 import {TranslateService} from 'ng2-translate/ng2-translate';
 import {ParamsComponent} from "./params";
 import {FooterComponent} from "./footer";
+import {ShowsComponent} from "./shows";
 
 @Injectable()
 @Component({
@@ -14,7 +15,7 @@ import {FooterComponent} from "./footer";
         <navbar></navbar>
         <!--<a [router-link]="['./Dashboard']">Dashboard</a>-->
         <!--<a [router-link]="['./Characters']">Characters</a>-->
-        <div id="mainView" class="container">
+        <div id="mainView">
             <router-outlet></router-outlet>
         </div>
 
@@ -25,7 +26,8 @@ import {FooterComponent} from "./footer";
 })
 @RouteConfig([
     {path: '/', as: 'Home', component: HomeComponent},
-    {path: '/show/:id', as: 'Show', component: ShowComponent}
+    {path: '/show/:id', as: 'Show', component: ShowComponent},
+    {path: '/shows', as: 'Shows', component: ShowsComponent}
 ])
 export class AppComponent {
     constructor(translate: TranslateService) {

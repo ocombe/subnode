@@ -1,6 +1,9 @@
 body {
     font-family: sans-serif;
-    padding: 70px 5px 0;
+}
+
+.loading-title {
+    margin: 40px;
 }
 
 a {
@@ -23,6 +26,7 @@ a {
 
 .refreshBtn {
     font-size: 20px;
+
     &:before {
         vertical-align: text-top;
     }
@@ -46,7 +50,7 @@ a {
 }
 
 .page-header {
-    padding-bottom: 9px;
+    padding: 70px 5px 9px;
     margin: 40px 0 20px;
     border-bottom: 1px solid #eeeeee;
 }
@@ -191,4 +195,27 @@ footer {
             height: auto;
         }
     }
+}
+
+img[src^="api/image/poster/"] {
+    max-width: 1000px;
+    max-height: 1500px;
+}
+
+img[src^="api/image/banner/"] {
+    max-width: 758px;
+    width: 758px;
+    max-height: 140px;
+    height: 140px;
+
+    background: {
+        image: url("../img/generic_banner.jpg");
+        position: center;
+        size: cover;
+    }
+}
+
+img[src^="api/image/thumb/"] {
+    max-width: 500px;
+    max-height: 281px;
 }

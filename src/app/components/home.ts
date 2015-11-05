@@ -29,7 +29,7 @@ import {SocketService} from "../services/socket";
                         </div>
                     </div>
                     <div class="col-lg-9 col-xs-12 imgWrapper">
-                        <img [src]="'api/banner/'+file.showId">
+                        <img [src]="'api/image/banner/'+file.showId" [alt]="file.showId">
                     </div>
                 </a>
             </div>

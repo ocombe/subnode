@@ -1,6 +1,42 @@
 .show {
     .page-header {
-        text-align: center;
+        background-size: cover;
+        background-position: 50% 10%;
+        color: #fff;
+        position: relative;
+        height: 550px;
+
+        .title-wrapper {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            padding: 1rem;
+            background-color: rgba(0,0,0,0.7);
+            width: 100%;
+        }
+
+        .poster {
+            width: 165px;
+            display: inline-block;
+            vertical-align: bottom;
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            box-shadow: 0px 0px 10px #000;
+        }
+
+        .title {
+            text-shadow: 0 0 20px #000;
+            display: inline-block;
+            margin-left: 185px;
+            @include ellipsis();
+            max-width: calc(100% - 185px);
+
+            .year {
+                color: $gray;
+                font-size: 25px;
+            }
+        }
 
         img {
             max-width: 100%;
@@ -14,6 +50,30 @@
             .content {
                 padding: 10px;
             }
+        }
+
+        @include media-breakpoint-down(sm) {
+            height: 220px;
+
+            .poster {
+                max-width: 78px;
+            }
+            .title {
+                margin-left: 90px;
+                font-size: 1.2rem;
+                max-width: calc(100% - 90px);
+
+                .year {
+                    font-size: 0.8rem;
+                }
+            }
+        }
+    }
+    .page-body {
+        margin: 0 40px;
+
+        @include media-breakpoint-down(sm) {
+            margin: 0 10px;
         }
     }
 }

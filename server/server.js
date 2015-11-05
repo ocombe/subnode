@@ -16,7 +16,7 @@ module.exports = {
 			fileScraper = require(__dirname + '/scraper'),
 			addic7ed = require(__dirname + '/addic7ed'),
 			betaSeries = require(__dirname + '/betaSeries'),
-			tvdb = require(__dirname + '/tvdb'),
+			api = require(__dirname + '/api'),
 			wrench = require('wrench'),
             chokidar = require(__dirname + '/chokidarWatcher'),
 			_ = require('lodash'),
@@ -28,7 +28,7 @@ module.exports = {
 			upToDate,
             watcher;
 
-        var watchEnabled = true; // for dev
+        var watchEnabled = false; // for dev
 
         filesList.ensureIndex({ fieldName: 'file', unique: true });
 
@@ -119,14 +119,54 @@ module.exports = {
 			});
 		});
 
-		app.get('/api/showList', function(req, response) {
+		app.get('/api/showList/:full?', function(req, response) {
+            // todo why do episodes disappear from the list when you click on them once ?
 			if(appParams && appParams.rootFolder) {
                 // todo use chokidar for following calls
 				fs.readdir(path.resolve(appParams.rootFolder), function(err, folders) {
                     if(err) {
                         console.error(err);
                     }
-					return response.json(folders ? folders.sort() : []);
+                    folders = folders ? folders.sort() : [];
+
+                    if(req.params.full) { // get all info
+                        // todo add tv db info
+                        var tvShows = {};
+                        _.each(folders, function(showId) {
+                            tvShows[showId] = {showId: showId, episodes: {}, subtitles: {}};
+                        });
+
+                        filesList.find({}, function(err, curFiles) {
+                            _.each(curFiles, function(fileInfo) {
+                                var showId = fileInfo.file.replace(appParams.rootFolder + '/', "");
+                                showId = showId.substr(0, showId.indexOf("/"));
+                                // todo cleanup showId ?
+                                if(fileInfo.type == 'video') {
+                                    tvShows[showId].episodes[fileInfo.season + "x" + fileInfo.episode] = fileInfo;
+                                } else if(fileInfo.type == 'subtitle') {
+                                    tvShows[showId].subtitles[fileInfo.season + "x" + fileInfo.episode] = fileInfo;
+                                }
+                            });
+
+                            _.each(tvShows, function(show) {
+                                show.episodes = _.keys(show.episodes);
+                                show.subtitles = _.keys(show.subtitles);
+                                var subCount = 0;
+                                // only count subtitles that match an episode
+                                _.each(show.episodes, function(ep) {
+                                   if(show.subtitles.indexOf(ep) !== -1) {
+                                       subCount++;
+                                   }
+                                });
+                                show.episodes = show.episodes.length;
+                                show.subtitles = subCount;
+                            });
+
+                            return response.json(_.values(tvShows));
+                        });
+                    } else {
+                        return response.json(folders);
+                    }
 				});
 			} else {
 				return response.json([]);
@@ -173,32 +213,51 @@ module.exports = {
                     }
                 }
 
+                function onEpisodes() {
+                    sortFiles();
+
+                    api.getShow(req.params.showId).then(function(res) {
+                        return response.json({success: true, data: {
+                            showInfo: res.show,
+                            seasons: episodesList
+                        }});
+                    }, function() {
+                        return response.json({success: true, data: {
+                            seasons: episodesList
+                        }});
+                    })
+                }
+
                 if(watchEnabled && initialScanDone && !req.params.force) {
                     filesList.find({show: req.params.showId}, function(err, curFiles) {
                         _.each(curFiles, function(fileInfo) {
                             addFile(fileInfo);
                         });
 
-                        sortFiles();
-                        return response.json(episodesList);
+                        onEpisodes();
                     });
                 } else {
-                    filesList.remove({show: req.params.showId}, {multiple: true}, function() {
-                    wrench.readdirRecursive(appParams.rootFolder + '/' + req.params.showId, function(error, curFiles) {
-                        if(typeof curFiles === 'undefined') {
-                            return response.json([]);
-                        } else if(curFiles !== null) {
-                            _.each(curFiles, function(file) {
-                                var fileInfo = fileScraper.scrape(appParams.rootFolder + '/' + req.params.showId + '/' + file);
-                                if(fileInfo) { // if video or subtitle
-                                    addFile(fileInfo);
-                                }
-                            });
-                        } else { // we have all files
-                            sortFiles();
-                            return response.json(episodesList);
-                        }
-                    });
+                    filesList.remove({show: req.params.showId}, {multi: true}, function(err, docs) {
+                        wrench.readdirRecursive(appParams.rootFolder + '/' + req.params.showId, function(error, curFiles) {
+                            if(typeof curFiles === 'undefined') {
+                                return response.json([]);
+                            } else if(curFiles !== null) {
+                                _.each(curFiles, function(file) {
+                                    var fileInfo = fileScraper.scrape(appParams.rootFolder + '/' + req.params.showId + '/' + file);
+                                    if(fileInfo) { // if video or subtitle
+                                        filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
+                                            if(err) {
+                                                console.log(err);
+                                            }
+                                        });
+
+                                        addFile(fileInfo);
+                                    }
+                                });
+                            } else { // we have all files
+                                onEpisodes();
+                            }
+                        });
                     });
                 }
 			}
@@ -302,8 +361,8 @@ module.exports = {
                         });
                     }));
                     if(subtitles.length > 0) {
-                    var selectedSubtitle = _.max(subtitles, 'score');
-                    download(folder, selectedSubtitle.url, req.body.episode, selectedSubtitle.file);
+                        var selectedSubtitle = _.max(subtitles, 'score');
+                        download(folder, selectedSubtitle.url, req.body.episode, selectedSubtitle.file);
                     } else {
                         return response.json({success: false, error: 'No subtitle found'});
                     }
@@ -338,17 +397,20 @@ module.exports = {
             }
 		});
 
-		app.get('/api/banner/:showName', function(req, response) {
-			tvdb.getBanner({
-				path: __dirname + '/../banners/',
-				showName: req.params.showName
-			}, function(path) {
-				fs.createReadStream(path || __dirname + "/../public/img/generic_banner.jpg").pipe(response);
-			});
+		app.get('/api/image/:type/:showName', function(req, response) {
+			api.getImage({
+				path: __dirname + '/../public/img/'+req.params.type+'/',
+				showName: req.params.showName,
+                type: req.params.type
+			}).then(function(path) {
+				fs.createReadStream(path).pipe(response);
+			}, function(err) {
+                fs.createReadStream(path.resolve(__dirname + "/../public/img/generic_" + req.params.type + ".jpg")).pipe(response);
+            });
 		});
 
 		app.get('/api/info/:showName/:lang', function(req, response) {
-			tvdb.getFullShowInfo({showName: req.params.showName, lang: req.params.lang}, function(err, data) {
+			api.getFullShowInfo({showName: req.params.showName, lang: req.params.lang}, function(err, data) {
 				return response.json(data);
 			});
 		});

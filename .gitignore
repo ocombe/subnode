@@ -15,6 +15,10 @@ appParams.json
 .tagconfig
 server/data/shows/*
 server/data/filesList.db
+public/img/banner/*
+public/img/poster/*
+public/img/fanart/*
+public/img/thumb/*
 releases
 
 #################
