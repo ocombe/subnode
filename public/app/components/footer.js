@@ -36,7 +36,7 @@ System.register(['angular2/angular2', "../directives/showSelector", "./loader", 
                 FooterComponent = __decorate([
                     angular2_1.Component({
                         selector: 'footer',
-                        template: "\n        <p class=\"copyright\"><a href='https://github.com/ocombe/subNode' target='_blank'>subNode</a> {{ 'BY' | translate }} <a href=\"https://twitter.com/OCombe\" target=\"_blank\">Olivier Combe</a> \u00A9 2013-2015</p>\n        <a href=\"http://www.betaseries.com\" target=\"_blank\"><img src=\"img/betaseries.png\"></a>\n        <a href=\"http://www.addic7ed.com/\" target=\"_blank\"><img src=\"img/addic7ed.png\"></a><br/><br/>\n        <div class=\"btn-toolbar ng-cloak\">\n            <a href=\"api/exit\" class=\"btn btn-danger\"><span class=\"glyphicon glyphicon-off\"></span> {{ 'SHUTDOWN' | translate }}</a>\n        </div>\n\t",
+                        template: "\n        <p class=\"copyright\"><a href='https://github.com/ocombe/subNode' target='_blank'>subNode</a> {{ 'BY' | translate }} <a href=\"https://twitter.com/OCombe\" target=\"_blank\">Olivier Combe</a> \u00A9 2015</p>\n        <a href=\"http://www.betaseries.com\" target=\"_blank\">Betaseries</a> -\n        <a href=\"http://www.addic7ed.com/\" target=\"_blank\">Addic7ed</a> -\n        <a href=\"https://trakt.tv/\" target=\"_blank\">Trakt api</a>\n\t",
                         directives: [showSelector_1.ShowSelector, loader_1.LoaderComponent, router_1.RouterLink],
                         pipes: [ng2_translate_1.TranslatePipe]
                     }), 

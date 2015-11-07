@@ -8,30 +8,33 @@ import {RestService} from "../services/rest";
 
 @Injectable()
 @Component({
-    template: `<div class="shows">
-    <div class="page-header">
-        <h2>
-            {{ 'SHOWS' | translate }}
-        </h2>
-    </div>
+    template: `
+    <div class="shows container">
+        <div class="page-header">
+            <h2>
+                {{ 'SHOWS' | translate }}
+            </h2>
+        </div>
 
-    <table class="table">
-        <thead class="thead-inverse">
-        <tr>
-            <th>ShowId</th>
-            <th>episodes</th>
-            <th>subtitles</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ng-for="#show of tvShows">
-            <td>{{show.showId}}</td>
-            <td>{{show.episodes}}</td>
-            <td>{{show.subtitles}}</td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+        <div class="page-body">
+            <table class="table">
+                <thead class="thead-inverse">
+                <tr>
+                    <th>ShowId</th>
+                    <th>episodes</th>
+                    <th>subtitles</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ng-for="#show of tvShows">
+                    <td>{{show.showId}}</td>
+                    <td>{{show.episodes}}</td>
+                    <td>{{show.subtitles}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
   `,
     directives: [NgFor, NgClass, LoaderComponent, NgIf],
     pipes: [TranslatePipe]

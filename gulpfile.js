@@ -75,14 +75,16 @@ function spawnServer() {
 
 // Rerun the task when a file changes
 function watch(server) {
-
     gulp.watch(PATHS.ts, batch(function(events, done) {
         gulp.series(ts2js)(done);
     }));
+
     gulp.watch(PATHS.sass, batch(function(events, done) {
         gulp.series(sass2css)(done);
     }));
+
     gulp.watch(PATHS.html, browserSync.reload);
+
     if(typeof server !== 'undefined') {
         gulp.watch(PATHS.server, function() {
             console.log('Restarting server');
@@ -127,7 +129,7 @@ function dev(done) {
         ws: true
     });
 
-    process.stdin.resume();//so the program will not close instantly
+    process.stdin.resume(); //so the program will not close instantly
 
     function exitHandler(options, err) {
         if(err) {

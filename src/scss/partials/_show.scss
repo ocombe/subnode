@@ -4,14 +4,14 @@
         background-position: 50% 10%;
         color: #fff;
         position: relative;
-        height: 550px;
+        height: 500px;
 
         .title-wrapper {
             position: absolute;
             bottom: 0;
             left: 0;
             padding: 1rem;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.7);
             width: 100%;
         }
 
@@ -53,7 +53,7 @@
         }
 
         @include media-breakpoint-down(sm) {
-            height: 220px;
+            height: 170px;
 
             .poster {
                 max-width: 78px;
@@ -70,10 +70,58 @@
         }
     }
     .page-body {
-        margin: 0 40px;
+        display: flex;
+        flex-direction: column;
+        margin: 0 auto;
 
-        @include media-breakpoint-down(sm) {
-            margin: 0 10px;
+        .episodes-list {
+            flex: 1;
+        }
+        .seasons-list {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        @include media-breakpoint-up(sm) {
+            flex-direction: row;
+
+            .seasons-list {
+                margin-right: 20px;
+            }
+        }
+    }
+
+    .nav-tabs {
+        border-bottom: none;
+
+        .nav-item {
+            border: 0;
+            margin-left: 0;
+        }
+        .nav-link {
+            cursor: pointer;
+            border-radius: 0;
+
+            &.active {
+                @include plain-hover-focus {
+                    color: $component-active-color;
+                    cursor: default;
+                    background-color: $component-active-bg;
+                }
+            }
+            &:hover {
+                border-color: transparent;
+                background-color: $light-gray;
+            }
+        }
+        @include media-breakpoint-up(sm) {
+            padding: 0;
+
+            .nav-item {
+                display: block;
+                float: none;
+                border-bottom: 1px solid #ddd;
+            }
         }
     }
 }
@@ -177,14 +225,6 @@
     }
 }
 
-.episodesList, .seasonsList {
-    @include transition(all .5s ease-in-out);
-
-    .glyphicon-filter {
-        display: none;
-    }
-}
-
 .subPackWrapper, .epListWrapper {
     padding: 0;
 
@@ -221,23 +261,23 @@
         }
     }
 
-    .qualite, .qualite5 {
+    .quality, .quality-5 {
         background-color: #468847;
         color: #fff;
     }
-    .qualite4 {
+    .quality-4 {
         background-color: #97a305;
         color: #fff;
     }
-    .qualite3 {
+    .quality-3 {
         background-color: #FFC40D;
         color: #000;
     }
-    .qualite2 {
+    .quality-2 {
         background-color: #f87c08;
         color: #000;
     }
-    .qualite1 {
+    .quality-1 {
         background-color: #B94A48;
         color: #fff;
     }
@@ -247,4 +287,25 @@
     .error {
         color: #d9534f;
     }
+}
+
+.badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    margin: 2px 0 0 10px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    line-height: 1;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-align: center;
+    background-color: #999999;
+    border-radius: 10px;
+}
+
+a.list-group-item.active > .badge, .nav-pills > .active > a > .badge {
+    color: #466072;
+    background-color: white;
 }

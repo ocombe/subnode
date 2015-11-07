@@ -1,5 +1,21 @@
 body {
     font-family: sans-serif;
+    background: $gray-dark;
+    color: #fff;
+}
+
+subnode {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#mainView {
+    flex: 1;
+    background: #fff;
+    color: $gray-dark;
+    margin-top: 48px;
+    padding-bottom: 40px;
 }
 
 .loading-title {
@@ -36,128 +52,34 @@ a {
     @include ellipsis();
 }
 
-#mainView {
-    .page-header {
-        margin-top: 0;
-        h1 {
-            margin-top: 0;
-        }
-        .loader {
-            font-size: 20px;
-        }
-
-    }
-}
-
 .page-header {
     padding: 70px 5px 9px;
-    margin: 40px 0 20px;
+    margin: 0 0 20px;
     border-bottom: 1px solid #eeeeee;
-}
 
-.lastEpisodes {
-    .card {
-        display: block; // fix flexbox firefox
-        margin-bottom: 20px;
-        overflow: auto;
-        padding: 4px;
-        border-radius: 3px;
-
-        // fix flexbox firefox
-        @include media-breakpoint-up(lg) {
-            display: flex;
-        }
-
-        &:hover {
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
-        }
-
-        a {
-            display: flex;
-            flex-direction: row;
-        }
+    h1 {
+        margin-top: 0;
     }
-    .card-title {
-        text-transform: capitalize;
-        @include ellipsis();
-        font-size: 1.5rem;
-        display: block;
-
-        // fix flexbox firefox
-        @include media-breakpoint-up(lg) {
-            max-width: 240px;
-        }
-
-        // fix flexbox firefox
-        @include media-breakpoint-down(lg) {
-            max-width: 190px;
-        }
-
-        // fix flexbox firefox
-        @include media-breakpoint-down(md) {
-            max-width: 100%;
-            text-align: center;
-        }
-    }
-    .card-text {
-        font-size: 1.1rem;
-    }
-    .card-subtitle {
-        font-size: 0.85rem;
-    }
-    .card-title, .card-text, .card-subtitle {
-        line-height: 2rem;
-        margin: 0;
-    }
-    .card-text-wrapper {
-        @include media-breakpoint-down(md) {
-            text-align: center;
-        }
-
-        @include media-breakpoint-up(lg) {
-            display: flex;
-            flex-wrap: wrap;
-            margin-left: -.9375rem;
-            margin-right: -.9375rem;
-        }
-    }
-    .imgWrapper {
-        vertical-align: middle;
-        text-align: right;
-        overflow: hidden; // for firefox bug with flexbox
-
-        @include media-breakpoint-up(lg) {
-            line-height: 136px;
-        }
-        @include media-breakpoint-down(md) {
-            padding-bottom: 1.25rem;
-        }
-
-        img {
-            max-width: 100%;
-        }
-    }
-}
-
-.home {
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .loader {
+        font-size: 20px;
     }
 }
 
 footer {
     padding: 10px 15px;
-    background-color: $panel-footer-bg;
-    border-top: 1px solid #dddddd;
-    border-bottom-right-radius: 1px;
-    border-bottom-left-radius: 1px;
-    margin: 20px -5px 0;
+    background-color: $gray-dark;
+    color: #fff;
     text-align: center;
 
     img {
         max-height: 30px;
+    }
+    a {
+        color: $light-gray;
+
+        &:hover, &:focus {
+            color: darken($gray, 10%);
+        }
     }
 }
 
@@ -167,34 +89,8 @@ footer {
     }
 }
 
-/**** NG ANIMATIONS ****/
-.fade-in.ng-hide-remove, .fade-in.ng-enter, .fade-out.ng-hide-add, .fade-out.ng-leave {
-    @include transition(all linear 0.25s);
-    display: block !important;
-}
-
-.fade-in {
-    &.ng-hide-remove, &.ng-enter {
-        opacity: 0;
-        height: 0;
-
-        &.ng-hide-remove-active, &.ng-enter-active {
-            opacity: 1;
-            height: auto;
-        }
-    }
-}
-
-.fade-out {
-    &.ng-hide-add, &.ng-leave {
-        opacity: 1;
-        height: 0;
-
-        &.ng-hide-add-active, &.ng-leave-active {
-            opacity: 0;
-            height: auto;
-        }
-    }
+img {
+    text-align: left; // for alt text
 }
 
 img[src^="api/image/poster/"] {
@@ -204,9 +100,12 @@ img[src^="api/image/poster/"] {
 
 img[src^="api/image/banner/"] {
     max-width: 758px;
-    width: 758px;
     max-height: 140px;
-    height: 140px;
+    width: 758px;
+
+    @include media-breakpoint-up(lg) {
+        height: 140px;
+    }
 
     background: {
         image: url("../img/generic_banner.jpg");

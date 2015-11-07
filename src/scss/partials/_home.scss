@@ -1,0 +1,84 @@
+
+.home {
+    .page-header {
+        display: flex;
+        flex-direction: column;
+
+        @include media-breakpoint-up(sm) {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @include media-breakpoint-down(md) {
+            padding: 40px 5px 9px;
+        }
+    }
+    .card {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+        overflow: auto;
+        padding: 4px;
+        border-radius: 3px;
+
+        @include media-breakpoint-up(lg) {
+            justify-content: space-between;
+        }
+
+        &:hover {
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+        }
+
+        a {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+    .card-block {
+        overflow: hidden;
+        padding: 0 1.25rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        min-width: 200px;
+        flex: 1;
+    }
+    .card-title {
+        text-transform: capitalize;
+        @include ellipsis();
+        font-size: 1.5rem;
+        display: block;
+    }
+    .card-text {
+        font-size: 1.1rem;
+    }
+    .card-subtitle {
+        font-size: 0.85rem;
+    }
+    .card-title, .card-text, .card-subtitle {
+        line-height: 2rem;
+        margin: 0;
+    }
+    .card-text-wrapper {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+    }
+    .img-wrapper {
+        vertical-align: middle;
+        text-align: right;
+        img {
+            width: 75px;
+            max-width: 75px;
+        }
+
+        @include media-breakpoint-up(lg) {
+            line-height: 136px;
+
+            img {
+                width: 700px;
+                max-width: 100%;
+            }
+        }
+    }
+}

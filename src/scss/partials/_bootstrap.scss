@@ -30,43 +30,6 @@ a.list-group-item.active {
     vertical-align: middle;
 }
 
-.badge {
-    display: inline-block;
-    min-width: 10px;
-    padding: 3px 7px;
-    margin: 2px 0 0 10px;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    line-height: 1;
-    vertical-align: baseline;
-    white-space: nowrap;
-    text-align: center;
-    background-color: #999999;
-    border-radius: 10px;
-}
-
-a.list-group-item.active > .badge, .nav-pills > .active > a > .badge {
-    color: #466072;
-    background-color: white;
-}
-
-.nav-tabs {
-    background-color: lighten($panel-footer-bg, 20%);
-
-    .nav-link {
-        cursor: pointer;
-
-        &.active {
-            @include plain-hover-focus {
-                color: $component-active-color;
-                cursor: default;
-                background-color: $component-active-bg;
-            }
-        }
-    }
-}
-
 button.close {
     padding: 10px;
     margin: -10px;

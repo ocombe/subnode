@@ -11,28 +11,27 @@ import {SocketService} from "../services/socket";
 @Component({
     selector: 'home',
     template: `
-        <div class="home">
+        <div class="home container">
             <div class="page-header">
-                <h2>
-                    {{ 'LAST_EPISODES' | translate }}
-                </h2>
+                <h2>{{ 'LAST_EPISODES' | translate }}</h2>
                 <small class="text-muted" [hidden]="scanDone">{{ 'INITIAL_SCAN' | translate }}</small>
             </div>
 
-            <div class="lastEpisodes">
-                <a class="card fade-in row" *ng-for="#file of lastEpisodes | async" [router-link]="routerService.normalize(['/Show', {id: file.showId}])">
-                    <div class="col-lg-3 col-xs-12 card-block">
-                        <div class="card-title">{{ file.showId }}</div>
-                        <div class="card-text-wrapper">
-                            <span class="card-text col-lg-12">{{ file.season | number:'2.0-0' }}x{{ file.episode | number:'2.0-0' }}</span>
-                            <span class="card-subtitle col-lg-12">{{ file.ctime | date }}</span>
-                        </div>
+            <a class="card fade-in" *ng-for="#file of lastEpisodes | async" [router-link]="routerService.normalize(['/Show', {id: file.showId}])">
+                <div class="img-wrapper hidden-lg-up">
+                    <img [src]="'api/image/poster/'+file.showId+'/thumb'">
+                </div>
+                <div class="card-block">
+                    <div class="card-title">{{ file.showId }}</div>
+                    <div class="card-text-wrapper">
+                        <span class="card-text">{{ file.season | number:'2.0-0' }}x{{ file.episode | number:'2.0-0' }}</span>
+                        <span class="card-subtitle">{{ file.ctime | date }}</span>
                     </div>
-                    <div class="col-lg-9 col-xs-12 imgWrapper">
-                        <img [src]="'api/image/banner/'+file.showId" [alt]="file.showId">
-                    </div>
-                </a>
-            </div>
+                </div>
+                <div class="img-wrapper hidden-md-down">
+                    <img [src]="'api/image/banner/'+file.showId+'/full'" [alt]="file.showId">
+                </div>
+            </a>
         </div>
 	`,
     directives: [NgFor, LoaderComponent, ROUTER_DIRECTIVES],
@@ -44,6 +43,7 @@ export class HomeComponent implements OnDestroy {
         SocketService.off('scan:new');
         SocketService.off('scan:status');
     }
+
     lastEpisodes: Array<string> = [];
     scanDone: Boolean = false;
 

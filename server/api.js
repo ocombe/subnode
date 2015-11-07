@@ -89,13 +89,18 @@ var getShow = function(showName) {
 
 exports.getImage = function(params) {
     return new Promise(function(resolve, reject) {
-        var filename = path.resolve(params.path, params.showName + '.jpg');
+        var filename = path.resolve(params.path, params.showName + (params.size ? '-' + params.size : '') + '.jpg');
         fs.exists(filename, function(exists) {
             if(exists) {
                 resolve(filename);
             } else {
                 getShow(params.showName).then(function(res) {
-                    var imgUrl = _.get(res, ['show', 'images', [params.type], 'full']);
+                    var imgUrl = _.get(res, ['show', 'images', [params.type]]);
+                    if(params.size && imgUrl[params.size]) {
+                        imgUrl = imgUrl[params.size];
+                    } else {
+                        imgUrl = imgUrl['full'];
+                    }
                     if(imgUrl) {
                         wrench.mkdirSyncRecursive(params.path, '0777');
                         var stream = request(imgUrl).on('end', function() {

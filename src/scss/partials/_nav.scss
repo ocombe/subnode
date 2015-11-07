@@ -1,16 +1,25 @@
-.navbar{
+$navbar-height: 48px;
+
+.navbar {
     padding: 0 25px 0 0;
     box-shadow: 0px 0px 10px #000;
-    background: rgba(0,0,0,0.6);
+    background: transparentize($gray-dark, 0.3);
+    transition: all 1s;
     color: #fff;
 
+    &:hover {
+        background: $gray-dark;
+    }
+
     .paramsBtn {
-        padding: 6px 0 0;
+        height: $navbar-height;
+        padding-top: 6px;
         font-size: 25px;
     }
     .navbar-brand{
+        height: $navbar-height;
         float: left;
-        padding: 7px 10px 8px 20px;
+        padding: 7px 10px 0 20px;
         margin-right: 0;
 
         img {
@@ -36,10 +45,25 @@
         }
         .nav-link, a {
             color: #fff;
+            padding: .425rem;
+
+            &:hover {
+                background: #fff;
+                color: $gray-dark;
+            }
         }
     }
     a {
         color: #fff;
+    }
+    .dropdown-menu {
+        border-radius: 0 0 3px 3px;
+        background: $gray-dark;
+        margin-top: 0;
+
+        &.dropdown-menu-right {
+            margin-right: -25px;
+        }
     }
 }
 

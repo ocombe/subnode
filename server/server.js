@@ -7,7 +7,7 @@ module.exports = {
             errorHandler = require('errorhandler'),
             compression = require('compression'),
             bodyParser = require('body-parser'),
-            logger = require('morgan'),
+            //logger = require('morgan'),
 			nconf = require('nconf'),
 			nconfParams = new nconf.Provider().file('config', __dirname + '/../appParams.json'),
 			fs = require('fs'),
@@ -28,13 +28,11 @@ module.exports = {
 			upToDate,
             watcher;
 
-        var watchEnabled = false; // for dev
+        var watchEnabled = true; // for dev
 
         filesList.ensureIndex({ fieldName: 'file', unique: true });
 
-		var appParams = {},
-			lastEpisodes = [],
-			lastFetch = 0;
+		var appParams = {};
 
 		var authenticate = function(req, res, next) {
 			if(!appParams || !appParams.username || appParams.username == '' || !appParams.password || appParams.password == '') {
@@ -59,11 +57,7 @@ module.exports = {
             showStack: true
         }));
         //app.use(logger(':method :url'));
-        app.use(compression({filter: shouldCompress}))
-
-        function shouldCompress(req, res) {
-            return true;
-        }
+        app.use(compression());
         app.use(authenticate);
         app.use(express.static(path.resolve(__dirname + "/../public")));
         app.use(express.static(path.resolve(__dirname + "/../node_modules")));
@@ -244,7 +238,11 @@ module.exports = {
                             } else if(curFiles !== null) {
                                 _.each(curFiles, function(file) {
                                     var fileInfo = fileScraper.scrape(appParams.rootFolder + '/' + req.params.showId + '/' + file);
+
                                     if(fileInfo) { // if video or subtitle
+                                        var fileStats = fs.statSync(path.resolve(appParams.rootFolder, fileInfo.file));
+                                        fileInfo.ctime = fileStats.ctime.getTime();
+
                                         filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
                                             if(err) {
                                                 console.log(err);
@@ -373,9 +371,10 @@ module.exports = {
 		});
 
 		app.get('/api/lastEpisodes', function(req, response) {
-            lastEpisodes = [];
             if(appParams.rootFolder) {
                 filesList.find({type: 'video'}, function(err, files) {
+                    var lastEpisodes = [];
+
                     files = files.sort(function(a, b) {
                         return b.ctime - a.ctime;
                     });
@@ -386,7 +385,7 @@ module.exports = {
                             file.showId = file.showId.substr(0, file.showId.indexOf('/'));
                             lastEpisodes.push(file);
                         } else {
-                            return false;
+                            return false; // exit loop
                         }
                     });
 
@@ -397,15 +396,18 @@ module.exports = {
             }
 		});
 
-		app.get('/api/image/:type/:showName', function(req, response) {
+		app.get('/api/image/:type/:showName/:size', function(req, response) {
+            var size = req.params.size,
+                type = req.params.type;
 			api.getImage({
-				path: __dirname + '/../public/img/'+req.params.type+'/',
+				path: __dirname + '/../public/img/'+type+'/',
 				showName: req.params.showName,
-                type: req.params.type
+                type: type,
+                size: size
 			}).then(function(path) {
 				fs.createReadStream(path).pipe(response);
 			}, function(err) {
-                fs.createReadStream(path.resolve(__dirname + "/../public/img/generic_" + req.params.type + ".jpg")).pipe(response);
+                fs.createReadStream(path.resolve(__dirname + "/../public/img/generic_" + type + ".jpg")).pipe(response);
             });
 		});
 

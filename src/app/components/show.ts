@@ -14,10 +14,10 @@ import {ParamsComponent} from "./params";
 @Component({
     template: `
         <div class='show'>
-            <div class="page-header" [ng-style]="{'background-image': 'url(api/image/fanart/'+ showId + ')'}">
+            <div class="page-header" [ng-style]="{'background-image': 'url(api/image/fanart/'+ showId + '/medium)'}">
 
                 <div class="title-wrapper">
-                    <img class="poster" [src]="'api/image/poster/'+showId" [alt]="showId">
+                    <img class="poster" [src]="'api/image/poster/'+showId+'/thumb'" [alt]="showId">
                     <h1 class="title">
                         {{tvShowData.title || showName}}
                         <span class="year" *ng-if="tvShowData.year">{{tvShowData.year}}</span>
@@ -25,24 +25,37 @@ import {ParamsComponent} from "./params";
                 </div>
             </div>
 
-            <div class="page-body">
+            <div class="page-body container">
                 <div *ng-if="!seasons.length && !loading" class="alert alert-danger text-center">No data for this show. Are you sure that the name is correct ?</div>
                 <div *ng-if="!seasons.length && loading" class="text-center"><loader></loader> Loading data...</div>
-                <ul class="nav nav-tabs" *ng-if="seasons.length">
+
+                <div class="dropdown seasons-list hidden-sm-up" *ng-if="seasons.length">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown">
+                        {{ 'SEASON' | translate }} {{ seasonFilter }}
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" *ng-for="#epList of seasons" [ng-class]="{active: seasonFilter == epList.season}" (click)="seasonFilter = epList.season">
+                            {{ 'SEASON' | translate }} {{epList.season }}
+                            <span *ng-if="epList.missingSubs > 0" class="badge pull-right">{{ epList.missingSubs }}</span>
+                        </a>
+                    </div>
+                </div>
+
+                <ul class="nav nav-tabs seasons-list hidden-xs-down" *ng-if="seasons.length">
                   <li class="nav-item" *ng-for="#epList of seasons" (click)="seasonFilter = epList.season">
                     <span class="nav-link" [ng-class]="{active: seasonFilter == epList.season}">
                         {{ 'SEASON' | translate }} {{epList.season }}
                         <span *ng-if="epList.missingSubs > 0" class="badge pull-right">{{ epList.missingSubs }}</span>
                     </span>
                   </li>
-                  <li class="nav-item pull-right" (click)="refresh(true)" title="{{ 'REFRESH' | translate }}">
-                    <span class="nav-link">
-                        <i class="glyphicon glyphicon-refresh"></i>
-                    </span>
-                  </li>
+                  <!--<li class="nav-item pull-right" (click)="refresh(true)" title="{{ 'REFRESH' | translate }}">-->
+                    <!--<span class="nav-link">-->
+                        <!--<i class="glyphicon glyphicon-refresh"></i>-->
+                    <!--</span>-->
+                  <!--</li>-->
                 </ul>
 
-                <div class="episodesList">
+                <div class="episodes-list" *ng-if="seasons.length">
                     <div class="card list-group epListWrapper" *ng-for="#epList of seasons | season:seasonFilter">
                         <div *ng-for="#ep of epList.episodes" class="episode alert" [ng-class]="{'alert-success': ep.subtitle, 'alert-warning': !ep.subtitle}">
                             <div class="episode-header">
@@ -59,8 +72,8 @@ import {ParamsComponent} from "./params";
                                     <div class="no-subtitle name">{{ 'NO_RESULT' | translate }}</div>
                                 </div>
                                 <div class="card list-group subPackWrapper fade-in" *ng-for="#subPack of subList | qualitySort">
-                                    <div class="card-header qualite{{ subPack.quality }}">
-                                        <span class="label pull-right qualite{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
+                                    <div class="card-header quality-{{ subPack.quality }}">
+                                        <span class="label pull-right quality-{{ subPack.quality }}">{{ 'SOURCE' | translate }}: {{ subPack.source }}</span>
                                         {{ subPack.file }}
                                     </div>
                                     <a *ng-for="#sub of subPack.content" class="subtitle list-group-item" (click)="downloadSub(sub, subPack, ep, $event)">
