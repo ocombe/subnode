@@ -380,8 +380,8 @@ module.exports = {
 
                     _.each(files, function(file) {
                         if(lastEpisodes.length < 10) {
-                            file.showId = file.file.replace(appParams.rootFolder + '/', '');
-                            file.showId = file.showId.substr(0, file.showId.indexOf('/'));
+                            file.showId = path.resolve(file.file).replace(path.resolve(appParams.rootFolder) + '\\', '');
+                            file.showId = file.showId.substr(0, file.showId.indexOf('\\'));
                             lastEpisodes.push(file);
                         } else {
                             return false; // exit loop
