@@ -13,8 +13,8 @@ vendor
 banners
 appParams.json
 .tagconfig
-server/data/shows/*
-server/data/filesList.db
+server/data/*
+!server/data/addic7ed_plus.db
 public/img/banner/*
 public/img/poster/*
 public/img/fanart/*

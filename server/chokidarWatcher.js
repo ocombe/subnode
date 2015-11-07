@@ -50,7 +50,6 @@ Watcher.prototype._startChild = function() {
             // stop the child
             that.child.stop();
             that.child.kill();
-            process.exit(0);
         }
     }
 
