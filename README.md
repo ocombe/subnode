@@ -53,13 +53,13 @@ An app to download subtitles for your TV Shows
 ![Home](https://cloud.githubusercontent.com/assets/265378/11016792/8732ef2c-858b-11e5-8e81-4e4c1138a3a8.jpg)
 
 
-* Parameters
-
-![Parameters](https://cloud.githubusercontent.com/assets/265378/11016793/87338680-858b-11e5-938e-3c328932292d.jpg)
-
-
 * Show page
 
 ![Show Page](https://cloud.githubusercontent.com/assets/265378/11016794/873425fe-858b-11e5-8301-2f9aa7d116e5.jpg)
+
+
+* Parameters
+
+![Parameters](https://cloud.githubusercontent.com/assets/265378/11016793/87338680-858b-11e5-938e-3c328932292d.jpg)
 
 
