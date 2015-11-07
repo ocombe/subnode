@@ -17,21 +17,23 @@ import {SocketService} from "../services/socket";
                 <small class="text-muted" [hidden]="scanDone">{{ 'INITIAL_SCAN' | translate }}</small>
             </div>
 
-            <a class="card fade-in" *ng-for="#file of lastEpisodes | async" [router-link]="routerService.normalize(['/Show', {id: file.showId}])">
-                <div class="img-wrapper hidden-lg-up">
-                    <img [src]="'api/image/poster/'+file.showId+'/thumb'">
-                </div>
-                <div class="card-block">
-                    <div class="card-title">{{ file.showId }}</div>
-                    <div class="card-text-wrapper">
-                        <span class="card-text">{{ file.season | number:'2.0-0' }}x{{ file.episode | number:'2.0-0' }}</span>
-                        <span class="card-subtitle">{{ file.ctime | date }}</span>
+            <div class="page-body">
+                <a class="card fade-in" *ng-for="#file of lastEpisodes | async" [router-link]="routerService.normalize(['/Show', {id: file.showId}])">
+                    <div class="img-wrapper hidden-lg-up">
+                        <img [src]="'api/image/poster/'+file.showId+'/thumb'">
                     </div>
-                </div>
-                <div class="img-wrapper hidden-md-down">
-                    <img [src]="'api/image/banner/'+file.showId+'/full'" [alt]="file.showId">
-                </div>
-            </a>
+                    <div class="card-block">
+                        <div class="card-title">{{ file.showId }}</div>
+                        <div class="card-text-wrapper">
+                            <span class="card-text">{{ file.season | number:'2.0-0' }}x{{ file.episode | number:'2.0-0' }}</span>
+                            <span class="card-subtitle">{{ file.ctime | date }}</span>
+                        </div>
+                    </div>
+                    <div class="img-wrapper hidden-md-down">
+                        <img [src]="'api/image/banner/'+file.showId+'/full'" [alt]="file.showId">
+                    </div>
+                </a>
+            </div>
         </div>
 	`,
     directives: [NgFor, LoaderComponent, ROUTER_DIRECTIVES],

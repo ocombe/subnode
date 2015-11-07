@@ -13,10 +13,14 @@ $navbar-height: 48px;
 
     .paramsBtn {
         height: $navbar-height;
-        padding-top: 6px;
         font-size: 25px;
+        line-height: $navbar-height;
+        
+        &:before {
+            vertical-align: initial;
+        }
     }
-    .navbar-brand{
+    .navbar-brand {
         height: $navbar-height;
         float: left;
         padding: 7px 10px 0 20px;
