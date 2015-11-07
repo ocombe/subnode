@@ -10,9 +10,6 @@ var app = require('app'),  // Module to control application life.
 // Report crashes to our server.
 require('crash-reporter').start();
 
-// for squirrel install
-if(require('electron-squirrel-startup')) return;
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow = null,
