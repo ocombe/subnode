@@ -114,7 +114,6 @@ module.exports = {
 		});
 
 		app.get('/api/showList/:full?', function(req, response) {
-            // todo why do episodes disappear from the list when you click on them once ?
 			if(appParams && appParams.rootFolder) {
                 // todo use chokidar for following calls
 				fs.readdir(path.resolve(appParams.rootFolder), function(err, folders) {
@@ -456,7 +455,9 @@ module.exports = {
 
                 var emitNewScan = _.debounce(function() {
                     io.emit('scan:new');
-                }, 1000);
+                }, 2000);
+
+                var tempFiles = [];
 
                 function onFileChange(path, stats) {
                     var fileInfo = fileScraper.scrape(path);
@@ -465,11 +466,15 @@ module.exports = {
                         if(stats && stats.ctime) {
                             fileInfo.ctime = new Date(stats.ctime).getTime();
                         }
-                        filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
-                            if(err) {
-                                console.log(err);
-                            }
-                        });
+                        if(tempFiles) {
+                            tempFiles.push(fileInfo);
+                        } else {
+                            filesList.update({file: fileInfo.file}, fileInfo, {upsert: true}, function(err) {
+                                if(err) {
+                                    console.log(err);
+                                }
+                            });
+                        }
                         if(initialScanDone) {
                             emitNewScan();
                         }
@@ -481,17 +486,29 @@ module.exports = {
                     .on('add', onFileChange)
                     .on('change', onFileChange)
                     .on('unlink', function(path) {
-                        //console.log('File', path, 'has been removed');
                         filesList.remove({path: path})
                     })
                     .on('error', function(error) {
                         console.log('Error happened', error);
                     })
                     .on('ready', function() {
-                        initialScanDone = true;
-                        console.log('Initial scan complete. Ready for changes.');
-                        filesList.persistence.compactDatafile(); // compress the db
-                        emitNewScan();
+                        filesList.remove({}, {multi: true}, function(err) {
+                            if(err) {
+                                console.log(err);
+                            } else {
+                                filesList.insert(tempFiles, function(err) {
+                                    tempFiles = undefined;
+                                    if(err) {
+                                        console.log(err);
+                                    } else {
+                                        initialScanDone = true;
+                                        console.log('Initial scan complete. Ready for changes.');
+                                        filesList.persistence.compactDatafile(); // compress the db
+                                        emitNewScan();
+                                    }
+                                })
+                            }
+                        });
                     });
             }
         }

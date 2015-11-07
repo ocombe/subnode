@@ -101,10 +101,10 @@ img[src^="api/image/poster/"] {
 img[src^="api/image/banner/"] {
     max-width: 758px;
     max-height: 140px;
-    width: 758px;
+    width: 700px;
 
     @include media-breakpoint-up(lg) {
-        height: 140px;
+        height: 129px;
     }
 
     background: {
