@@ -3,6 +3,7 @@ import 'select2';
 import {RestService} from "../services/rest";
 import {Router, Location} from 'angular2/router';
 import {RouterService} from "../services/router";
+import {TranslateService} from "ng2-translate/ng2-translate";
 
 /**
  * This directive applies select2 on the nav <select> element
@@ -14,7 +15,7 @@ import {RouterService} from "../services/router";
 })
 @View({
     template: `
-        <select data-placeholder="Select a show">
+        <select data-placeholder="">
             <option *ng-for="#show of showList" [value]="show">{{show}}</option>
         </select>
     `,
@@ -26,14 +27,24 @@ export class ShowSelector {
     showList: Array<string> = [];
     lastValue: string;
 
-    //Todo: follow path changes to update the select
-    constructor(rest: RestService, element: ElementRef, private routerService: RouterService, private router: Router, location: Location) {
+    constructor(rest: RestService, element: ElementRef, private routerService: RouterService, private router: Router, location: Location, translate: TranslateService) {
         this.select = element.nativeElement.querySelector('select');
 
         this.$select = $(this.select).select2()
             .on('change', (e: JQueryEventObject) => {
                 this.showSelected();
             });
+
+        // update placeholder on lang change
+        translate.onLangChange.observer({
+            next: (params: any) => {
+                translate.get('SELECT_SHOW').subscribe((trad: string) => {
+                    setTimeout(() => {
+                        $('.select2-selection__placeholder').text(trad);
+                    });
+                });
+            }
+        });
 
         rest.get('api/showList').toPromise().then((showList: Array<string>) => {
             this.showList = showList;

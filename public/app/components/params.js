@@ -69,6 +69,7 @@ System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate",
                         if (typeof params.rootFolder === 'undefined') {
                             $('#paramsModal').modal();
                         }
+                        translate.use(params.lang || 'en');
                         _this.translate.onLangChange.observer({
                             next: function (params) {
                                 if (_this.lang.value !== params.lang) {
@@ -76,7 +77,7 @@ System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate",
                                 }
                             }
                         });
-                        _this.lang.updateValue(_this.translate.currentLang, {});
+                        _this.lang.updateValue(params.lang || 'en', {});
                         _this.rootFolder.updateValue(params.rootFolder, {});
                         _this.username.updateValue(params.username, {});
                         _this.password.updateValue(params.password, {});
@@ -96,7 +97,11 @@ System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate",
                     return val ? val : [];
                 };
                 ParamsComponent.prototype.selectLangChange = function () {
-                    this.translate.use(this.lang.value);
+                    var _this = this;
+                    // set timeout for firefox
+                    setTimeout(function () {
+                        _this.translate.use(_this.lang.value);
+                    });
                 };
                 ParamsComponent.prototype.saveParams = function () {
                     var _this = this;

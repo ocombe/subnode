@@ -187,6 +187,8 @@ export class ParamsComponent {
                 $('#paramsModal').modal();
             }
 
+            translate.use(params.lang || 'en');
+
             this.translate.onLangChange.observer({
                 next: (params: any) => {
                     if(this.lang.value !== params.lang) {
@@ -194,7 +196,7 @@ export class ParamsComponent {
                     }
                 }
             });
-            this.lang.updateValue(this.translate.currentLang, {});
+            this.lang.updateValue(params.lang || 'en', {});
             this.rootFolder.updateValue(params.rootFolder, {});
             this.username.updateValue(params.username, {});
             this.password.updateValue(params.password, {});
@@ -218,7 +220,10 @@ export class ParamsComponent {
     }
 
     selectLangChange() {
-        this.translate.use(this.lang.value);
+        // set timeout for firefox
+        setTimeout(() => {
+            this.translate.use(this.lang.value);
+        });
     }
 
     saveParams() {

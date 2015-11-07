@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/router', "../services/router"], function(exports_1) {
+System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/router', "../services/router", "ng2-translate/ng2-translate"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -10,7 +10,7 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var angular2_1, rest_1, router_1, router_2;
+    var angular2_1, rest_1, router_1, router_2, ng2_translate_1;
     var ShowSelector;
     return {
         setters:[
@@ -26,14 +26,16 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
             },
             function (router_2_1) {
                 router_2 = router_2_1;
+            },
+            function (ng2_translate_1_1) {
+                ng2_translate_1 = ng2_translate_1_1;
             }],
         execute: function() {
             /**
              * This directive applies select2 on the nav <select> element
              */
             ShowSelector = (function () {
-                //Todo: follow path changes to update the select
-                function ShowSelector(rest, element, routerService, router, location) {
+                function ShowSelector(rest, element, routerService, router, location, translate) {
                     var _this = this;
                     this.routerService = routerService;
                     this.router = router;
@@ -42,6 +44,16 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                     this.$select = $(this.select).select2()
                         .on('change', function (e) {
                         _this.showSelected();
+                    });
+                    // update placeholder on lang change
+                    translate.onLangChange.observer({
+                        next: function (params) {
+                            translate.get('SELECT_SHOW').subscribe(function (trad) {
+                                setTimeout(function () {
+                                    $('.select2-selection__placeholder').text(trad);
+                                });
+                            });
+                        }
                     });
                     rest.get('api/showList').toPromise().then(function (showList) {
                         _this.showList = showList;
@@ -82,10 +94,10 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                         providers: [rest_1.RestService]
                     }),
                     angular2_1.View({
-                        template: "\n        <select data-placeholder=\"Select a show\">\n            <option *ng-for=\"#show of showList\" [value]=\"show\">{{show}}</option>\n        </select>\n    ",
+                        template: "\n        <select data-placeholder=\"\">\n            <option *ng-for=\"#show of showList\" [value]=\"show\">{{show}}</option>\n        </select>\n    ",
                         directives: [angular2_1.FORM_DIRECTIVES, angular2_1.NgFor, angular2_1.NgModel]
                     }), 
-                    __metadata('design:paramtypes', [rest_1.RestService, angular2_1.ElementRef, router_2.RouterService, router_1.Router, router_1.Location])
+                    __metadata('design:paramtypes', [rest_1.RestService, angular2_1.ElementRef, router_2.RouterService, router_1.Router, router_1.Location, ng2_translate_1.TranslateService])
                 ], ShowSelector);
                 return ShowSelector;
             })();
