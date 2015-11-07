@@ -19,33 +19,32 @@ An app to download subtitles for your TV Shows
 
 
 # Installation & usage :
-1. Download and install [nodeJS](http://nodejs.org/download/).
+1. Download the release for your operating system on [the releases page](https://github.com/ocombe/subNode/releases).
 
+2. Unzip and launch subnode (subnode.exe on Windows) at the root of the folder than you just unzipped.
 
-2. Go to the subNode folder and launch the init script, it will download and compile the modules for your environment
+# Installation on a headless server (for advanced users) :
+1. Download and install [nodeJS > v0.10.42](http://nodejs.org/download/).
 
-  On Windows : ```./scripts/init.bat```
+2. Download/clone this repository on your computer.
 
-  On Linux : ```sudo sh scripts/init.sh```
+3. Go to the subNode folder and install the node modules (it will download and compile the modules for your environment) :
 
-  Or via the command line :```npm install --production --unsafe-perm```
+  ```sh
+  npm install --production --unsafe-perm
+  ```
 
+4. Launch the server :
 
-3. Launch the server :
+  ```sh
+  node app.js
+  ```
 
-  On Windows : ```./scripts/launch.bat```
-
-  On Linux : ```sudo sh scripts/launch.sh```
-
-  Or via the command line :```node app.js``` on Windows and ```nodejs app.js``` on Linux
-
-4. Go to http://localhost:3000/ and enjoy !
+5. Go to http://localhost:3000/ and enjoy !
 
 # Troubleshooting
-* The launch script ```sudo sh scripts/launch.sh``` or the command ```nodejs app.js``` doesn't work on Linux: it launches and the exits :
-  It's a bug in forever (the module to keep the app launched even if it crashes). Try to launch the app manually via the command: ```sudo nodejs ./server/serverWrapper.js```
 
-* I got an error "EADDRINUSE" when I try to start the app :
+* I have an error "EADDRINUSE" when I try to start the app :
   subNode uses the port 3000 by default. If this port is already used by another program you will get this error. You can change the value of the variable "port" in the file appParams.json
 
 # Screenshots
