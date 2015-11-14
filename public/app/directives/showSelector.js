@@ -77,7 +77,7 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                     });
                 }
                 ShowSelector.prototype.showSelected = function () {
-                    if (this.select.value !== this.lastValue) {
+                    if (this.select.value && this.select.value !== this.lastValue) {
                         this.lastValue = this.select.value;
                         this.routerService.navigate(['/Show', { id: this.select.value }]);
                     }

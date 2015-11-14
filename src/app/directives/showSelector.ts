@@ -69,7 +69,7 @@ export class ShowSelector {
     }
 
     showSelected() {
-        if(this.select.value !== this.lastValue) {
+        if(this.select.value && this.select.value !== this.lastValue) {
             this.lastValue = this.select.value;
             this.routerService.navigate(['/Show', {id: this.select.value}]);
         }
