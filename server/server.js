@@ -475,7 +475,7 @@ module.exports = {
                                 }
                             });
                         }
-                        if(initialScanDone) {
+                        if(initialScanDone && fileInfo.type === 'video') {
                             emitNewScan();
                         }
                     }
