@@ -37,11 +37,10 @@ System.register(['angular2/angular2', 'angular2/router', '../services/rest', "./
             }],
         execute: function() {
             HomeComponent = (function () {
-                function HomeComponent(rest, routerService, ngZone) {
+                function HomeComponent(rest, routerService) {
                     var _this = this;
                     this.rest = rest;
                     this.routerService = routerService;
-                    this.ngZone = ngZone;
                     this.lastEpisodes = [];
                     this.scanDone = false;
                     this.getLastEpisodes().then(function () {
@@ -75,7 +74,7 @@ System.register(['angular2/angular2', 'angular2/router', '../services/rest', "./
                         directives: [angular2_1.NgFor, loader_1.LoaderComponent, router_1.ROUTER_DIRECTIVES],
                         pipes: [ng2_translate_1.TranslatePipe]
                     }), 
-                    __metadata('design:paramtypes', [rest_1.RestService, router_2.RouterService, angular2_1.NgZone])
+                    __metadata('design:paramtypes', [rest_1.RestService, router_2.RouterService])
                 ], HomeComponent);
                 return HomeComponent;
             })();

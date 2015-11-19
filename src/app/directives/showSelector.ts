@@ -36,14 +36,12 @@ export class ShowSelector {
             });
 
         // update placeholder on lang change
-        translate.onLangChange.observer({
-            next: (params: any) => {
-                translate.get('SELECT_SHOW').subscribe((trad: string) => {
-                    setTimeout(() => {
+        translate.onLangChange.subscribe((params: any) => {
+            translate.get('SELECT_SHOW').subscribe((trad: string) => {
+                setTimeout(() => {
                         $('.select2-selection__placeholder').text(trad);
-                    });
                 });
-            }
+            });
         });
 
         rest.get('api/showList').toPromise().then((showList: Array<string>) => {

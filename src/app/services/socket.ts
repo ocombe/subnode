@@ -1,3 +1,5 @@
+var zone = new Zone();
+
 export class SocketService {
     static socket: any = io();
 

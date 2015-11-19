@@ -1,8 +1,9 @@
 System.register([], function(exports_1) {
-    var SocketService;
+    var zone, SocketService;
     return {
         setters:[],
         execute: function() {
+            zone = new Zone();
             SocketService = (function () {
                 function SocketService() {
                 }

@@ -3,7 +3,8 @@ import {ShowSelector} from "../directives/showSelector";
 import {LoaderComponent} from "./loader";
 import {TranslateService, TranslatePipe} from "ng2-translate/ng2-translate";
 import {RestService, RestResponse} from '../services/rest';
-import 'bootstrap/dist/js/bootstrap.min.js'
+import 'bootstrap/dist/js/umd/modal.js';
+import 'bootstrap/dist/js/umd/dropdown.js';
 
 @Injectable()
 @Component({
@@ -189,11 +190,9 @@ export class ParamsComponent {
 
             translate.use(params.lang || 'en');
 
-            this.translate.onLangChange.observer({
-                next: (params: any) => {
-                    if(this.lang.value !== params.lang) {
-                        this.lang.updateValue(params.lang, {});
-                    }
+            this.translate.onLangChange.subscribe((params: any) => {
+                if(this.lang.value !== params.lang) {
+                    this.lang.updateValue(params.lang, {});
                 }
             });
             this.lang.updateValue(params.lang || 'en', {});

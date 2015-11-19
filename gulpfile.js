@@ -36,14 +36,10 @@ gulp.task('binaries', windowsInstaller);
 
 /* Define our tasks using plain functions */
 function ts2js() {
+    var tscConfig = require('./tsconfig.json');
+
     var tsResult = gulp.src([PATHS.ts, PATHS.typings])
-        .pipe(typescript({
-            noImplicitAny: true,
-            module: 'system',
-            target: 'ES5',
-            emitDecoratorMetadata: true,
-            experimentalDecorators: true
-        }));
+        .pipe(typescript(tscConfig.compilerOptions));
 
     return tsResult.js.pipe(gulp.dest('public'))
         .pipe(browserSync.stream());
@@ -161,7 +157,7 @@ function vendor() {
     return gulp.src([
             'node_modules/systemjs/dist/system.src.js',
             'node_modules/angular2/bundles/angular2.min.js',
-            'node_modules/angular2/bundles/router.dev.min.js',
+            'node_modules/angular2/bundles/router.dev.js',
             'node_modules/angular2/bundles/http.min.js',
             'node_modules/lodash/index.js'
         ])
@@ -201,10 +197,10 @@ function build(done) {
     packager({
         dir: './',
         name: 'subnode',
-        platform: 'all',
-        //platform: 'win32',
-        arch: 'all',
-        //arch: 'ia32',
+        //platform: 'all',
+        platform: 'win32',
+        //arch: 'all',
+        arch: 'ia64',
         out: './releases/',
         overwrite: true,
         icon: './public/img/favicon.ico',

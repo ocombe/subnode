@@ -1,4 +1,4 @@
-System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate", '../services/rest', 'bootstrap/dist/js/bootstrap.min.js'], function(exports_1) {
+System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate", '../services/rest', 'bootstrap/dist/js/umd/modal.js', 'bootstrap/dist/js/umd/dropdown.js'], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") return Reflect.decorate(decorators, target, key, desc);
         switch (arguments.length) {
@@ -26,7 +26,8 @@ System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate",
             function (rest_1_1) {
                 rest_1 = rest_1_1;
             },
-            function (_1) {}],
+            function (_1) {},
+            function (_2) {}],
         execute: function() {
             ParamsComponent = (function () {
                 function ParamsComponent(rest, translate, element) {
@@ -70,11 +71,9 @@ System.register(['angular2/angular2', "./loader", "ng2-translate/ng2-translate",
                             $('#paramsModal').modal();
                         }
                         translate.use(params.lang || 'en');
-                        _this.translate.onLangChange.observer({
-                            next: function (params) {
-                                if (_this.lang.value !== params.lang) {
-                                    _this.lang.updateValue(params.lang, {});
-                                }
+                        _this.translate.onLangChange.subscribe(function (params) {
+                            if (_this.lang.value !== params.lang) {
+                                _this.lang.updateValue(params.lang, {});
                             }
                         });
                         _this.lang.updateValue(params.lang || 'en', {});

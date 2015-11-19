@@ -46,14 +46,12 @@ System.register(['angular2/angular2', 'select2', "../services/rest", 'angular2/r
                         _this.showSelected();
                     });
                     // update placeholder on lang change
-                    translate.onLangChange.observer({
-                        next: function (params) {
-                            translate.get('SELECT_SHOW').subscribe(function (trad) {
-                                setTimeout(function () {
-                                    $('.select2-selection__placeholder').text(trad);
-                                });
+                    translate.onLangChange.subscribe(function (params) {
+                        translate.get('SELECT_SHOW').subscribe(function (trad) {
+                            setTimeout(function () {
+                                $('.select2-selection__placeholder').text(trad);
                             });
-                        }
+                        });
                     });
                     rest.get('api/showList').toPromise().then(function (showList) {
                         _this.showList = showList;

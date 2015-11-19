@@ -1,4 +1,4 @@
-import {Component, Injectable, NgFor, ChangeDetectionStrategy, OnDestroy, NgZone} from 'angular2/angular2';
+import {Component, Injectable, NgFor, ChangeDetectionStrategy, OnDestroy} from 'angular2/angular2';
 import {ROUTER_DIRECTIVES} from 'angular2/router';
 import {RestService} from '../services/rest';
 import {LoaderComponent} from "./loader";
@@ -49,7 +49,7 @@ export class HomeComponent implements OnDestroy {
     lastEpisodes: Array<string> = [];
     scanDone: Boolean = false;
 
-    constructor(private rest: RestService, private routerService: RouterService, private ngZone: NgZone) {
+    constructor(private rest: RestService, private routerService: RouterService) {
         this.getLastEpisodes().then(() => {
             SocketService.on('scan:new', () => {
                 this.scanDone = true;
