@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-root',
   template: `
     <p>
-      app Works!!!dd
+      app Works!!!
     </p>
   `,
   styles: []
